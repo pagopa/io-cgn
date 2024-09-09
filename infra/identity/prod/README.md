@@ -1,4 +1,4 @@
-# IO Messages - GitHub federated Managed Identities
+# IO CGN - GitHub federated Managed Identities
 
 <!-- markdownlint-disable -->
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
