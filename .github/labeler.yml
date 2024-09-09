@@ -1,0 +1,11 @@
+infra:
+  - changed-files:
+      - any-glob-to-any-file: ["infra/**"]
+
+external-interface-changes:
+  - changed-files:
+      - any-glob-to-any-file: ["apps/**/openapi.yaml", "apps/**/openapi/*.yaml"]
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "README.md"]
