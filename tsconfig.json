@@ -2,5 +2,12 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "resolveJsonModule": true
-  }
+  },
+  "exclude": [
+    "__mocks__",
+    "dist",
+    "node_modules",
+    "generated",
+    "**/__tests__/*",
+  ]
 }
