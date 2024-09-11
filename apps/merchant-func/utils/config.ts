@@ -28,8 +28,6 @@ export const RedisParams = t.intersection([
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.intersection([
   t.interface({
-    AzureWebJobsStorage: NonEmptyString,
-    CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
     isProduction: t.boolean
   }),
   RedisParams
