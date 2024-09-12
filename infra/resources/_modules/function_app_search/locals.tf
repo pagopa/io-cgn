@@ -1,5 +1,5 @@
 locals {
-  cgn_merchant = {
+  cgn_search = {
     app_settings = {
       FUNCTIONS_WORKER_PROCESS_COUNT = 4
       NODE_ENV                       = "production"
@@ -9,10 +9,20 @@ locals {
       APPINSIGHTS_CONNECTION_STRING   = var.ai_connection_string
       APPINSIGHTS_SAMPLING_PERCENTAGE = var.ai_sampling_percentage
 
+      // POSTGRES
+      CGN_POSTGRES_DB_ADMIN_URI   = var.cgn_postgres_db_admin_connection_string
+      CGN_POSTGRES_DB_SSL_ENABLED = "true"
+
       // REDIS
-      REDIS_URL      = var.redis_url
-      REDIS_PORT     = var.redis_port
-      REDIS_PASSWORD = var.redis_password
+      REDIS_URL             = var.redis_url
+      REDIS_PORT            = var.redis_port
+      REDIS_PASSWORD        = var.redis_password
+      REDIS_CLUSTER_ENABLED = "false"
+      REDIS_TLS_ENABLED     = "true"
+
+      // UTILS
+      CDN_MERCHANT_IMAGES_BASE_URL = var.cgn_cdn_endpoint_base_url
+      CGN_BUCKET_CODE_LOCK_LIMIT   = 101
 
       // Keepalive fields are all optionals
       FETCH_KEEPALIVE_ENABLED             = "true"

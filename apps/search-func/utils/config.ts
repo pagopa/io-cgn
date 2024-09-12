@@ -41,7 +41,6 @@ export const IConfig = t.intersection([
     CGN_EXTERNAL_SOURCE_HEADER_NAME: NonEmptyString,
 
     CGN_POSTGRES_DB_ADMIN_URI: NonEmptyString,
-    CGN_POSTGRES_DB_RO_URI: NonEmptyString,
     isPostgresSslEnabled: t.boolean,
 
     isProduction: t.boolean

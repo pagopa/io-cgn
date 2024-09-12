@@ -24,6 +24,18 @@ resource "azurerm_resource_group" "itn_cgn" {
   location = local.location
 }
 
+module "key_vaults" {
+  source = "../_modules/key_vaults"
+
+  project             = local.project
+  location            = local.location
+  resource_group_name = azurerm_resource_group.itn_cgn.name
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+
+  tags = local.tags
+}
+
 module "redis_cgn" {
   source = "github.com/pagopa/terraform-azurerm-v3//redis_cache?ref=v8.21.0"
 

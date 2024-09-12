@@ -8,6 +8,10 @@ module "functions_cgn_merchant" {
   domain              = local.domain
   resource_group_name = azurerm_resource_group.itn_cgn.name
 
+  ai_instrumentation_key = data.azurerm_application_insights.common.instrumentation_key
+  ai_connection_string   = data.azurerm_application_insights.common.connection_string
+  ai_sampling_percentage = 5
+
   cidr_subnet_cgn_merchant_func    = "10.20.12.0/26"
   private_endpoint_subnet_id           = data.azurerm_subnet.pep.id
   private_dns_zone_resource_group_name = data.azurerm_resource_group.weu_common.name

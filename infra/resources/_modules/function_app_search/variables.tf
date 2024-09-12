@@ -33,9 +33,9 @@ variable "resource_group_name" {
   description = "Name of the resource group where resources will be created"
 }
 
-variable "cidr_subnet_cgn_merchant_func" {
+variable "cidr_subnet_cgn_search_func" {
   type        = string
-  description = "CIDR block for merchant merchant function app subnet"
+  description = "CIDR block for cgn search function app subnet"
 }
 
 variable "private_endpoint_subnet_id" {
@@ -72,6 +72,7 @@ variable "ai_sampling_percentage" {
 }
 
 # REPO DEFINED VARIABLES
+
 variable "redis_url" {
   type        = string
   description = "Redis url"
@@ -85,4 +86,14 @@ variable "redis_port" {
 variable "redis_password" {
   type        = string
   description = "Redis password"
+}
+
+variable "cgn_postgres_db_admin_connection_string" {
+  type        = string
+  description = "Postgres admin connection string"
+}
+
+variable "cgn_cdn_endpoint_base_url" {
+  type        = string
+  description = "CDN endpoint base url"
 }
