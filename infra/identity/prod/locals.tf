@@ -25,15 +25,13 @@ locals {
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-rg-01 = [
-        "Role Based Access Control Administrator"
-      ],
-      io-p-rg-operations = [
-        "Role Based Access Control Administrator"
-      ],
-      io-p-itn-cgn-rg-01 = [
+        "Role Based Access Control Administrator",
         "Key Vault Reader",
         "Key Vault Crypto User",
         "Key Vault Secrets User",
+      ],
+      io-p-rg-operations = [
+        "Role Based Access Control Administrator"
       ]
     }
   }
