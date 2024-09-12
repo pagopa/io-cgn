@@ -29,6 +29,11 @@ locals {
       ],
       io-p-rg-operations = [
         "Role Based Access Control Administrator"
+      ],
+      io-p-itn-cgn-rg-01 = [
+        "Key Vault Reader",
+        "Key Vault Crypto User",
+        "Key Vault Secrets User",
       ]
     }
   }
