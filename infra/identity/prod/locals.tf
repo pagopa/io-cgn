@@ -35,4 +35,21 @@ locals {
       ]
     }
   }
+  environment_ci_roles = {
+    subscription = [
+      "Contributor"
+    ]
+    resource_groups = {
+      terraform-state-rg = [
+        "Storage Blob Data Contributor"
+      ],
+      io-p-itn-cgn-rg-01 = [
+        "Role Based Access Control Administrator",
+        "Key Vault Secrets User",
+      ],
+      io-p-rg-operations = [
+        "Role Based Access Control Administrator"
+      ]
+    }
+  }
 }
