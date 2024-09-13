@@ -25,10 +25,10 @@ locals {
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-rg-01 = [
-        "Role Based Access Control Administrator",
         "Key Vault Reader",
         "Key Vault Crypto User",
         "Key Vault Secrets User",
+        "Role Based Access Control Administrator",
       ],
       io-p-rg-operations = [
         "Role Based Access Control Administrator"
@@ -37,15 +37,19 @@ locals {
   }
   environment_ci_roles = {
     subscription = [
-      "Contributor"
+      "Reader", 
+      "Reader and Data Access", 
+      "PagoPA IaC Reader", 
+      "DocumentDB Account Contributor"
     ]
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-rg-01 = [
-        "Role Based Access Control Administrator",
+        "Key Vault Reader",
         "Key Vault Secrets User",
+        "Role Based Access Control Administrator",
       ],
       io-p-rg-operations = [
         "Role Based Access Control Administrator"
