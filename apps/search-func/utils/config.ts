@@ -34,8 +34,6 @@ export type IConfig = t.TypeOf<typeof IConfig>;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const IConfig = t.intersection([
   t.interface({
-    AzureWebJobsStorage: NonEmptyString,
-
     CDN_MERCHANT_IMAGES_BASE_URL: NonEmptyString,
     CGN_BUCKET_CODE_LOCK_LIMIT: NonNegativeInteger,
     CGN_EXTERNAL_SOURCE_HEADER_NAME: NonEmptyString,
