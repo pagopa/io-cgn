@@ -34,6 +34,11 @@ module "federated_identities" {
     roles  = local.environment_cd_roles
   }
 
+  continuos_integration = { 
+    enable = true, 
+    roles = local.environment_cd_roles 
+  }
+
   tags = local.tags
 }
 
