@@ -1,0 +1,28 @@
+@startuml CGN Card Functions
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Contesto CGN Card Functions (io-cgn)
+
+Person(cit, "CIT")
+System(backend, "IO Backend")
+
+Container_Boundary(cgnfunc, "Card Functions",""){
+  System(cardfunc, "CGN Card Functions")
+  Container(redis, "Redis")
+  ContainerDb(cosmos, "CosmosDB")
+  ContainerQueue(queue, "Queue Storage")
+}
+System_Ext(services, "Services")
+System_Ext(eyca, "Eyca")
+
+Rel(backend, cardfunc, "Invoca", "Avvia e controlla attivazione carte")
+Rel(cit,backend, "Richiede servizi CGN")
+Rel(cardfunc,services, "Richiede attivazione servizio speciale")
+Rel(cardfunc,eyca, "Richiede attivazione carta EYCA")
+Rel(cardfunc,cosmos, "Inserisce dati CGN/EYCA")
+Rel(cardfunc,redis, "Cacha la sessione CCDB Eyca")
+Rel(cardfunc,queue, "Inseriscono stato da processare in coda")
+Rel(queue,cardfunc, "Avviano processing stato CGN/EYCA")
+
+@enduml
