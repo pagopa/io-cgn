@@ -1,0 +1,48 @@
+@startuml Sequence attivazione CGN
+actor       Utente       as cit
+participant "IO Backend" as be
+participant "CGN Card Functions" as cf
+participant "Services Functions" as sf
+queue "CGN Pending" as pending
+queue "CGN Activated" as activated
+database "CosmosDB" as cosmos
+collections "Storage" as storage
+
+cit -> be : Richiesta attivazione CGN
+be -> cf : ActivateCGN
+cf -> be : 204 Accepted
+be -> cit: 204 Accepted
+cf -> pending : Insert PENDING CGN message
+
+group CGN PENDING
+  pending -> cf : Start "CgnPendingProcessing"
+  activate cf
+  cf -> cosmos : Upsert carta CGN PENDING 
+  cf -> sf : Upsert Servizio Speciale PENDING
+  cf -> storage : Upsert scadenza CGN
+  cf -> activated: Insert ACTIVATED CGN message
+  deactivate cf
+end
+
+group CGN ACTIVATED
+  activated -> cf : Start "CgnActivatedProcessing"
+  activate cf
+  cf -> sf : Upsert Servizio Speciale ACTIVE
+  cf -> cosmos : Update carta CGN ACTIVATED
+  deactivate cf 
+end
+
+loop POLLING STATO ATTIVAZIONE
+cit -> be : Polling Stato Attivazione CGN
+activate be
+be -> cf: "GetCgnStatus"
+activate cf
+cf -> cosmos: Check status CGN
+cf -> be: {status: CardStatus}
+deactivate cf
+be -> cit : {status: CardStatus}
+deactivate be
+end
+
+
+@enduml
