@@ -1,0 +1,20 @@
+@startuml CGN Card Functions
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Contesto CGN Card Functions (io-cgn)
+
+Person(cit, "CIT")
+Boundary(boundary, "IO Backend"){
+  System(backend, "IO Backend")
+  System(cardfunc, "CGN Card Functions")
+  Rel(backend, cardfunc, "Invoca", "Avvia e controlla attivazione carte")
+}
+System_Ext(services, "Services")
+System_Ext(eyca, "Eyca")
+
+Rel(cit,backend, "Richiede servizi CGN")
+Rel(cardfunc,services, "Richiede attivazione servizio speciale")
+Rel(cardfunc,eyca, "Richiede attivazione carta EYCA")
+
+@enduml
