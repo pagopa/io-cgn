@@ -1,0 +1,45 @@
+@startuml Sequence attivazione EYCA
+actor       Utente       as cit
+participant "IO Backend" as be
+participant "CGN Card Functions" as cf
+participant "EYCA CCDB" as ccdb
+participant "Redis" as redis
+queue "EYCA Pending" as epending
+queue "EYCA Activated" as eactivated
+database "CosmosDB" as cosmos
+collections "Storage" as storage
+
+group EYCA PENDING
+  epending -> cf : Start "EycaPendingProcessing"
+  activate cf
+  cf -> cosmos : Upsert carta EYCA PENDING 
+  cf -> storage : Upsert scadenza EYCA
+  cf -> redis : SET CCDB session su Redis
+  cf -> ccdb : Preissue carta EYCA a CCDB
+  cf -> eactivated: Insert ACTIVATED EYCA message
+  deactivate cf
+end
+
+group EYCA ACTIVATED
+  eactivated -> cf : Start "EycaActivatedProcessing"
+  activate cf
+  cf -> redis : GET CCDB session da Redis
+  cf -> ccdb : Update carta EYCA su CCDB con scadenza
+  cf -> cosmos : Update carta EYCA ACTIVATED con numero carta
+  deactivate cf 
+end
+
+loop POLLING STATO ATTIVAZIONE
+cit -> be : Polling Stato Attivazione EYCA
+activate be
+be -> cf: "GetEycaStatus"
+activate cf
+cf -> cosmos: Check status EYCA
+cf -> be: {status: CardStatus}
+deactivate cf
+be -> cit : {status: CardStatus}
+deactivate be
+end
+
+
+@enduml

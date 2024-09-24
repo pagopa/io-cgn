@@ -2,7 +2,7 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title Contesto CGN Card Functions (io-cgn)
+title Container CGN Card Functions (io-cgn)
 
 Person(cit, "CIT")
 System(backend, "IO Backend")
