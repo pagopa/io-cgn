@@ -14,5 +14,5 @@ app.http("healthCheck", {
     cosmosClient
   }),
   methods: ["GET"],
-  route: "api/v1/cgn/health",
+  route: "health",
 });
