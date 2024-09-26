@@ -4,7 +4,7 @@
   "author": "IO CGN",
   "version": "3.0.1",
   "license": "MIT",
-  "main": "dist/main.js",
+  "main": "dist/src/main.js",
   "files": [
     "**/function.json",
     "dist",
@@ -18,10 +18,10 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
-    "lint-api": "oval validate -p openapi/index.yaml",
-    "generate:definitions": "shx rm -rf generated/definitions && gen-api-models --api-spec openapi/index.yaml --out-dir generated/definitions",
-    "generate:api-eyca": "shx rm -rf generated/eyca-api && gen-api-models --api-spec openapi/eyca.yaml --no-strict --out-dir generated/eyca-api --request-types --response-decoders --client",
-    "generate:api-services": "shx rm -rf generated/services-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-services/v3.3.0/openapi/index.yaml --no-strict --out-dir generated/services-api --request-types --response-decoders --client"
+    "lint-api": "oval validate -p src/openapi/index.yaml",
+    "generate:definitions": "shx rm -rf src/generated/definitions && gen-api-models --api-spec src/openapi/index.yaml --out-dir src/generated/definitions",
+    "generate:api-eyca": "shx rm -rf src/generated/eyca-api && gen-api-models --api-spec src/openapi/eyca.yaml --no-strict --out-dir src/generated/eyca-api --request-types --response-decoders --client",
+    "generate:api-services": "shx rm -rf src/generated/services-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-services/v3.3.0/openapi/index.yaml --no-strict --out-dir src/generated/services-api --request-types --response-decoders --client"
   },
   "devDependencies": {
     "@pagopa/eslint-config": "^1.3.1",

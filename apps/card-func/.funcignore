@@ -1,9 +1,3 @@
-*.js.map
-*.ts
-.git*
-.vscode*
-.circleci*
-.prettierrc
 local.settings.json*
 tsconfig.json
 tslint.json
