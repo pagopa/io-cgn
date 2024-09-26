@@ -92,9 +92,9 @@ module "functions_cgn_card" {
   eyca_api_username = data.azurerm_key_vault_secret.eyca_api_username.value
   eyca_api_password = data.azurerm_key_vault_secret.eyca_api_username.value
 
-  services_api_url = data.azurerm_key_vault_secret.services_api_url
-  services_api_key = data.azurerm_key_vault_secret.services_api_key
-  cgn_service_id   = data.azurerm_key_vault_secret.cgn_service_id
+  services_api_url = data.azurerm_key_vault_secret.services_api_url.value
+  services_api_key = data.azurerm_key_vault_secret.services_api_key.value
+  cgn_service_id   = data.azurerm_key_vault_secret.cgn_service_id.value
 
   cgn_legal_backup_storage_connection = data.azurerm_key_vault_secret.cgn_legal_backup_storage_connection.value
   cgn_legal_backup_container_name     = "cgn-legalbackup-blob"
