@@ -57,7 +57,6 @@ export const IConfig = t.intersection([
     COSMOSDB_CGN_KEY: NonEmptyString,
     COSMOSDB_CGN_URI: NonEmptyString,
 
-    AzureWebJobsStorage: NonEmptyString,
     CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
 
     EYCA_API_BASE_URL: NonEmptyString,
