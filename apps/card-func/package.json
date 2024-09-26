@@ -6,6 +6,8 @@
   "license": "MIT",
   "main": "dist/main.js",
   "files": [
+    "**/function.json",
+    "dist",
     "host.json"
   ],
   "scripts": {
