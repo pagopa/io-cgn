@@ -153,6 +153,21 @@ variable "eyca_api_password" {
   description = "EYCA API password"
 }
 
+variable "services_api_url" {
+  type        = string
+  description = "Services API url"
+}
+
+variable "services_api_key" {
+  type        = string
+  description = "Services API key"
+}
+
+variable "cgn_service_id" {
+  type        = string
+  description = "CGN service id"
+}
+
 variable "cgn_legal_backup_storage_connection" {
   type        = string
   description = "Legal backup storage connection string"

@@ -28,6 +28,21 @@ data "azurerm_key_vault_secret" "eyca_api_password" {
   key_vault_id = module.key_vaults.key_vault_cgn.id
 }
 
+data "azurerm_key_vault_secret" "services_api_url" {
+  name         = "SERVICES-API-URL"
+  key_vault_id = module.key_vaults.key_vault_cgn.id
+}
+
+data "azurerm_key_vault_secret" "services_api_key" {
+  name         = "SERVICES-API-KEY"
+  key_vault_id = module.key_vaults.key_vault_cgn.id
+}
+
+data "azurerm_key_vault_secret" "cgn_service_id" {
+  name         = "CGN-SERVICE-ID"
+  key_vault_id = module.key_vaults.key_vault_cgn.id
+}
+
 data "azurerm_key_vault_secret" "cgn_legal_backup_storage_connection" {
   name         = "CGN-LEGAL-BACKUP-STORAGE-CONNECTION"
   key_vault_id = module.key_vaults.key_vault_cgn.id
@@ -76,6 +91,10 @@ module "functions_cgn_card" {
   eyca_api_base_url = data.azurerm_key_vault_secret.eyca_api_base_url.value
   eyca_api_username = data.azurerm_key_vault_secret.eyca_api_username.value
   eyca_api_password = data.azurerm_key_vault_secret.eyca_api_username.value
+
+  services_api_url = data.azurerm_key_vault_secret.services_api_url
+  services_api_key = data.azurerm_key_vault_secret.services_api_key
+  cgn_service_id   = data.azurerm_key_vault_secret.cgn_service_id
 
   cgn_legal_backup_storage_connection = data.azurerm_key_vault_secret.cgn_legal_backup_storage_connection.value
   cgn_legal_backup_container_name     = "cgn-legalbackup-blob"

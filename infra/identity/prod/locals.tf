@@ -37,9 +37,9 @@ locals {
   }
   environment_ci_roles = {
     subscription = [
-      "Reader", 
-      "Reader and Data Access", 
-      "PagoPA IaC Reader", 
+      "Reader",
+      "Reader and Data Access",
+      "PagoPA IaC Reader",
       "DocumentDB Account Contributor"
     ]
     resource_groups = {

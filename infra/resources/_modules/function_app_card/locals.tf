@@ -39,6 +39,11 @@ locals {
       EYCA_API_USERNAME = var.eyca_api_username
       EYCA_API_PASSWORD = var.eyca_api_password
 
+      // SERVICES API
+      SERVICES_API_URL = var.services_api_url
+      SERVICES_API_KEY = var.services_api_key
+      CGN_SERVICE_ID   = var.cgn_service_id
+
       // LEGAL BACKUP
       CGN_DATA_BACKUP_CONNECTION           = var.cgn_legal_backup_storage_connection
       CGN_CARDS_DATA_BACKUP_CONTAINER_NAME = var.cgn_legal_backup_container_name
