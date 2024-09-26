@@ -43,7 +43,7 @@ module "functions_cgn_card" {
   domain              = local.domain
   resource_group_name = azurerm_resource_group.itn_cgn.name
 
-  cidr_subnet_cgn_card_func            = "10.20.12.128/26"
+  cidr_subnet_cgn_card_func            = "10.20.15.0/26"
   private_endpoint_subnet_id           = data.azurerm_subnet.pep.id
   private_dns_zone_resource_group_name = data.azurerm_resource_group.weu_common.name
   virtual_network = {
