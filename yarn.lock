@@ -4564,6 +4564,7 @@ __metadata:
     applicationinsights: "npm:^1.8.10"
     azure-storage: "npm:^2.10.3"
     date-fns: "npm:^2.16.1"
+    dotenv-cli: "npm:^3.1.0"
     durable-functions: "npm:^2.1.0"
     eslint-plugin-prettier: "npm:^4.0.0"
     express: "npm:^4.15.3"
