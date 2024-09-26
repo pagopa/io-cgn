@@ -1,0 +1,24 @@
+name: Deploy Function App (card-func)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/card-func/CHANGELOG.md"
+      - ".github/workflows/deploy-card-func.yaml"
+
+jobs:
+
+  deploy:
+    name: Deploy Card Func
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
+    secrets: inherit
+    with:
+      workspace_name: card-func
+      environment: app-prod
+      resource_group_name: io-p-itn-cgn-rg-01
+      function_app_name: io-p-itn-cgn-card-func-01
+      health_check_path: "/api/v1/cgn/health"
+      use_staging_slot: true

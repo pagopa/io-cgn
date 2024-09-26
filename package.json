@@ -1,7 +1,7 @@
 {
   "name": "io-cgn",
   "type": "module",
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "license": "UNLICENSED",
   "private": true,
   "workspaces": [
