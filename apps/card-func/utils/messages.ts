@@ -7,6 +7,7 @@ import { CardExpired } from "../generated/definitions/CardExpired";
 import { CardPending } from "../generated/definitions/CardPending";
 import { CardPendingDelete } from "../generated/definitions/CardPendingDelete";
 import { CardRevoked } from "../generated/definitions/CardRevoked";
+import { assertNever } from "./types";
 
 export const MESSAGES = {
   CardRevoked: (card: CardRevoked): MessageContent =>
@@ -51,7 +52,7 @@ Grazie per aver partecipato all'iniziativa!`
     } as MessageContent)
 };
 
-export const getMessage = (card: Card): MessageContent | void => {
+export const getMessage = (card: Card): MessageContent => {
   if (CardRevoked.is(card)) {
     return MESSAGES.CardRevoked(card);
   }
@@ -64,6 +65,8 @@ export const getMessage = (card: Card): MessageContent | void => {
   if (CardPending.is(card) || CardPendingDelete.is(card)) {
     throw new Error("Unexpected Card status");
   }
+
+  return assertNever(card);
 };
 
 export const getEycaExpirationMessage = (): MessageContent =>
