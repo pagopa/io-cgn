@@ -4302,9 +4302,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"card-func-old@workspace:apps/card-func":
+"card-func@workspace:apps/card-func":
   version: 0.0.0-use.local
-  resolution: "card-func-old@workspace:apps/card-func"
+  resolution: "card-func@workspace:apps/card-func"
   dependencies:
     "@azure/cosmos": "npm:^3.17.3"
     "@azure/functions": "npm:^3.2.0"
