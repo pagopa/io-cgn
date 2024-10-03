@@ -3658,17 +3658,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.5":
-  version: 1.7.7
-  resolution: "axios@npm:1.7.7"
-  dependencies:
-    follow-redirects: "npm:^1.15.6"
-    form-data: "npm:^4.0.0"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/4499efc89e86b0b49ffddc018798de05fab26e3bf57913818266be73279a6418c3ce8f9e934c7d2d707ab8c095e837fc6c90608fb7715b94d357720b5f568af7
-  languageName: node
-  linkType: hard
-
 "azure-storage@npm:^2.10.3, azure-storage@npm:^2.10.5":
   version: 2.10.7
   resolution: "azure-storage@npm:2.10.7"
@@ -4324,7 +4313,6 @@ __metadata:
     date-fns: "npm:^2.16.1"
     dependency-check: "npm:^4.1.0"
     dotenv-cli: "npm:^3.1.0"
-    durable-functions: "npm:^2.1.0"
     eslint-plugin-prettier: "npm:^4.0.0"
     express: "npm:^4.15.3"
     fp-ts: "npm:^2.11.1"
@@ -4339,6 +4327,7 @@ __metadata:
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:^4.3.5"
+    ulid: "npm:^2.3.0"
     winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
@@ -5660,21 +5649,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"durable-functions@npm:^2.1.0":
-  version: 2.1.4
-  resolution: "durable-functions@npm:2.1.4"
-  dependencies:
-    "@azure/functions": "npm:^1.2.3"
-    axios: "npm:^1.6.5"
-    debug: "npm:~2.6.9"
-    lodash: "npm:^4.17.15"
-    moment: "npm:^2.29.2"
-    uuid: "npm:~3.3.2"
-    validator: "npm:~13.7.0"
-  checksum: 10c0/55f14ab1867100a292bfc3617f195d0814a08b95292379204922b763c59ff32cf88c31361b25d531b8f6c1a94ba040b4ba16bd3cd8d0d93da19c4d797777b53d
-  languageName: node
-  linkType: hard
-
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -6900,7 +6874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.14.0":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -11330,7 +11304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.29.2, moment@npm:^2.29.4":
+"moment@npm:^2.29.4":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 10c0/865e4279418c6de666fca7786607705fd0189d8a7b7624e2e56be99290ac846f90878a6f602e34b4e0455c549b85385b1baf9966845962b313699e7cb847543a
@@ -13004,13 +12978,6 @@ __metadata:
     forwarded: "npm:0.2.0"
     ipaddr.js: "npm:1.9.1"
   checksum: 10c0/c3eed999781a35f7fd935f398b6d8920b6fb00bbc14287bc6de78128ccc1a02c89b95b56742bf7cf0362cc333c61d138532049c7dedc7a328ef13343eff81210
-  languageName: node
-  linkType: hard
-
-"proxy-from-env@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "proxy-from-env@npm:1.1.0"
-  checksum: 10c0/fe7dd8b1bdbbbea18d1459107729c3e4a2243ca870d26d34c2c1bcd3e4425b7bcc5112362df2d93cc7fb9746f6142b5e272fd1cc5c86ddf8580175186f6ad42b
   languageName: node
   linkType: hard
 

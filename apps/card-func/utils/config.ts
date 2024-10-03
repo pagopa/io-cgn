@@ -68,6 +68,11 @@ export const IConfig = t.intersection([
     CGN_CARDS_DATA_BACKUP_CONTAINER_NAME: NonEmptyString,
     CGN_CARDS_DATA_BACKUP_FOLDER_NAME: NonEmptyString,
 
+    PENDING_CGN_QUEUE_NAME: NonEmptyString,
+    PENDING_EYCA_QUEUE_NAME: NonEmptyString,
+    ACTIVATED_CGN_QUEUE_NAME: NonEmptyString,
+    ACTIVATED_EYCA_QUEUE_NAME: NonEmptyString,
+
     OTP_TTL_IN_SECONDS: NonNegativeInteger,
     isProduction: t.boolean
   }),
