@@ -3,7 +3,12 @@ import * as O from "fp-ts/lib/Option";
 import { pipe } from "fp-ts/lib/function";
 import { Context } from "@azure/functions";
 import { trackException } from "./appinsights";
-import { ActivityResultFailure } from "./activity";
+
+export const GenericFailure = t.interface({
+  kind: t.literal("FAILURE"),
+  reason: t.string
+});
+export type GenericFailure = t.TypeOf<typeof GenericFailure>;
 
 export const TransientFailure = t.interface({
   kind: t.literal("TRANSIENT"),
@@ -54,7 +59,7 @@ export const toPermanentFailure = (
 
 export const trackFailure = (context: Context, logPrefix: string) => (
   err: Failure
-): ActivityResultFailure => {
+): GenericFailure => {
   const error = TransientFailure.is(err)
     ? `${logPrefix}|TRANSIENT_ERROR=${err.reason}`
     : `${logPrefix}|FATAL|PERMANENT_ERROR=${err.reason}`;
