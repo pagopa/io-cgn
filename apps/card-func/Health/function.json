@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/Info/index.js"
+  "scriptFile": "../dist/Health/index.js"
 }
