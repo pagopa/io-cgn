@@ -21,5 +21,5 @@
       "direction": "in"
     }
   ],
-  "scriptFile": "../dist/StartCgnActivation/index.js"
+  "scriptFile": "../dist/CGN1_StartActivation/index.js"
 }
