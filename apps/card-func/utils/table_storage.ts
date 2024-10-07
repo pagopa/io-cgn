@@ -104,10 +104,16 @@ export const queryFilterForKey = (partitionKey: string): TableQuery =>
 /**
  * Store a card expiration into `cardExpirationTableName` table
  */
+export type StoreCardExpirationFunction = (
+  fiscalCode: FiscalCode,
+  activationDate: Date,
+  expirationDate: Date
+) => TE.TaskEither<Error, TableService.EntityMetadata>;
+
 export const insertCardExpiration = (
   tableService: TableService,
   cardExpirationTableName: NonEmptyString
-) => (
+): StoreCardExpirationFunction => (
   fiscalCode: FiscalCode,
   activationDate: Date,
   expirationDate: Date

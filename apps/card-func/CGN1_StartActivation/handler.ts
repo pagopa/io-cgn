@@ -23,25 +23,17 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { ulid } from "ulid";
-import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
-import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardExpired";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
-import { StatusEnum as PendingDeleteStatusEnum } from "../generated/definitions/CardPendingDelete";
-import { StatusEnum as RevokedStatusEnum } from "../generated/definitions/CardRevoked";
 import { UserCgnModel } from "../models/user_cgn";
+import { PendingCGNMessage } from "../types/queue-message";
+import { toBase64 } from "../utils/base64";
 import {
   checkCgnRequirements,
-  extractCgnExpirationDate
+  extractCgnExpirationDate,
+  isCardActivated
 } from "../utils/cgn_checks";
-import { QueueStorage } from "../utils/queue";
 import { trackError } from "../utils/errors";
-
-type PendingCGNMessage = {
-  request_id: Ulid;
-  activation_date: Date;
-  expiration_date: Date;
-  status: PendingStatusEnum.PENDING;
-};
+import { QueueStorage } from "../utils/queue";
 
 type IStartCgnActivationHandler = (
   context: Context,
@@ -111,12 +103,7 @@ const shouldActivateNewCGN = (
       O.fold(
         () => TE.of(true),
         userCgn =>
-          [
-            ActivatedStatusEnum.ACTIVATED.toString(),
-            ExpiredStatusEnum.EXPIRED.toString(),
-            RevokedStatusEnum.REVOKED.toString(),
-            PendingDeleteStatusEnum.PENDING_DELETE.toString()
-          ].includes(userCgn.card.status)
+          isCardActivated(userCgn)
             ? pipe(
                 TE.left(new Error("CGN already activated")),
                 TE.mapLeft(trackError(context, "CGN1_StartActivation")),
@@ -146,6 +133,7 @@ export const StartCgnActivationHandler = (
       expirationDate =>
         ({
           request_id: ulid(),
+          fiscal_code: fiscalCode,
           activation_date: new Date(),
           expiration_date: expirationDate,
           status: PendingStatusEnum.PENDING
@@ -153,7 +141,10 @@ export const StartCgnActivationHandler = (
     ),
     TE.chainFirstW(pendingCardMessage =>
       pipe(
-        queueStorage.enqueuePendingCGNMessage(context, JSON.stringify(pendingCardMessage)),
+        queueStorage.enqueuePendingCGNMessage(
+          context,
+          toBase64(pendingCardMessage)
+        ),
         TE.mapLeft(e => ResponseErrorInternal(e.message))
       )
     ),
@@ -164,7 +155,6 @@ export const StartCgnActivationHandler = (
         pendingCgnMessage.request_id
       )
     ),
-    TE.mapLeft(x => x),
     TE.toUnion
   )();
 

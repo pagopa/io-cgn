@@ -15,3 +15,8 @@ export const trackError = (context: Context, logPrefix: string) => (
   context.log.error(error);
   return error;
 };
+
+export const throwError = (err: Error): void => {
+    throw err;
+};
+

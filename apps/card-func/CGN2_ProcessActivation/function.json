@@ -1,0 +1,13 @@
+{
+  "bindings": [
+    {
+      "queueName": "%PENDING_CGN_QUEUE_NAME%",
+      "connection": "CGN_STORAGE_CONNECTION_STRING",
+      "name": "queueMessage",
+      "type": "queueTrigger",
+      "direction": "in"
+    }
+  ],
+  "disabled": false,
+  "scriptFile": "../dist/CGN2_ProcessActivation/index.js"
+}

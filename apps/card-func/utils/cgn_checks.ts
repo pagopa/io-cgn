@@ -5,6 +5,11 @@ import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
+import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardExpired";
+import { StatusEnum as PendingDeleteStatusEnum } from "../generated/definitions/CardPendingDelete";
+import { StatusEnum as RevokedStatusEnum } from "../generated/definitions/CardRevoked";
+import { UserCgn } from "../models/user_cgn";
 
 const CGN_LOWER_BOUND_AGE = 18;
 
@@ -162,3 +167,11 @@ export const extractEycaExpirationDate = (
     ),
     E.map(birthDate => addYears(birthDate, eycaUpperBoundAge))
   );
+
+export const isCardActivated = (userCgn: UserCgn) =>
+  [
+    ActivatedStatusEnum.ACTIVATED.toString(),
+    ExpiredStatusEnum.EXPIRED.toString(),
+    RevokedStatusEnum.REVOKED.toString(),
+    PendingDeleteStatusEnum.PENDING_DELETE.toString()
+  ].includes(userCgn.card.status);
