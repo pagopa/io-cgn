@@ -33,6 +33,11 @@ import {
   StatusEnum as RevokedStatusEnum
 } from "../generated/definitions/CardRevoked";
 import { Card } from "../generated/definitions/Card";
+import {
+  CardActivatedMessage,
+  CardPendingMessage
+} from "../types/queue-message";
+import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 
 export const now = new Date();
 
@@ -41,16 +46,52 @@ export const cgnActivatedDates = {
   expiration_date: addYears(now, 2)
 };
 
-export const aFiscalCode = "RODFDS05S10H501T" as FiscalCode;
-export const anUneligibleFiscalCode = "RODFDS80S10H501T" as FiscalCode;
+const DEFAULT_CGN_UPPER_BOUND_AGE = 36 as NonNegativeInteger;
+const DEFAULT_EYCA_UPPER_BOUND_AGE = 31 as NonNegativeInteger;
 
-export const queueMessage: string = toBase64({
+const eligibleCgnEycaYear = (new Date().getFullYear() - 19)
+  .toString()
+  .substring(2, 4);
+
+const uneligibleCgnYear = (
+  new Date().getFullYear() -
+  DEFAULT_CGN_UPPER_BOUND_AGE -
+  1
+)
+  .toString()
+  .substring(2, 4);
+
+const uneligibleEycaYear = (
+  new Date().getFullYear() -
+  DEFAULT_EYCA_UPPER_BOUND_AGE -
+  1
+)
+  .toString()
+  .substring(2, 4);
+
+export const aFiscalCode = `RODFDS${eligibleCgnEycaYear}S10H501T` as FiscalCode;
+export const aCGNUneligibleFiscalCode = `RODFDS${uneligibleCgnYear}S10H501T` as FiscalCode;
+export const anEYCAUneligibleFiscalCode = `RODFDS${uneligibleEycaYear}S10H501T` as FiscalCode;
+
+export const cardPendingMessageMock: CardPendingMessage = {
   request_id: ulid() as Ulid,
   fiscal_code: aFiscalCode,
   activation_date: new Date(),
   expiration_date: new Date(),
   status: PendingStatusEnum.PENDING
-});
+};
+
+export const pendingQueueMessage: string = toBase64(cardPendingMessageMock);
+
+export const cardActivatedMessageMock: CardActivatedMessage = {
+  request_id: ulid() as Ulid,
+  fiscal_code: aFiscalCode,
+  activation_date: new Date(),
+  expiration_date: new Date(),
+  status: ActivatedStatusEnum.ACTIVATED
+};
+
+export const activatedQueueMessage: string = toBase64(cardActivatedMessageMock);
 
 export const context = ({
   log: {
@@ -107,9 +148,14 @@ export const upsertModelMock = jest
   .fn()
   .mockImplementation(() => TE.of({ ...aUserCgn, card: aUserCardPending }));
 
+export const updateModelMock = jest
+  .fn()
+  .mockImplementation(<T>(input: T) => TE.of(input));
+
 export const userCgnModelMock = ({
   findLastVersionByModelId: findLastVersionByModelIdMock,
-  upsert: upsertModelMock
+  upsert: upsertModelMock,
+  update: updateModelMock
 } as unknown) as UserCgnModel;
 
 // mock services api client
@@ -154,7 +200,17 @@ export const enqueueActivatedCGNMessageMock = jest
   .fn()
   .mockReturnValue(TE.right(true));
 
+export const enqueuePendingEYCAMessageMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(true));
+
+export const enqueueActivatedEYCAMessageMock = jest
+  .fn()
+  .mockReturnValue(TE.right(true));
+
 export const queueStorageMock = ({
   enqueuePendingCGNMessage: enqueuePendingCGNMessageMock,
-  enqueueActivatedCGNMessage: enqueueActivatedCGNMessageMock
+  enqueueActivatedCGNMessage: enqueueActivatedCGNMessageMock,
+  enqueuePendingEYCAMessage: enqueuePendingEYCAMessageMock,
+  enqueueActivatedEYCAMessage: enqueueActivatedEYCAMessageMock
 } as unknown) as QueueStorage;

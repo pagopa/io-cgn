@@ -4,7 +4,7 @@ import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import {
   aFiscalCode,
-  anUneligibleFiscalCode,
+  aCGNUneligibleFiscalCode,
   aUserCardActivated,
   aUserCardPending,
   aUserCardPendingDelete,
@@ -16,8 +16,7 @@ import {
   userCgnModelMock
 } from "../../__mocks__/mock";
 import { StartCgnActivationHandler } from "../handler";
-
-const DEFAULT_CGN_UPPER_BOUND_AGE = 36 as NonNegativeInteger;
+import { DEFAULT_CGN_UPPER_BOUND_AGE } from "../../utils/config";
 
 describe("StartCgnActivation", () => {
   beforeEach(() => {
@@ -72,7 +71,7 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(
       context,
-      anUneligibleFiscalCode
+      aCGNUneligibleFiscalCode
     );
     expect(response.kind).toBe("IResponseErrorForbiddenNotAuthorized");
   });

@@ -13,7 +13,7 @@ import {
   ActivationStatusEnum
 } from "../generated/services-api/ActivationStatus";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
-import { ActivatedCGNMessage, PendingCGNMessage } from "../types/queue-message";
+import { CardActivatedMessage, CardPendingMessage } from "../types/queue-message";
 import { fromBase64, toBase64 } from "../utils/base64";
 import { genRandomCardCode } from "../utils/cgnCode";
 import { errorsToError } from "../utils/conversions";
@@ -128,15 +128,17 @@ export const handler = (
   queueStorage: QueueStorage
 ) => (context: Context, queueMessage: string): Promise<boolean> =>
   pipe(
-    TE.of(fromBase64<PendingCGNMessage>(queueMessage)),
+    TE.of(fromBase64<CardPendingMessage>(queueMessage)),
     TE.chain(pendingCgnMessage =>
       pipe(
         // create or get a pending card
         createOrGetCgnCard(userCgnModel, pendingCgnMessage.fiscal_code),
-        TE.chain(cgnCard =>
-          isCardActivated(cgnCard)
-            ? TE.of(true)
-            : pipe(
+        TE.chain(userCgn =>
+          isCardActivated(userCgn)
+            ? // card already activated mean we should go on
+              TE.of(true)
+            : //else we process
+              pipe(
                 // upsert special service
                 upsertServiceActivation(
                   servicesClient,
@@ -160,13 +162,20 @@ export const handler = (
             toBase64({
               request_id: pendingCgnMessage.request_id,
               fiscal_code: pendingCgnMessage.fiscal_code,
-              status: ActivatedStatusEnum.ACTIVATED
+              status: ActivatedStatusEnum.ACTIVATED,
+              activation_date: pendingCgnMessage.activation_date,
+              expiration_date: pendingCgnMessage.expiration_date
             })
+          )
+        ),
+        TE.mapLeft(
+          trackError(
+            context,
+            `[${pendingCgnMessage.request_id}] CgnActivation_2_ProcessPendingQueue`
           )
         )
       )
     ),
-    TE.mapLeft(trackError(context, "CGN2_ProcessActivation")),
     TE.mapLeft(throwError),
     TE.toUnion
   )();

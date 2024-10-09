@@ -25,7 +25,7 @@ import * as TE from "fp-ts/lib/TaskEither";
 import { ulid } from "ulid";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserCgnModel } from "../models/user_cgn";
-import { PendingCGNMessage } from "../types/queue-message";
+import { CardPendingMessage } from "../types/queue-message";
 import { toBase64 } from "../utils/base64";
 import {
   checkCgnRequirements,
@@ -137,7 +137,7 @@ export const StartCgnActivationHandler = (
           activation_date: new Date(),
           expiration_date: expirationDate,
           status: PendingStatusEnum.PENDING
-        } as PendingCGNMessage)
+        } as CardPendingMessage)
     ),
     TE.chainFirstW(pendingCardMessage =>
       pipe(

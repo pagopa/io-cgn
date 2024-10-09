@@ -55,4 +55,10 @@ export class QueueStorage {
 
   enqueueActivatedCGNMessage = (message: string) =>
     this.enqueueMessage(this.config.ACTIVATED_CGN_QUEUE_NAME, message);
+
+  enqueuePendingEYCAMessage = (message: string) =>
+    this.enqueueMessage(this.config.PENDING_EYCA_QUEUE_NAME, message);
+
+  enqueueActivatedEYCAMessage = (message: string) =>
+    this.enqueueMessage(this.config.ACTIVATED_EYCA_QUEUE_NAME, message);
 }
