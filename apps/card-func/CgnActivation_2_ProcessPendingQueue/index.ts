@@ -8,6 +8,7 @@ import { getConfigOrThrow } from "../utils/config";
 import { ServicesAPIClient } from "../clients/services";
 import { createTableService } from "azure-storage";
 import { insertCardExpiration } from "../utils/table_storage";
+import { QueueStorage } from "../utils/queue";
 
 const config = getConfigOrThrow();
 
@@ -21,6 +22,8 @@ const tableService = createTableService(config.CGN_STORAGE_CONNECTION_STRING);
 
 const storeCgnExpiration = insertCardExpiration(tableService, config.CGN_EXPIRATION_TABLE_NAME);
 
+const queueStorage: QueueStorage = new QueueStorage(config);
+
 // eslint-disable-next-line functional/no-let
 let logger: Context["log"] | undefined;
 const contextTransport = new AzureContextTransport(() => logger, {
@@ -28,6 +31,6 @@ const contextTransport = new AzureContextTransport(() => logger, {
 });
 winston.add(contextTransport);
 
-export const index: AzureFunction = handler(userCgnModel, ServicesAPIClient, storeCgnExpiration);
+export const index: AzureFunction = handler(userCgnModel, ServicesAPIClient, storeCgnExpiration, queueStorage);
 
 export default index;

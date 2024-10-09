@@ -16,7 +16,7 @@ export const trackError = (context: Context, logPrefix: string) => (
   return error;
 };
 
-export const throwError = (err: Error): void => {
+export const throwError = (err: Error): boolean => {
     throw err;
 };
 

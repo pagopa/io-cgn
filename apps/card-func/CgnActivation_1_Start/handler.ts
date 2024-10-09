@@ -142,9 +142,9 @@ export const StartCgnActivationHandler = (
     TE.chainFirstW(pendingCardMessage =>
       pipe(
         queueStorage.enqueuePendingCGNMessage(
-          context,
           toBase64(pendingCardMessage)
         ),
+        TE.mapLeft(trackError(context, "CGN1_StartActivation")),
         TE.mapLeft(e => ResponseErrorInternal(e.message))
       )
     ),

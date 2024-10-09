@@ -9,5 +9,5 @@
     }
   ],
   "disabled": false,
-  "scriptFile": "../dist/CGN2_ProcessActivation/index.js"
+  "scriptFile": "../dist/CgnActivation_2_ProcessPendingQueue/index.js"
 }

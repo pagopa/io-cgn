@@ -1,7 +1,6 @@
 import { Context } from "@azure/functions";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
-import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import { TableService } from "azure-storage";
+import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import { constVoid, flow, pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
@@ -14,24 +13,38 @@ import {
   ActivationStatusEnum
 } from "../generated/services-api/ActivationStatus";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
-import { PendingCGNMessage } from "../types/queue-message";
-import { fromBase64 } from "../utils/base64";
+import { ActivatedCGNMessage, PendingCGNMessage } from "../types/queue-message";
+import { fromBase64, toBase64 } from "../utils/base64";
 import { genRandomCardCode } from "../utils/cgnCode";
 import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
-import {
-  insertCardExpiration,
-  StoreCardExpirationFunction
-} from "../utils/table_storage";
+import { StoreCardExpirationFunction } from "../utils/table_storage";
+import { isCardActivated } from "../utils/cgn_checks";
+import { QueueStorage } from "../utils/queue";
+import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 
 /**
- * Generates a new code for the requested CGN CARD
- * @returns NonEmptyString
+ * Upsert CGN Card on cosmos
+ * @returns UserCgn
  */
-const getCgnCodeTask = () =>
+const upsertCgnCard = (userCgnModel: UserCgnModel, fiscalCode: FiscalCode) =>
   pipe(
     TE.tryCatch(() => genRandomCardCode(), E.toError),
-    TE.mapLeft(() => new Error("Cannot generate a new CGN code"))
+    TE.mapLeft(() => new Error("Cannot generate a new CGN code")),
+    TE.chain(cgnCode =>
+      pipe(
+        userCgnModel.upsert({
+          card: { status: PendingStatusEnum.PENDING },
+          fiscalCode,
+          id: cgnCode,
+          kind: "INewUserCgn"
+        }),
+        TE.mapLeft(
+          cosmosErrors =>
+            new Error(`${cosmosErrors.kind}|Cannot upsert cosmos CGN`)
+        )
+      )
+    )
   );
 
 /**
@@ -40,33 +53,18 @@ const getCgnCodeTask = () =>
  * @param fiscalCode
  * @returns TaskEither<Error,UserCgn>
  */
-const createOrGetPendingCGNCard = (
-  context: Context,
+const createOrGetCgnCard = (
   userCgnModel: UserCgnModel,
   fiscalCode: FiscalCode
 ): TE.TaskEither<Error, UserCgn> =>
   pipe(
     userCgnModel.findLastVersionByModelId([fiscalCode]),
-    TE.mapLeft(cosmosErrors => new Error(cosmosErrors.kind)),
-    TE.mapLeft(trackError(context, "CGN2_ProcessActivation")),
-    TE.mapLeft(_ => new Error("Cannot query for existing CGN")),
+    TE.mapLeft(
+      cosmosErrors => new Error(`${cosmosErrors.kind}|Cannot query cosmos CGN`)
+    ),
     TE.chainW(
       O.fold(
-        () =>
-          pipe(
-            getCgnCodeTask(),
-            TE.chain(cgnCode =>
-              pipe(
-                userCgnModel.upsert({
-                  card: { status: PendingStatusEnum.PENDING },
-                  fiscalCode,
-                  id: cgnCode,
-                  kind: "INewUserCgn"
-                }),
-                TE.mapLeft(ce => new Error(ce.kind))
-              )
-            )
-          ),
+        () => upsertCgnCard(userCgnModel, fiscalCode),
         userCgn => TE.of(userCgn)
       )
     )
@@ -107,7 +105,7 @@ const upsertServiceActivation = (
 ): TE.TaskEither<Error, Activation> =>
   pipe(
     TE.tryCatch(
-      () =>
+      async () =>
         servicesClient.upsertServiceActivation({
           payload: { fiscal_code: fiscalCode, status: activationStatus }
         }),
@@ -126,36 +124,49 @@ const upsertServiceActivation = (
 export const handler = (
   userCgnModel: UserCgnModel,
   servicesClient: ServicesAPIClient,
-  storeCgnExpiration: StoreCardExpirationFunction
-) => (
-  context: Context,
-  queueMessage: string
-): Promise<E.Either<void, UserCgn>> =>
+  storeCgnExpiration: StoreCardExpirationFunction,
+  queueStorage: QueueStorage
+) => (context: Context, queueMessage: string): Promise<boolean> =>
   pipe(
     TE.of(fromBase64<PendingCGNMessage>(queueMessage)),
     TE.chain(pendingCgnMessage =>
       pipe(
-        createOrGetPendingCGNCard(
-          context,
-          userCgnModel,
-          pendingCgnMessage.fiscal_code
+        // create or get a pending card
+        createOrGetCgnCard(userCgnModel, pendingCgnMessage.fiscal_code),
+        TE.chain(cgnCard =>
+          isCardActivated(cgnCard)
+            ? TE.of(true)
+            : pipe(
+                // upsert special service
+                upsertServiceActivation(
+                  servicesClient,
+                  ActivationStatusEnum.PENDING,
+                  pendingCgnMessage.fiscal_code
+                ),
+                TE.chain(_ =>
+                  // store expiration date to table storage
+                  storeCgnExpiration(
+                    pendingCgnMessage.fiscal_code,
+                    pendingCgnMessage.activation_date,
+                    pendingCgnMessage.expiration_date
+                  )
+                ),
+                TE.map(_ => true)
+              )
         ),
-        TE.chainFirst(pendingCgn =>
-          upsertServiceActivation(
-            servicesClient,
-            ActivationStatusEnum.PENDING,
-            pendingCgn.fiscalCode
-          )
-        ),
-        TE.chainFirst(_ =>
-          storeCgnExpiration(
-            pendingCgnMessage.fiscal_code,
-            pendingCgnMessage.activation_date,
-            pendingCgnMessage.expiration_date
+        TE.chain(_ =>
+          // send activated message to queue
+          queueStorage.enqueueActivatedCGNMessage(
+            toBase64({
+              request_id: pendingCgnMessage.request_id,
+              fiscal_code: pendingCgnMessage.fiscal_code,
+              status: ActivatedStatusEnum.ACTIVATED
+            })
           )
         )
       )
     ),
     TE.mapLeft(trackError(context, "CGN2_ProcessActivation")),
-    TE.mapLeft(throwError)
+    TE.mapLeft(throwError),
+    TE.toUnion
   )();

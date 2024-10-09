@@ -1,10 +1,8 @@
 import { QueueService } from "azure-storage";
-import { getConfigOrThrow, IConfig } from "./config";
-import { pipe } from "fp-ts/lib/function";
 import * as E from "fp-ts/lib/Either";
+import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
-import { Context } from "@azure/functions";
-import { trackError } from "./errors";
+import { IConfig } from "./config";
 
 export class QueueStorage {
   config: IConfig;
@@ -52,9 +50,9 @@ export class QueueStorage {
       TE.chain(_ => this.createMessage(queueName, message))
     );
 
-  enqueuePendingCGNMessage = (context: Context, message: string) =>
-    pipe(
-      this.enqueueMessage(this.config.PENDING_CGN_QUEUE_NAME, message),
-      TE.mapLeft(trackError(context, "CGN1_StartActivation"))
-    );
+  enqueuePendingCGNMessage = (message: string) =>
+    this.enqueueMessage(this.config.PENDING_CGN_QUEUE_NAME, message);
+
+  enqueueActivatedCGNMessage = (message: string) =>
+    this.enqueueMessage(this.config.ACTIVATED_CGN_QUEUE_NAME, message);
 }
