@@ -1,10 +1,9 @@
 import { Context } from "@azure/functions";
-import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { EycaAPIClient } from "../clients/eyca";
 import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 import {
@@ -14,8 +13,7 @@ import {
 import { CardActivatedMessage } from "../types/queue-message";
 import { fromBase64 } from "../utils/base64";
 import { throwError, trackError } from "../utils/errors";
-import { updateCard, UpdateCcdbEycaCard } from "../utils/eyca";
-import { RedisClientFactory } from "../utils/redis";
+import { UpdateCcdbEycaCard } from "../utils/eyca";
 
 /**
  * Update EYCA Card on cosmos

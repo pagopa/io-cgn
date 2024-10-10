@@ -19,23 +19,24 @@ import {
   ResponseSuccessRedirectToResource
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode, Ulid } from "@pagopa/ts-commons/lib/strings";
+import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { ulid } from "ulid";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
-import { UserCgnModel } from "../models/user_cgn";
+import { UserEycaCardModel } from "../models/user_eyca_card";
 import { CardPendingMessage } from "../types/queue-message";
 import { toBase64 } from "../utils/base64";
 import {
-  checkCgnRequirements,
-  extractCgnExpirationDate,
-  isCardActivated
+  extractEycaExpirationDate,
+  isCardActivated,
+  isEycaEligible
 } from "../utils/cgn_checks";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
 
-type IStartCgnActivationHandler = (
+type IStartEycaActivationHandler = (
   context: Context,
   fiscalCode: FiscalCode
 ) => Promise<
@@ -46,67 +47,29 @@ type IStartCgnActivationHandler = (
 >;
 
 /**
- * Check if a citizen is eligible for CGN activation
- * A citizen is eligible for a CGN while he's from 18 to 35 years old
- * If eligible returns the calculated expiration date for the CGN
  *
- * @param fiscalCode: the citizen's fiscalCode
- */
-const getCgnExpirationDataTask = (
-  context: Context,
-  fiscalCode: FiscalCode,
-  cgnUpperBoundAge: NonNegativeInteger
-): TE.TaskEither<
-  IResponseErrorInternal | IResponseErrorForbiddenNotAuthorized,
-  Date
-> =>
-  pipe(
-    checkCgnRequirements(fiscalCode, cgnUpperBoundAge),
-    TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
-    TE.mapLeft(() =>
-      ResponseErrorInternal("Cannot perform CGN Eligibility Check")
-    ),
-    TE.chainW(
-      TE.fromPredicate(
-        isEligible => isEligible === true,
-        () => ResponseErrorForbiddenNotAuthorized
-      )
-    ),
-    TE.chainW(() =>
-      pipe(
-        extractCgnExpirationDate(fiscalCode, cgnUpperBoundAge),
-        TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
-        TE.mapLeft(() =>
-          ResponseErrorInternal("Cannot perform CGN Eligibility Check")
-        )
-      )
-    )
-  );
-
-/**
- *
- * @param userCgnModel
+ * @param userEycaCardModel
  * @param fiscalCode
  * @returns
  */
-const shouldActivateNewCGN = (
+const shouldActivateNewEyca = (
   context: Context,
-  userCgnModel: UserCgnModel,
+  userEycaCardModel: UserEycaCardModel,
   fiscalCode: FiscalCode
 ): TE.TaskEither<IResponseErrorInternal | IResponseErrorConflict, boolean> =>
   pipe(
-    userCgnModel.findLastVersionByModelId([fiscalCode]),
+    userEycaCardModel.findLastVersionByModelId([fiscalCode]),
     TE.mapLeft(cosmosErrors => new Error(cosmosErrors.kind)),
-    TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
-    TE.mapLeft(_ => ResponseErrorInternal("Cannot query for existing CGN")),
+    TE.mapLeft(trackError(context, "EycaActivation_1_Start")),
+    TE.mapLeft(_ => ResponseErrorInternal("Cannot query for existing EYCA")),
     TE.chainW(
       O.fold(
         () => TE.of(true),
-        userCgn =>
-          isCardActivated(userCgn)
+        userEycaCard =>
+          isCardActivated(userEycaCard)
             ? pipe(
-                TE.left(new Error("CGN already activated")),
-                TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
+                TE.left(new Error("EYCA already activated")),
+                TE.mapLeft(trackError(context, "EycaActivation_1_Start")),
                 TE.mapLeft(e => ResponseErrorConflict(e.message))
               )
             : // we always try to "re-activate", next flow will be idempotent
@@ -115,19 +78,44 @@ const shouldActivateNewCGN = (
     )
   );
 
+/**
+ * Get eyca expiration date if eligible
+ * @param fiscalCode
+ * @param eycaUpperBoundAge
+ * @returns
+ */
+const getEycaExpirationDateIfEligibleTask = (
+  fiscalCode: FiscalCode,
+  eycaUpperBoundAge: NonNegativeInteger
+) =>
+  pipe(
+    E.Do,
+    E.bind("expirationDate", () =>
+      extractEycaExpirationDate(fiscalCode, eycaUpperBoundAge)
+    ),
+    E.bind("isEligibile", () => isEycaEligible(fiscalCode, eycaUpperBoundAge)),
+    TE.fromEither,
+    TE.mapLeft(e => ResponseErrorInternal(e.message)),
+    TE.chainW(eycaEligibilityInfo =>
+      eycaEligibilityInfo.isEligibile
+        ? TE.right(eycaEligibilityInfo.expirationDate)
+        : TE.left(ResponseErrorForbiddenNotAuthorized)
+    )
+  );
+
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export const StartCgnActivationHandler = (
-  userCgnModel: UserCgnModel,
-  cgnUpperBoundAge: NonNegativeInteger,
+export const StartEycaActivationHandler = (
+  userEycaCardModel: UserEycaCardModel,
+  eycaUpperBoundAge: NonNegativeInteger,
   queueStorage: QueueStorage
-): IStartCgnActivationHandler => async (
+): IStartEycaActivationHandler => async (
   context: Context,
   fiscalCode: FiscalCode
 ) =>
   pipe(
-    shouldActivateNewCGN(context, userCgnModel, fiscalCode),
+    shouldActivateNewEyca(context, userEycaCardModel, fiscalCode),
     TE.chainW(_ =>
-      getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge)
+      getEycaExpirationDateIfEligibleTask(fiscalCode, eycaUpperBoundAge)
     ),
     TE.map(
       expirationDate =>
@@ -141,31 +129,29 @@ export const StartCgnActivationHandler = (
     ),
     TE.chainFirstW(pendingCardMessage =>
       pipe(
-        queueStorage.enqueuePendingCGNMessage(
-          toBase64(pendingCardMessage)
-        ),
-        TE.mapLeft(trackError(context, "CGN1_StartActivation")),
+        queueStorage.enqueuePendingEYCAMessage(toBase64(pendingCardMessage)),
+        TE.mapLeft(trackError(context, "EycaActivation_1_Start")),
         TE.mapLeft(e => ResponseErrorInternal(e.message))
       )
     ),
-    TE.map(pendingCgnMessage =>
+    TE.map(pendingEycaMessage =>
       ResponseSuccessRedirectToResource(
-        pendingCgnMessage.request_id,
-        `/api/v1/cgn/${fiscalCode}/activation`,
-        pendingCgnMessage.request_id
+        pendingEycaMessage.request_id,
+        `/api/v1/cgn/${fiscalCode}/eyca/activation`,
+        pendingEycaMessage.request_id
       )
     ),
     TE.toUnion
   )();
 
-export const StartCgnActivation = (
-  userCgnModel: UserCgnModel,
-  cgnUpperBoundAge: NonNegativeInteger,
+export const StartEycaActivation = (
+  userEycaCardModel: UserEycaCardModel,
+  eycaUpperBoundAge: NonNegativeInteger,
   queueStorage: QueueStorage
 ): express.RequestHandler => {
-  const handler = StartCgnActivationHandler(
-    userCgnModel,
-    cgnUpperBoundAge,
+  const handler = StartEycaActivationHandler(
+    userEycaCardModel,
+    eycaUpperBoundAge,
     queueStorage
   );
   const middlewaresWrap = withRequestMiddlewares(

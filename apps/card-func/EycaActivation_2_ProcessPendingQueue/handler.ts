@@ -1,18 +1,16 @@
 import { Context } from "@azure/functions";
-import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { EycaAPIClient } from "../clients/eyca";
 import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
 import { CardPendingMessage } from "../types/queue-message";
 import { fromBase64, toBase64 } from "../utils/base64";
 import { throwError, trackError } from "../utils/errors";
-import { preIssueCard, PreIssueEycaCard } from "../utils/eyca";
+import { PreIssueEycaCard } from "../utils/eyca";
 import { QueueStorage } from "../utils/queue";
-import { RedisClientFactory } from "../utils/redis";
 import { StoreCardExpirationFunction } from "../utils/table_storage";
 
 /**

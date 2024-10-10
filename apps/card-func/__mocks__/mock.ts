@@ -42,6 +42,7 @@ import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { EycaCardActivated } from "../generated/definitions/EycaCardActivated";
 import { CcdbNumber } from "../generated/definitions/CcdbNumber";
+import { EycaCardPendingDelete } from "../generated/definitions/EycaCardPendingDelete";
 
 export const now = new Date();
 
@@ -176,6 +177,13 @@ export const aUserEycaCardActivated: EycaCardActivated = {
   activation_date: new Date(),
   expiration_date: addYears(new Date(), 2),
   status: ActivatedStatusEnum.ACTIVATED
+};
+
+export const aUserEycaCardPendingDelete: EycaCardPendingDelete = {
+  card_number: ccdbNumberMock,
+  activation_date: new Date(),
+  expiration_date: addYears(new Date(), 2),
+  status: PendingDeleteStatusEnum.PENDING_DELETE
 };
 
 export const aUserEycaCard: UserEycaCard = {

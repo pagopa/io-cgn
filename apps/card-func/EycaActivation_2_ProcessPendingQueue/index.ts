@@ -9,13 +9,11 @@ import {
 } from "../models/user_eyca_card";
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
+import { preIssueCard, PreIssueEycaCard } from "../utils/eyca";
 import { QueueStorage } from "../utils/queue";
 import { RedisClientFactory } from "../utils/redis";
 import { insertCardExpiration } from "../utils/table_storage";
 import { handler } from "./handler";
-import { preIssueCard, PreIssueEycaCard } from "../utils/eyca";
-import * as TE from "fp-ts/lib/TaskEither";
-import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 
 const config = getConfigOrThrow();
 
