@@ -95,7 +95,7 @@ describe("preIssueCard", () => {
         eycaApiClient,
         anEycaApiUsername,
         anEycaApiPassword
-      ),
+      )(),
       TE.bimap(
         err => expect(err).toBeDefined(),
         () => fail()
@@ -111,7 +111,7 @@ describe("preIssueCard", () => {
         eycaApiClient,
         anEycaApiUsername,
         anEycaApiPassword
-      ),
+      )(),
       TE.bimap(
         err => expect(err).toBeDefined(),
         () => fail()
@@ -129,7 +129,7 @@ describe("preIssueCard", () => {
         eycaApiClient,
         anEycaApiUsername,
         anEycaApiPassword
-      ),
+      )(),
       TE.bimap(
         err => {
           expect(getTaskMock).toBeCalledTimes(1);
@@ -150,7 +150,7 @@ describe("preIssueCard", () => {
         eycaApiClient,
         anEycaApiUsername,
         anEycaApiPassword
-      ),
+      )(),
       TE.bimap(
         () => fail(),
         ccdbNumber => {
@@ -170,7 +170,7 @@ describe("preIssueCard", () => {
         eycaApiClient,
         anEycaApiUsername,
         anEycaApiPassword
-      ),
+      )(),
       TE.bimap(
         () => fail(),
         ccdbNumber => {
@@ -198,10 +198,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         err => expect(err).toBeDefined(),
         () => fail()
@@ -215,10 +213,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         err => expect(err).toBeDefined(),
         () => fail()
@@ -234,10 +230,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         e => {
           expect(getTaskMock).toBeCalledTimes(1);
@@ -257,10 +251,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         () => fail(),
         _ => {
@@ -279,10 +271,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         () => {
           expect(getTaskMock).toBeCalledTimes(1);
@@ -300,10 +290,8 @@ describe("updateCard", () => {
         {} as any,
         eycaApiClient,
         anEycaApiUsername,
-        anEycaApiPassword,
-        aCcdbNumber,
-        new Date()
-      ),
+        anEycaApiPassword
+      )(aCcdbNumber, new Date()),
       TE.bimap(
         () => fail(),
         _ => {

@@ -1,4 +1,4 @@
-import { FiscalCode, Ulid } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode, NonEmptyString, Ulid } from "@pagopa/ts-commons/lib/strings";
 import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 
@@ -15,4 +15,5 @@ export type CardPendingMessage = CardMessage & {
 
 export type CardActivatedMessage = CardMessage & {
   status: ActivatedStatusEnum.ACTIVATED;
+  card_id: NonEmptyString
 };

@@ -11,7 +11,7 @@ import {
   aUserCgn,
   context,
   enqueuePendingCGNMessageMock,
-  findLastVersionByModelIdMock,
+  cgnFindLastVersionByModelIdMock,
   queueStorageMock,
   userCgnModelMock
 } from "../../__mocks__/mock";
@@ -24,7 +24,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return an Internal Error if an error occurs during UserCgn retrieve", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() =>
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.left(toCosmosErrorResponse(new Error("query error")))
     );
     const startCgnActivationHandler = StartCgnActivationHandler(
@@ -37,7 +37,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return a Conflict Error if a CGN is already ACTIVATED", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() =>
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.of(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
     const startCgnActivationHandler = StartCgnActivationHandler(
@@ -50,7 +50,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return a Conflict Error if a CGN is PENDING_DELETE", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() =>
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.of(O.some({ ...aUserCgn, card: aUserCardPendingDelete }))
     );
     const startCgnActivationHandler = StartCgnActivationHandler(
@@ -63,7 +63,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return a Forbidden Error if a fiscal code is not eligible for CGN", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     const startCgnActivationHandler = StartCgnActivationHandler(
       userCgnModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
@@ -77,7 +77,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return a Redirect to Resource if CGN activation starts", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     const startCgnActivationHandler = StartCgnActivationHandler(
       userCgnModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
@@ -89,7 +89,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should return a Redirect to Resource if CGN activation re-starts", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() =>
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.of(O.some({ ...aUserCgn, card: aUserCardPending }))
     );
     const startCgnActivationHandler = StartCgnActivationHandler(
@@ -103,7 +103,7 @@ describe("StartCgnActivation", () => {
   });
 
   it("should fail if CGN activation starts and queue service is not reachable", async () => {
-    findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
+    cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     enqueuePendingCGNMessageMock.mockImplementationOnce(() =>
       TE.left(new Error("any error"))
     );

@@ -1,33 +1,29 @@
 import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import {
-  aFiscalCode,
+  activatedQueueMessage,
+  anEYCAUneligibleFiscalCode,
   aUserCardActivated,
   aUserCardPending,
   aUserCgn,
+  cardActivatedMessageMock,
+  cgnFindLastVersionByModelIdMock,
+  cgnUpdateModelMock,
   context,
   enqueuePendingEYCAMessageMock,
-  findLastVersionByModelIdMock,
   makeServiceResponse,
-  activatedQueueMessage,
   queueStorageMock,
   servicesClientMock,
-  storeCgnExpirationMock,
-  updateModelMock,
-  upsertModelMock,
   upsertServiceActivationMock,
-  userCgnModelMock,
-  cardActivatedMessageMock,
-  anEYCAUneligibleFiscalCode
+  userCgnModelMock
 } from "../../__mocks__/mock";
-import { handler } from "../handler";
 import { toBase64 } from "../../utils/base64";
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
+import { handler } from "../handler";
 
-findLastVersionByModelIdMock.mockReturnValue(
+cgnFindLastVersionByModelIdMock.mockReturnValue(
   TE.right(O.some({ ...aUserCgn, card: aUserCardPending }))
 );
 
@@ -37,7 +33,7 @@ describe("ProcessActivation", () => {
   });
 
   it("should throw when query to cosmos fails", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.left({ kind: "COSMOS_ERROR" })
     );
 
@@ -52,14 +48,14 @@ describe("ProcessActivation", () => {
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
-    expect(updateModelMock).not.toHaveBeenCalled();
+    expect(cgnUpdateModelMock).not.toHaveBeenCalled();
     expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when query to cosmos does not find cgn card", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
 
     const promised = handler(
       userCgnModelMock,
@@ -72,9 +68,9 @@ describe("ProcessActivation", () => {
       new Error("Cannot find requested CGN")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
-    expect(updateModelMock).not.toHaveBeenCalled();
+    expect(cgnUpdateModelMock).not.toHaveBeenCalled();
     expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
   });
 
@@ -92,9 +88,9 @@ describe("ProcessActivation", () => {
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).not.toHaveBeenCalled();
+    expect(cgnUpdateModelMock).not.toHaveBeenCalled();
     expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
   });
 
@@ -114,14 +110,14 @@ describe("ProcessActivation", () => {
       new Error("Cannot upsert service activation with response code 500")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).not.toHaveBeenCalled();
+    expect(cgnUpdateModelMock).not.toHaveBeenCalled();
     expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when update model fails", async () => {
-    updateModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
+    cgnUpdateModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
 
     const promised = handler(
       userCgnModelMock,
@@ -134,9 +130,9 @@ describe("ProcessActivation", () => {
       new Error("COSMOS_ERROR|Cannot update cosmos CGN")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).toBeCalledTimes(1);
+    expect(cgnUpdateModelMock).toBeCalledTimes(1);
     expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
   });
 
@@ -154,9 +150,9 @@ describe("ProcessActivation", () => {
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).toBeCalledTimes(1);
+    expect(cgnUpdateModelMock).toBeCalledTimes(1);
     expect(enqueuePendingEYCAMessageMock).toBeCalledTimes(1);
   });
 
@@ -170,9 +166,9 @@ describe("ProcessActivation", () => {
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).toBeCalledTimes(1);
+    expect(cgnUpdateModelMock).toBeCalledTimes(1);
     expect(enqueuePendingEYCAMessageMock).toBeCalledTimes(1);
   });
 
@@ -192,14 +188,14 @@ describe("ProcessActivation", () => {
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(updateModelMock).toBeCalledTimes(1);
+    expect(cgnUpdateModelMock).toBeCalledTimes(1);
     expect(enqueuePendingEYCAMessageMock).not.toBeCalled();
   });
 
   it("should succeed without activating the cgn card if already activated and not send any eyca activation message", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.right(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
 
@@ -212,9 +208,9 @@ describe("ProcessActivation", () => {
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toBeCalled();
-    expect(updateModelMock).not.toBeCalled();
+    expect(cgnUpdateModelMock).not.toBeCalled();
     expect(enqueuePendingEYCAMessageMock).not.toBeCalled();
   });
 });

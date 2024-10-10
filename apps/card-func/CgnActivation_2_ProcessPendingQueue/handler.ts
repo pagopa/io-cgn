@@ -13,7 +13,10 @@ import {
   ActivationStatusEnum
 } from "../generated/services-api/ActivationStatus";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
-import { CardActivatedMessage, CardPendingMessage } from "../types/queue-message";
+import {
+  CardActivatedMessage,
+  CardPendingMessage
+} from "../types/queue-message";
 import { fromBase64, toBase64 } from "../utils/base64";
 import { genRandomCardCode } from "../utils/cgnCode";
 import { errorsToError } from "../utils/conversions";
@@ -136,7 +139,7 @@ export const handler = (
         TE.chain(userCgn =>
           isCardActivated(userCgn)
             ? // card already activated mean we should go on
-              TE.of(true)
+              TE.of(userCgn)
             : //else we process
               pipe(
                 // upsert special service
@@ -153,18 +156,19 @@ export const handler = (
                     pendingCgnMessage.expiration_date
                   )
                 ),
-                TE.map(_ => true)
+                TE.map(_ => userCgn)
               )
         ),
-        TE.chain(_ =>
+        TE.chain(userCgn =>
           // send activated message to queue
           queueStorage.enqueueActivatedCGNMessage(
             toBase64({
               request_id: pendingCgnMessage.request_id,
               fiscal_code: pendingCgnMessage.fiscal_code,
-              status: ActivatedStatusEnum.ACTIVATED,
               activation_date: pendingCgnMessage.activation_date,
-              expiration_date: pendingCgnMessage.expiration_date
+              expiration_date: pendingCgnMessage.expiration_date,
+              status: ActivatedStatusEnum.ACTIVATED,
+              card_id: userCgn.id
             })
           )
         ),

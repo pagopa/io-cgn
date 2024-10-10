@@ -38,6 +38,10 @@ import {
   CardPendingMessage
 } from "../types/queue-message";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
+import { EycaCard } from "../generated/definitions/EycaCard";
+import { EycaCardActivated } from "../generated/definitions/EycaCardActivated";
+import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 
 export const now = new Date();
 
@@ -83,7 +87,10 @@ export const cardPendingMessageMock: CardPendingMessage = {
 
 export const pendingQueueMessage: string = toBase64(cardPendingMessageMock);
 
+export const ccdbNumberMock = "A111-B222-C333-D444" as CcdbNumber;
+
 export const cardActivatedMessageMock: CardActivatedMessage = {
+  card_id: (ccdbNumberMock as unknown) as NonEmptyString,
   request_id: ulid() as Ulid,
   fiscal_code: aFiscalCode,
   activation_date: new Date(),
@@ -110,6 +117,7 @@ export const makeServiceResponse = (
   headers: []
 });
 
+// mock some cgn entities
 export const aUserCardPending: CardPending = {
   status: PendingStatusEnum.PENDING
 };
@@ -140,23 +148,70 @@ export const aUserCgn: UserCgn = {
 };
 
 // mock user cgn model
-export const findLastVersionByModelIdMock = jest
+export const cgnFindLastVersionByModelIdMock = jest
   .fn()
   .mockImplementation(() => TE.right(O.none));
 
-export const upsertModelMock = jest
+export const cgnUpsertModelMock = jest
   .fn()
   .mockImplementation(() => TE.of({ ...aUserCgn, card: aUserCardPending }));
 
-export const updateModelMock = jest
+export const cgnUpdateModelMock = jest
   .fn()
   .mockImplementation(<T>(input: T) => TE.of(input));
 
 export const userCgnModelMock = ({
-  findLastVersionByModelId: findLastVersionByModelIdMock,
-  upsert: upsertModelMock,
-  update: updateModelMock
+  findLastVersionByModelId: cgnFindLastVersionByModelIdMock,
+  upsert: cgnUpsertModelMock,
+  update: cgnUpdateModelMock
 } as unknown) as UserCgnModel;
+
+// mock some eyca card entities
+export const aUserEycaCardPending: CardPending = {
+  status: PendingStatusEnum.PENDING
+};
+
+export const aUserEycaCardActivated: EycaCardActivated = {
+  card_number: ccdbNumberMock,
+  activation_date: new Date(),
+  expiration_date: addYears(new Date(), 2),
+  status: ActivatedStatusEnum.ACTIVATED
+};
+
+export const aUserEycaCard: UserEycaCard = {
+  fiscalCode: aFiscalCode,
+  card: {} as EycaCard
+};
+
+// mock user eyca card model
+export const eycaFindLastVersionByModelIdMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(O.none));
+
+export const eycaUpsertModelMock = jest
+  .fn()
+  .mockImplementation(() =>
+    TE.of({ ...aUserEycaCard, card: aUserEycaCardPending })
+  );
+
+export const eycaUpdateModelMock = jest
+  .fn()
+  .mockImplementation(<T>(input: T) => TE.of(input));
+
+export const userEycaCardModelMock = ({
+  findLastVersionByModelId: eycaFindLastVersionByModelIdMock,
+  upsert: eycaUpsertModelMock,
+  update: eycaUpdateModelMock
+} as unknown) as UserEycaCardModel;
+
+// mock interaction with ccdb
+export const preIssueEycaCardMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(ccdbNumberMock));
+
+export const updateCcdbEycaCardMock = jest
+  .fn()
+  .mockImplementation(() => TE.right("responsemock"));
 
 // mock services api client
 export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
@@ -185,7 +240,7 @@ export const servicesClientMock = {
 };
 
 // mock storage
-export const storeCgnExpirationMock = jest
+export const storeCardExpirationMock = jest
   .fn()
   .mockImplementation(() =>
     TE.right(({} as unknown) as TableService.EntityMetadata)

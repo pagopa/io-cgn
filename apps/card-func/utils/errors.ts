@@ -12,7 +12,7 @@ export const trackError = (context: Context, logPrefix: string) => (
       name: `cgn.exception.${logPrefix}.failure`
     }
   });
-  context.log.error(error);
+  context.log.error(error.message);
   return error;
 };
 

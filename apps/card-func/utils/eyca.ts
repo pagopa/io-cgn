@@ -91,11 +91,14 @@ const retrieveCcdbSessionId = (
     )
   );
 
+export type UpdateCcdbEycaCard = ReturnType<typeof updateCard>;
+
 export const updateCard = (
   redisClientFactory: RedisClientFactory,
   eycaClient: ReturnType<EycaAPIClient>,
   username: NonEmptyString,
-  password: NonEmptyString,
+  password: NonEmptyString
+) => (
   ccdbNumber: CcdbNumber,
   cardDateExpiration: Timestamp
 ): TE.TaskEither<Error, NonEmptyString> =>
@@ -143,12 +146,14 @@ export const updateCard = (
     )
   );
 
+export type PreIssueEycaCard = ReturnType<typeof preIssueCard>;
+
 export const preIssueCard = (
   redisClientFactory: RedisClientFactory,
   eycaClient: ReturnType<EycaAPIClient>,
   username: NonEmptyString,
   password: NonEmptyString
-): TE.TaskEither<Error, CcdbNumber> =>
+): (() => TE.TaskEither<Error, CcdbNumber>) => () =>
   pipe(
     retrieveCcdbSessionId(redisClientFactory, eycaClient, username, password),
     TE.chain(sessionId =>

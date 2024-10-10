@@ -7,15 +7,15 @@ import {
   aFiscalCode,
   aUserCardActivated,
   aUserCardPending,
+  cgnFindLastVersionByModelIdMock,
+  cgnUpsertModelMock,
   context,
   enqueueActivatedCGNMessageMock,
-  findLastVersionByModelIdMock,
   makeServiceResponse,
   pendingQueueMessage,
   queueStorageMock,
   servicesClientMock,
-  storeCgnExpirationMock,
-  upsertModelMock,
+  storeCardExpirationMock,
   upsertServiceActivationMock,
   userCgnModelMock
 } from "../../__mocks__/mock";
@@ -27,14 +27,14 @@ describe("ProcessActivation", () => {
   });
 
   it("should throw when query to cosmos fails", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.left({ kind: "COSMOS_ERROR" })
     );
 
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
@@ -42,20 +42,20 @@ describe("ProcessActivation", () => {
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).not.toHaveBeenCalled();
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).not.toHaveBeenCalled();
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
-    expect(storeCgnExpirationMock).not.toHaveBeenCalled();
+    expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when upsert to cosmos fails", async () => {
-    upsertModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
+    cgnUpsertModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
 
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
@@ -63,10 +63,10 @@ describe("ProcessActivation", () => {
       new Error("COSMOS_ERROR|Cannot upsert cosmos CGN")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
-    expect(storeCgnExpirationMock).not.toHaveBeenCalled();
+    expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
   });
 
@@ -78,16 +78,16 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).not.toHaveBeenCalled();
+    expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
   });
 
@@ -99,7 +99,7 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
@@ -107,29 +107,29 @@ describe("ProcessActivation", () => {
       new Error("Cannot upsert service activation with response code 500")
     );
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).not.toHaveBeenCalled();
+    expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when expiration storage fails", async () => {
-    storeCgnExpirationMock.mockReturnValueOnce(TE.left(new Error("Error")));
+    storeCardExpirationMock.mockReturnValueOnce(TE.left(new Error("Error")));
 
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).toBeCalledTimes(1);
+    expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
   });
 
@@ -141,16 +141,16 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).toBeCalledTimes(1);
+    expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
   });
 
@@ -158,21 +158,21 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).toBeCalledTimes(1);
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).toBeCalledTimes(1);
+    expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and recover an existing pending card when already existing", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.right(
         O.some({
           fiscalCode: aFiscalCode,
@@ -185,21 +185,21 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).not.toBeCalled();
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).not.toBeCalled();
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
-    expect(storeCgnExpirationMock).toBeCalledTimes(1);
+    expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and recover an existing activated card when already existing", async () => {
-    findLastVersionByModelIdMock.mockReturnValueOnce(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.right(
         O.some({
           fiscalCode: aFiscalCode,
@@ -212,16 +212,16 @@ describe("ProcessActivation", () => {
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,
-      storeCgnExpirationMock,
+      storeCardExpirationMock,
       queueStorageMock
     )(context, pendingQueueMessage);
 
     await expect(promised).resolves.toStrictEqual(true);
 
-    expect(findLastVersionByModelIdMock).toBeCalledTimes(1);
-    expect(upsertModelMock).not.toBeCalled();
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).not.toBeCalled();
     expect(upsertServiceActivationMock).not.toBeCalled();
-    expect(storeCgnExpirationMock).not.toBeCalled();
+    expect(storeCardExpirationMock).not.toBeCalled();
     expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
   });
 });
