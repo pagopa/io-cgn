@@ -12,7 +12,7 @@ import {
   context,
   enqueueActivatedCGNMessageMock,
   makeServiceResponse,
-  pendingQueueMessage,
+  cardPendingMessageMock,
   queueStorageMock,
   servicesClientMock,
   storeCardExpirationMock,
@@ -36,7 +36,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
@@ -57,7 +57,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot upsert cosmos CGN")
@@ -80,7 +80,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -101,7 +101,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot upsert service activation with response code 500")
@@ -122,7 +122,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -143,7 +143,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -160,7 +160,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -187,7 +187,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -214,7 +214,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       storeCardExpirationMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 

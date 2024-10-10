@@ -129,54 +129,54 @@ export const handler = (
   servicesClient: ServicesAPIClient,
   storeCgnExpiration: StoreCardExpirationFunction,
   queueStorage: QueueStorage
-) => (context: Context, queueMessage: string): Promise<boolean> =>
+) => (
+  context: Context,
+  pendingCgnMessage: CardPendingMessage
+): Promise<boolean> =>
   pipe(
-    TE.of(fromBase64<CardPendingMessage>(queueMessage)),
-    TE.chain(pendingCgnMessage =>
-      pipe(
-        // create or get a pending card
-        createOrGetCgnCard(userCgnModel, pendingCgnMessage.fiscal_code),
-        TE.chain(userCgn =>
-          isCardActivated(userCgn)
-            ? // card already activated mean we should go on
-              TE.of(userCgn)
-            : //else we process
-              pipe(
-                // upsert special service
-                upsertServiceActivation(
-                  servicesClient,
-                  ActivationStatusEnum.PENDING,
-                  pendingCgnMessage.fiscal_code
-                ),
-                TE.chain(_ =>
-                  // store expiration date to table storage
-                  storeCgnExpiration(
-                    pendingCgnMessage.fiscal_code,
-                    pendingCgnMessage.activation_date,
-                    pendingCgnMessage.expiration_date
-                  )
-                ),
-                TE.map(_ => userCgn)
-              )
-        ),
-        TE.chain(userCgn =>
-          // send activated message to queue
-          queueStorage.enqueueActivatedCGNMessage(
-            toBase64({
-              request_id: pendingCgnMessage.request_id,
-              fiscal_code: pendingCgnMessage.fiscal_code,
-              activation_date: pendingCgnMessage.activation_date,
-              expiration_date: pendingCgnMessage.expiration_date,
-              status: ActivatedStatusEnum.ACTIVATED,
-              card_id: userCgn.id
-            })
-          )
-        ),
-        TE.mapLeft(
-          trackError(
-            context,
-            `[${pendingCgnMessage.request_id}] CgnActivation_2_ProcessPendingQueue`
-          )
+    pipe(
+      // create or get a pending card
+      createOrGetCgnCard(userCgnModel, pendingCgnMessage.fiscal_code),
+      TE.chain(userCgn =>
+        isCardActivated(userCgn)
+          ? // card already activated mean we should go on
+            TE.of(userCgn)
+          : //else we process
+            pipe(
+              // upsert special service
+              upsertServiceActivation(
+                servicesClient,
+                ActivationStatusEnum.PENDING,
+                pendingCgnMessage.fiscal_code
+              ),
+              TE.chain(_ =>
+                // store expiration date to table storage
+                storeCgnExpiration(
+                  pendingCgnMessage.fiscal_code,
+                  pendingCgnMessage.activation_date,
+                  pendingCgnMessage.expiration_date
+                )
+              ),
+              TE.map(_ => userCgn)
+            )
+      ),
+      TE.chain(userCgn =>
+        // send activated message to queue
+        queueStorage.enqueueActivatedCGNMessage(
+          toBase64({
+            request_id: pendingCgnMessage.request_id,
+            fiscal_code: pendingCgnMessage.fiscal_code,
+            activation_date: pendingCgnMessage.activation_date,
+            expiration_date: pendingCgnMessage.expiration_date,
+            status: ActivatedStatusEnum.ACTIVATED,
+            card_id: userCgn.id
+          })
+        )
+      ),
+      TE.mapLeft(
+        trackError(
+          context,
+          `[${pendingCgnMessage.request_id}] CgnActivation_2_ProcessPendingQueue`
         )
       )
     ),

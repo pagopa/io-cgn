@@ -14,7 +14,7 @@
       "type": "http",
       "direction": "out",
       "name": "res"
-    },
+    }
   ],
   "scriptFile": "../dist/EycaActivation_1_Start/index.js"
 }
