@@ -23,8 +23,15 @@ module "function_app_cgn_card" {
     resource_group_name = var.virtual_network.resource_group_name
   }
 
-  app_settings      = local.cgn_card.app_settings
-  slot_app_settings = local.cgn_card.app_settings
+  app_settings = local.cgn_card.app_settings
+  slot_app_settings = merge(
+    local.cgn_card.app_settings, {
+      // disable queue triggered functions on staging slot
+      "AzureWebJobs.CgnActivation_2_ProcessPendingQueue.Disabled"    = "1"
+      "AzureWebJobs.CgnActivation_3_ProcessActivatedQueue.Disabled"  = "1"
+      "AzureWebJobs.EycaActivation_2_ProcessPendingQueue.Disabled"   = "1"
+      "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled" = "1"
+  })
 
   tags = var.tags
 }
