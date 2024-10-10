@@ -33,5 +33,12 @@ module "function_app_cgn_card" {
       "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled" = "1"
   })
 
+  sticky_app_setting_names = [
+    "AzureWebJobs.CgnActivation_2_ProcessPendingQueue.Disabled",
+    "AzureWebJobs.CgnActivation_3_ProcessActivatedQueue.Disabled",
+    "AzureWebJobs.EycaActivation_2_ProcessPendingQueue.Disabled",
+    "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled"
+  ]
+
   tags = var.tags
 }
