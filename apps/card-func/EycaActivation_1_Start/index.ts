@@ -40,7 +40,7 @@ secureExpressApp(app);
 
 // Add express route
 app.post(
-  "/api/v1/cgn/:fiscalcode/activation",
+  "/api/v1/cgn/:fiscalcode/eyca/activation",
   StartEycaActivation(userEycaCardModel, config.EYCA_UPPER_BOUND_AGE, queueStorage)
 );
 
