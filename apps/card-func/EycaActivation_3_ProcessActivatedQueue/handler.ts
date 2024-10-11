@@ -57,50 +57,48 @@ const getUserEycaCard = (
 export const handler = (
   userEycaCardModel: UserEycaCardModel,
   updateCcdbEycaCard: UpdateCcdbEycaCard
-) => (context: Context, queueMessage: string): Promise<boolean> =>
+) => (
+  context: Context,
+  activatedEycaMessage: CardActivatedMessage
+): Promise<boolean> =>
   pipe(
-    TE.of(fromBase64<CardActivatedMessage>(queueMessage)),
-    TE.chain(activatedEycaMessage =>
+    TE.Do,
+    TE.bind("eycaNumber", () =>
+      // decode eycaNumber as CcdbNumber
       pipe(
-        TE.Do,
-        TE.bind("eycaNumber", () =>
-          // decode eycaNumber as CcdbNumber
-          pipe(
-            CcdbNumber.decode(activatedEycaMessage.card_id),
-            TE.fromEither,
-            TE.mapLeft(E.toError)
-          )
-        ),
-        TE.bind("userEyca", () =>
-          // create or get a pending card
-          getUserEycaCard(userEycaCardModel, activatedEycaMessage.fiscal_code)
-        ),
-        TE.chainFirst(eycaInfo =>
-          // update card to CCDB
-          updateCcdbEycaCard(
-            eycaInfo.eycaNumber,
-            activatedEycaMessage.expiration_date
-          )
-        ),
-        TE.chain(eycaInfo =>
-          // update card on cosmos
-          updateUserEycaCard(userEycaCardModel, {
-            ...eycaInfo.userEyca,
-            card: {
-              card_number: eycaInfo.eycaNumber,
-              activation_date: activatedEycaMessage.activation_date,
-              expiration_date: activatedEycaMessage.expiration_date,
-              status: ActivatedStatusEnum.ACTIVATED
-            }
-          })
-        ),
-        TE.map(_ => true), // do not care about result
-        TE.mapLeft(
-          trackError(
-            context,
-            `[${activatedEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`
-          )
-        )
+        CcdbNumber.decode(activatedEycaMessage.card_id),
+        TE.fromEither,
+        TE.mapLeft(E.toError)
+      )
+    ),
+    TE.bind("userEyca", () =>
+      // create or get a pending card
+      getUserEycaCard(userEycaCardModel, activatedEycaMessage.fiscal_code)
+    ),
+    TE.chainFirst(eycaInfo =>
+      // update card to CCDB
+      updateCcdbEycaCard(
+        eycaInfo.eycaNumber,
+        activatedEycaMessage.expiration_date
+      )
+    ),
+    TE.chain(eycaInfo =>
+      // update card on cosmos
+      updateUserEycaCard(userEycaCardModel, {
+        ...eycaInfo.userEyca,
+        card: {
+          card_number: eycaInfo.eycaNumber,
+          activation_date: activatedEycaMessage.activation_date,
+          expiration_date: activatedEycaMessage.expiration_date,
+          status: ActivatedStatusEnum.ACTIVATED
+        }
+      })
+    ),
+    TE.map(_ => true), // do not care about result
+    TE.mapLeft(
+      trackError(
+        context,
+        `[${activatedEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`
       )
     ),
     TE.mapLeft(throwError),

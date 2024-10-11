@@ -43,3 +43,10 @@ module "function_app_cgn_card" {
 
   tags = var.tags
 }
+
+# NAT Gateway
+
+resource "azurerm_subnet_nat_gateway_association" "functions_messages_citizen_subnet" {
+  subnet_id      = module.function_app_cgn_card.subnet.id
+  nat_gateway_id = var.nat_gateway_id
+}

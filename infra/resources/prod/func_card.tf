@@ -90,7 +90,7 @@ module "functions_cgn_card" {
 
   eyca_api_base_url = data.azurerm_key_vault_secret.eyca_api_base_url.value
   eyca_api_username = data.azurerm_key_vault_secret.eyca_api_username.value
-  eyca_api_password = data.azurerm_key_vault_secret.eyca_api_username.value
+  eyca_api_password = data.azurerm_key_vault_secret.eyca_api_password.value
 
   services_api_url = data.azurerm_key_vault_secret.services_api_url.value
   services_api_key = data.azurerm_key_vault_secret.services_api_key.value
@@ -103,6 +103,8 @@ module "functions_cgn_card" {
   otp_ttl_in_seconds   = "600"
   cgn_upper_bound_age  = "36"
   eyca_upper_bound_age = "31"
+
+  nat_gateway_id = data.azurerm_nat_gateway.itn_ng.id
 
   tags = local.tags
 }

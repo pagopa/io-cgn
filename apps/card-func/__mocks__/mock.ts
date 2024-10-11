@@ -86,8 +86,6 @@ export const cardPendingMessageMock: CardPendingMessage = {
   status: PendingStatusEnum.PENDING
 };
 
-export const pendingQueueMessage: string = toBase64(cardPendingMessageMock);
-
 export const ccdbNumberMock = "A111-B222-C333-D444" as CcdbNumber;
 
 export const cardActivatedMessageMock: CardActivatedMessage = {
@@ -98,8 +96,6 @@ export const cardActivatedMessageMock: CardActivatedMessage = {
   expiration_date: new Date(),
   status: ActivatedStatusEnum.ACTIVATED
 };
-
-export const activatedQueueMessage: string = toBase64(cardActivatedMessageMock);
 
 export const context = ({
   log: {

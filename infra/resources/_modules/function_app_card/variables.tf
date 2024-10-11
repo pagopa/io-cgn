@@ -72,6 +72,10 @@ variable "ai_sampling_percentage" {
 }
 
 # REPO DEFINED VARIABLES
+variable "nat_gateway_id" {
+  type        = string
+  description = "The ID of the NAT Gateway"
+}
 
 variable "redis_url" {
   type        = string

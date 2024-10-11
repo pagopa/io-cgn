@@ -1,8 +1,7 @@
 import * as TE from "fp-ts/lib/TaskEither";
 import {
-  activatedQueueMessage,
-  aUserEycaCardActivated,
   aUserEycaCardPending,
+  cardActivatedMessageMock,
   context,
   eycaFindLastVersionByModelIdMock,
   eycaUpdateModelMock,
@@ -27,7 +26,7 @@ describe("ProcessActivation", () => {
 
     const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
       context,
-      activatedQueueMessage
+      cardActivatedMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -44,7 +43,7 @@ describe("ProcessActivation", () => {
 
     const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
       context,
-      activatedQueueMessage
+      cardActivatedMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
@@ -59,7 +58,7 @@ describe("ProcessActivation", () => {
 
     const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
       context,
-      activatedQueueMessage
+      cardActivatedMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(new Error("COSMOS_ERROR|Cannot update cosmos EYCA"));
@@ -72,7 +71,7 @@ describe("ProcessActivation", () => {
   it("should succeed and activate a pending card", async () => {
     const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
       context,
-      activatedQueueMessage
+      cardActivatedMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);

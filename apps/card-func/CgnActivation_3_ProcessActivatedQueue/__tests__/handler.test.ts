@@ -18,7 +18,6 @@ import {
   upsertServiceActivationMock,
   userCgnModelMock
 } from "../../__mocks__/mock";
-import { toBase64 } from "../../utils/base64";
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
 import { handler } from "../handler";
 
