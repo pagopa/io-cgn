@@ -3,7 +3,6 @@ import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import {
-  activatedQueueMessage,
   anEYCAUneligibleFiscalCode,
   aUserCardActivated,
   aUserCardPending,
@@ -42,7 +41,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
@@ -62,7 +61,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot find requested CGN")
@@ -84,7 +83,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -104,7 +103,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot upsert service activation with response code 500")
@@ -124,7 +123,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot update cosmos CGN")
@@ -146,7 +145,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -162,7 +161,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -178,13 +177,10 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(
-      context,
-      toBase64({
-        ...cardActivatedMessageMock,
-        fiscal_code: anEYCAUneligibleFiscalCode
-      })
-    );
+    )(context, {
+      ...cardActivatedMessageMock,
+      fiscal_code: anEYCAUneligibleFiscalCode
+    });
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -204,7 +200,7 @@ describe("ProcessActivation", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, activatedQueueMessage);
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 
