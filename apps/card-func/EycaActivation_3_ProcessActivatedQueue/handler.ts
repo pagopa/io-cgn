@@ -88,8 +88,8 @@ export const handler = (
         ...eycaInfo.userEyca,
         card: {
           card_number: eycaInfo.eycaNumber,
-          activation_date: activatedEycaMessage.activation_date,
-          expiration_date: activatedEycaMessage.expiration_date,
+          activation_date: new Date(activatedEycaMessage.activation_date),
+          expiration_date: new Date(activatedEycaMessage.expiration_date),
           status: ActivatedStatusEnum.ACTIVATED
         }
       })
