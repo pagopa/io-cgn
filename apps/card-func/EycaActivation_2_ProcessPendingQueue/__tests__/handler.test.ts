@@ -6,7 +6,7 @@ import {
   enqueueActivatedEYCAMessageMock,
   eycaFindLastVersionByModelIdMock,
   eycaUpsertModelMock,
-  pendingQueueMessage,
+  cardPendingMessageMock,
   preIssueEycaCardMock,
   queueStorageMock,
   storeCardExpirationMock,
@@ -29,7 +29,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos EYCA")
@@ -52,7 +52,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot upsert cosmos EYCA")
@@ -75,7 +75,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -98,7 +98,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -121,7 +121,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -140,7 +140,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -159,7 +159,7 @@ describe("ProcessActivation", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, pendingQueueMessage);
+    )(context, cardPendingMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 

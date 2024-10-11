@@ -61,44 +61,42 @@ export const handler = (
   storeEycaExpiration: StoreCardExpirationFunction,
   preIssueEycaCard: PreIssueEycaCard,
   queueStorage: QueueStorage
-) => (context: Context, queueMessage: string): Promise<boolean> =>
+) => (
+  context: Context,
+  pendingEycaMessage: CardPendingMessage
+): Promise<boolean> =>
   pipe(
-    TE.of(fromBase64<CardPendingMessage>(queueMessage)),
-    TE.chain(pendingEycaMessage =>
-      pipe(
-        // create or get a pending card
-        createOrGetEycaCard(userEycaCardModel, pendingEycaMessage.fiscal_code),
-        TE.chain(_ =>
-          // store eyca expiration
-          storeEycaExpiration(
-            pendingEycaMessage.fiscal_code,
-            pendingEycaMessage.activation_date,
-            pendingEycaMessage.expiration_date
-          )
-        ),
-        TE.chain(_ =>
-          // pre issue card from CCDB
-          preIssueEycaCard()
-        ),
-        TE.chain(userEycaId =>
-          // send activated message to queue
-          queueStorage.enqueueActivatedEYCAMessage(
-            toBase64({
-              request_id: pendingEycaMessage.request_id,
-              fiscal_code: pendingEycaMessage.fiscal_code,
-              activation_date: pendingEycaMessage.activation_date,
-              expiration_date: pendingEycaMessage.expiration_date,
-              status: ActivatedStatusEnum.ACTIVATED,
-              card_id: userEycaId
-            })
-          )
-        ),
-        TE.mapLeft(
-          trackError(
-            context,
-            `[${pendingEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`
-          )
-        )
+    // create or get a pending card
+    createOrGetEycaCard(userEycaCardModel, pendingEycaMessage.fiscal_code),
+    TE.chain(_ =>
+      // store eyca expiration
+      storeEycaExpiration(
+        pendingEycaMessage.fiscal_code,
+        pendingEycaMessage.activation_date,
+        pendingEycaMessage.expiration_date
+      )
+    ),
+    TE.chain(_ =>
+      // pre issue card from CCDB
+      preIssueEycaCard()
+    ),
+    TE.chain(userEycaId =>
+      // send activated message to queue
+      queueStorage.enqueueActivatedEYCAMessage(
+        toBase64({
+          request_id: pendingEycaMessage.request_id,
+          fiscal_code: pendingEycaMessage.fiscal_code,
+          activation_date: pendingEycaMessage.activation_date,
+          expiration_date: pendingEycaMessage.expiration_date,
+          status: ActivatedStatusEnum.ACTIVATED,
+          card_id: userEycaId
+        })
+      )
+    ),
+    TE.mapLeft(
+      trackError(
+        context,
+        `[${pendingEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`
       )
     ),
     TE.mapLeft(throwError),
