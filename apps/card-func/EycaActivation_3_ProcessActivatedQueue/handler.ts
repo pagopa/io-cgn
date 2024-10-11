@@ -79,7 +79,7 @@ export const handler = (
       // update card to CCDB
       updateCcdbEycaCard(
         eycaInfo.eycaNumber,
-        activatedEycaMessage.expiration_date
+        new Date(activatedEycaMessage.expiration_date)
       )
     ),
     TE.chain(eycaInfo =>
