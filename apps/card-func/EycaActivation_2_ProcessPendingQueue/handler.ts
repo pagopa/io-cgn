@@ -72,8 +72,8 @@ export const handler = (
       // store eyca expiration
       storeEycaExpiration(
         pendingEycaMessage.fiscal_code,
-        pendingEycaMessage.activation_date,
-        pendingEycaMessage.expiration_date
+        new Date(pendingEycaMessage.activation_date),
+        new Date(pendingEycaMessage.expiration_date)
       )
     ),
     TE.chain(_ =>
