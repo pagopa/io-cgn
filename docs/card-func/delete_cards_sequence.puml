@@ -1,0 +1,42 @@
+@startuml Sequence attivazione CGN
+actor       Utente       as cit
+participant "IO Backend" as be
+participant "CGN Card Functions" as cf
+participant "Services Functions" as sf
+participant "EYCA CCDB" as ccdb
+participant "Redis" as redis
+queue "CGN PendingDelete" as pending
+queue "EYCA PendingDelete" as epending
+database "CosmosDB" as cosmos
+collections "Storage" as storage
+
+cit -> be : Richiesta cancellazione CGN
+be -> cf : DeleteCGN
+cf -> be : 204 Accepted
+be -> cit: 204 Accepted
+cf -> pending : Insert PENDING_DELETE CGN message
+cf -> epending : Insert PENDING_DELETE EYCA message
+
+group CGN PENDING_DELETE
+  pending -> cf : Start "CgnPendingDeleteProcessing"
+  activate cf
+  cf -> cosmos : Upsert carta CGN PENDING_DELETE 
+  cf -> sf : Upsert Servizio Speciale PENDING
+  cf -> storage : Delete scadenza CGN
+  cf -> cosmos : Delete di tutte le UserCgn
+  cf -> sf : Upsert Servizio Speciale INACTIVE
+  deactivate cf
+end
+
+group EYCA PENDING_DELETE
+  epending -> cf : Start "EycaPendingDeleteProcessing"
+  activate cf
+  cf -> cosmos : Upsert carta EYCA PENDING_DELETE 
+  cf -> redis : Recupero sessione ccdb
+  cf -> ccdb : Delete EYCA via ccdb
+  cf -> storage : Delete scadenza EYCA
+  cf -> cosmos : Delete di tutte le UserEycaCard 
+  deactivate cf
+end
+
+@enduml
