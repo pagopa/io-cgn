@@ -142,6 +142,21 @@ variable "activated_eyca_queue_name" {
   description = "Activated EYCA queue name"
 }
 
+variable "pending_delete_cgn_queue_name" {
+  type        = string
+  description = "Pending Delete CGN queue name"
+}
+
+variable "pending_delete_eyca_queue_name" {
+  type        = string
+  description = "Pending Delete EYCA queue name"
+}
+
+variable "messages_queue_name" {
+  type        = string
+  description = "Messages queue name"
+}
+
 variable "eyca_api_base_url" {
   type        = string
   description = "EYCA API base url"

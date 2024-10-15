@@ -24,7 +24,7 @@ module "function_app_cgn_card" {
   }
 
   app_settings = local.cgn_card.app_settings
-  
+
   slot_app_settings = merge(
     local.cgn_card.app_settings, {
       // disable queue triggered functions on staging slot

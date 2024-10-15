@@ -83,10 +83,13 @@ module "functions_cgn_card" {
   table_cgn_expiration  = "cardexpiration"
   table_eyca_expiration = "eycacardexpiration"
 
-  pending_cgn_queue_name    = "pendingcgn"
-  pending_eyca_queue_name   = "pendingeyca"
-  activated_cgn_queue_name  = "activatedcgn"
-  activated_eyca_queue_name = "activatedeyca"
+  pending_cgn_queue_name         = "pendingcgn"
+  pending_eyca_queue_name        = "pendingeyca"
+  activated_cgn_queue_name       = "activatedcgn"
+  activated_eyca_queue_name      = "activatedeyca"
+  pending_delete_cgn_queue_name  = "pendingdeletecgn"
+  pending_delete_eyca_queue_name = "pendingdeleteeyca"
+  messages_queue_name            = "messages"
 
   eyca_api_base_url = data.azurerm_key_vault_secret.eyca_api_base_url.value
   eyca_api_username = data.azurerm_key_vault_secret.eyca_api_username.value
