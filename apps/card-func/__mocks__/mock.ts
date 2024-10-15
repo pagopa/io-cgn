@@ -267,9 +267,19 @@ export const enqueueActivatedEYCAMessageMock = jest
   .fn()
   .mockReturnValue(TE.right(true));
 
+export const enqueuePendingDeleteCGNMessageMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(true));
+
+export const enqueuePendingDeleteEYCAMessageMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(true));
+
 export const queueStorageMock = ({
   enqueuePendingCGNMessage: enqueuePendingCGNMessageMock,
   enqueueActivatedCGNMessage: enqueueActivatedCGNMessageMock,
   enqueuePendingEYCAMessage: enqueuePendingEYCAMessageMock,
-  enqueueActivatedEYCAMessage: enqueueActivatedEYCAMessageMock
+  enqueueActivatedEYCAMessage: enqueueActivatedEYCAMessageMock,
+  enqueuePendingDeleteCGNMessage: enqueuePendingDeleteCGNMessageMock,
+  enqueuePendingDeleteEYCAMessage: enqueuePendingDeleteEYCAMessageMock
 } as unknown) as QueueStorage;

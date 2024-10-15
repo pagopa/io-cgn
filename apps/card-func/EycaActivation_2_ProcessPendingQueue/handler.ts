@@ -1,5 +1,5 @@
 import { Context } from "@azure/functions";
-import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -82,16 +82,14 @@ export const handler = (
     ),
     TE.chain(userEycaId =>
       // send activated message to queue
-      queueStorage.enqueueActivatedEYCAMessage(
-        toBase64({
-          request_id: pendingEycaMessage.request_id,
-          fiscal_code: pendingEycaMessage.fiscal_code,
-          activation_date: pendingEycaMessage.activation_date,
-          expiration_date: pendingEycaMessage.expiration_date,
-          status: ActivatedStatusEnum.ACTIVATED,
-          card_id: userEycaId
-        })
-      )
+      queueStorage.enqueueActivatedEYCAMessage({
+        request_id: pendingEycaMessage.request_id,
+        fiscal_code: pendingEycaMessage.fiscal_code,
+        activation_date: pendingEycaMessage.activation_date,
+        expiration_date: pendingEycaMessage.expiration_date,
+        status: ActivatedStatusEnum.ACTIVATED,
+        card_id: userEycaId
+      })
     ),
     TE.mapLeft(
       trackError(

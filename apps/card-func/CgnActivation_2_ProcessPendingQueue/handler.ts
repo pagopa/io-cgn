@@ -14,10 +14,7 @@ import {
   ActivationStatusEnum
 } from "../generated/services-api/ActivationStatus";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
-import {
-  CardPendingMessage
-} from "../types/queue-message";
-import { toBase64 } from "../utils/base64";
+import { CardPendingMessage } from "../types/queue-message";
 import { isCardActivated } from "../utils/cgn_checks";
 import { genRandomCardCode } from "../utils/cgnCode";
 import { errorsToError } from "../utils/conversions";
@@ -160,16 +157,14 @@ export const handler = (
     ),
     TE.chain(userCgn =>
       // send activated message to queue
-      queueStorage.enqueueActivatedCGNMessage(
-        toBase64({
-          request_id: pendingCgnMessage.request_id,
-          fiscal_code: pendingCgnMessage.fiscal_code,
-          activation_date: pendingCgnMessage.activation_date,
-          expiration_date: pendingCgnMessage.expiration_date,
-          status: ActivatedStatusEnum.ACTIVATED,
-          card_id: userCgn.id
-        })
-      )
+      queueStorage.enqueueActivatedCGNMessage({
+        request_id: pendingCgnMessage.request_id,
+        fiscal_code: pendingCgnMessage.fiscal_code,
+        activation_date: pendingCgnMessage.activation_date,
+        expiration_date: pendingCgnMessage.expiration_date,
+        status: ActivatedStatusEnum.ACTIVATED,
+        card_id: userCgn.id
+      })
     ),
     TE.mapLeft(
       trackError(

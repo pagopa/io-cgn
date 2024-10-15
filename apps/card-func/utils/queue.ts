@@ -3,6 +3,12 @@ import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import { IConfig } from "./config";
+import {
+  CardActivatedMessage,
+  CardPendingDeleteMessage,
+  CardPendingMessage
+} from "../types/queue-message";
+import { toBase64 } from "./base64";
 
 export class QueueStorage {
   config: IConfig;
@@ -50,15 +56,36 @@ export class QueueStorage {
       TE.chain(_ => this.createMessage(queueName, message))
     );
 
-  enqueuePendingCGNMessage = (message: string) =>
-    this.enqueueMessage(this.config.PENDING_CGN_QUEUE_NAME, message);
+  enqueuePendingCGNMessage = (message: CardPendingMessage) =>
+    this.enqueueMessage(this.config.PENDING_CGN_QUEUE_NAME, toBase64(message));
 
-  enqueueActivatedCGNMessage = (message: string) =>
-    this.enqueueMessage(this.config.ACTIVATED_CGN_QUEUE_NAME, message);
+  enqueueActivatedCGNMessage = (message: CardActivatedMessage) =>
+    this.enqueueMessage(
+      this.config.ACTIVATED_CGN_QUEUE_NAME,
+      toBase64(message)
+    );
 
-  enqueuePendingEYCAMessage = (message: string) =>
-    this.enqueueMessage(this.config.PENDING_EYCA_QUEUE_NAME, message);
+  enqueuePendingEYCAMessage = (message: CardPendingMessage) =>
+    this.enqueueMessage(this.config.PENDING_EYCA_QUEUE_NAME, toBase64(message));
 
-  enqueueActivatedEYCAMessage = (message: string) =>
-    this.enqueueMessage(this.config.ACTIVATED_EYCA_QUEUE_NAME, message);
+  enqueueActivatedEYCAMessage = (message: CardActivatedMessage) =>
+    this.enqueueMessage(
+      this.config.ACTIVATED_EYCA_QUEUE_NAME,
+      toBase64(message)
+    );
+
+  enqueuePendingDeleteCGNMessage = (message: CardPendingDeleteMessage) =>
+    this.enqueueMessage(
+      this.config.PENDING_DELETE_CGN_QUEUE_NAME,
+      toBase64(message)
+    );
+
+  enqueuePendingDeleteEYCAMessage = (message: CardPendingDeleteMessage) =>
+    this.enqueueMessage(
+      this.config.PENDING_DELETE_EYCA_QUEUE_NAME,
+      toBase64(message)
+    );
+
+  enqueueMessageToSendMessage = (message: string) =>
+    this.enqueueMessage(this.config.MESSAGES_QUEUE_NAME, message);
 }

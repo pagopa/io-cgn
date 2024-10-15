@@ -1,4 +1,5 @@
 import { Context } from "@azure/functions";
+import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
@@ -13,7 +14,6 @@ import {
 } from "../generated/services-api/ActivationStatus";
 import { RetrievedUserCgn, UserCgn, UserCgnModel } from "../models/user_cgn";
 import { CardActivatedMessage } from "../types/queue-message";
-import { fromBase64, toBase64 } from "../utils/base64";
 import {
   extractEycaExpirationDate,
   isCardActivated,
@@ -22,7 +22,7 @@ import {
 import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 
 /**
  * Gets a CGN CARD
@@ -187,14 +187,13 @@ export const handler = (
                     () => TE.of(true),
                     // send pending eyca message to queue
                     expirationDate =>
-                      queueStorage.enqueuePendingEYCAMessage(
-                        toBase64({
-                          request_id: activatedCgnMessage.request_id,
-                          fiscal_code: activatedCgnMessage.fiscal_code,
-                          activation_date: new Date(),
-                          expiration_date: expirationDate
-                        })
-                      )
+                      queueStorage.enqueuePendingEYCAMessage({
+                        request_id: activatedCgnMessage.request_id,
+                        fiscal_code: activatedCgnMessage.fiscal_code,
+                        activation_date: new Date(),
+                        expiration_date: expirationDate,
+                        status: PendingStatusEnum.PENDING
+                      })
                   )
                 )
               )

@@ -27,7 +27,6 @@ import { ulid } from "ulid";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserEycaCardModel } from "../models/user_eyca_card";
 import { CardPendingMessage } from "../types/queue-message";
-import { toBase64 } from "../utils/base64";
 import {
   extractEycaExpirationDate,
   isCardActivated,
@@ -129,7 +128,7 @@ export const StartEycaActivationHandler = (
     ),
     TE.chainFirstW(pendingCardMessage =>
       pipe(
-        queueStorage.enqueuePendingEYCAMessage(toBase64(pendingCardMessage)),
+        queueStorage.enqueuePendingEYCAMessage(pendingCardMessage),
         TE.mapLeft(trackError(context, "EycaActivation_1_Start")),
         TE.mapLeft(e => ResponseErrorInternal(e.message))
       )

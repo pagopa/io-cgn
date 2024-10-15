@@ -26,7 +26,6 @@ import { ulid } from "ulid";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserCgnModel } from "../models/user_cgn";
 import { CardPendingMessage } from "../types/queue-message";
-import { toBase64 } from "../utils/base64";
 import {
   checkCgnRequirements,
   extractCgnExpirationDate,
@@ -141,9 +140,7 @@ export const StartCgnActivationHandler = (
     ),
     TE.chainFirstW(pendingCardMessage =>
       pipe(
-        queueStorage.enqueuePendingCGNMessage(
-          toBase64(pendingCardMessage)
-        ),
+        queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
         TE.mapLeft(trackError(context, "CGN1_StartActivation")),
         TE.mapLeft(e => ResponseErrorInternal(e.message))
       )
