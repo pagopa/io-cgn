@@ -19,7 +19,7 @@ import {
 } from "../../__mocks__/mock";
 import { StartCardsDeleteHandler } from "../handler";
 
-describe("StartCgnActivation", () => {
+describe("StartCgnDelete", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

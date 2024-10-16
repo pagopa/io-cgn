@@ -21,7 +21,7 @@ import {
 } from "../../__mocks__/mock";
 import { handler } from "../handler";
 
-describe("ProcessActivation", () => {
+describe("ProcessPendingCgnQueue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

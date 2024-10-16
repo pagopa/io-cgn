@@ -136,10 +136,15 @@ export const insertCardExpiration = (
 /**
  * Delete a card expiration into `cardExpirationTableName` table
  */
+export type DeleteCardExpirationFunction = (
+  fiscalCode: FiscalCode,
+  expirationDate: Date
+) => TE.TaskEither<Error, ServiceResponse>;
+
 export const deleteCardExpiration = (
   tableService: TableService,
   cardExpirationTableName: NonEmptyString
-) => (
+): DeleteCardExpirationFunction => (
   fiscalCode: FiscalCode,
   expirationDate: Date
 ): TE.TaskEither<Error, ServiceResponse> => {

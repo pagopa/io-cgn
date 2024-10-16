@@ -1,22 +1,18 @@
+import { Context } from "@azure/functions";
+import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
 import {
   FiscalCode,
   NonEmptyString,
   Ulid
 } from "@pagopa/ts-commons/lib/strings";
+import { ServiceResponse, TableService } from "azure-storage";
 import { addYears } from "date-fns";
-import * as O from "fp-ts/lib/Option";
 import * as E from "fp-ts/lib/Either";
+import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { QueueStorage } from "../utils/queue";
-import { TableService } from "azure-storage";
-import { createClient } from "../generated/services-api/client";
-import { ActivationStatusEnum } from "../generated/services-api/ActivationStatus";
-import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
-import { UserCgn, UserCgnModel } from "../models/user_cgn";
-import {
-  StatusEnum as PendingDeleteStatusEnum,
-  CardPendingDelete
-} from "../generated/definitions/CardPendingDelete";
+import { ulid } from "ulid";
+import { Card } from "../generated/definitions/Card";
 import {
   StatusEnum as ActivatedStatusEnum,
   CardActivated
@@ -25,24 +21,28 @@ import {
   CardPending,
   StatusEnum as PendingStatusEnum
 } from "../generated/definitions/CardPending";
-import { toBase64 } from "../utils/base64";
-import { ulid } from "ulid";
-import { Context } from "@azure/functions";
+import {
+  CardPendingDelete,
+  StatusEnum as PendingDeleteStatusEnum
+} from "../generated/definitions/CardPendingDelete";
 import {
   CardRevoked,
   StatusEnum as RevokedStatusEnum
 } from "../generated/definitions/CardRevoked";
-import { Card } from "../generated/definitions/Card";
-import {
-  CardActivatedMessage,
-  CardPendingMessage
-} from "../types/queue-message";
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
-import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
+import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { EycaCardActivated } from "../generated/definitions/EycaCardActivated";
-import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 import { EycaCardPendingDelete } from "../generated/definitions/EycaCardPendingDelete";
+import { ActivationStatusEnum } from "../generated/services-api/ActivationStatus";
+import { createClient } from "../generated/services-api/client";
+import { UserCgn, UserCgnModel } from "../models/user_cgn";
+import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
+import {
+  CardActivatedMessage,
+  CardPendingDeleteMessage,
+  CardPendingMessage
+} from "../types/queue-message";
+import { QueueStorage } from "../utils/queue";
 
 export const now = new Date();
 
@@ -97,6 +97,13 @@ export const cardActivatedMessageMock: CardActivatedMessage = {
   status: ActivatedStatusEnum.ACTIVATED
 };
 
+export const cardPendingDeleteMessageMock: CardPendingDeleteMessage = {
+  request_id: ulid() as Ulid,
+  fiscal_code: aFiscalCode,
+  expiration_date: new Date(),
+  status: PendingDeleteStatusEnum.PENDING_DELETE
+};
+
 export const context = ({
   log: {
     error: jest.fn().mockImplementation(e => {
@@ -149,6 +156,12 @@ export const cgnFindLastVersionByModelIdMock = jest
   .fn()
   .mockImplementation(() => TE.right(O.none));
 
+export const cgnFindAllCgnCardsModelMock = jest
+  .fn()
+  .mockImplementation(() =>
+    TE.right([{ ...aUserCgn, card: aUserCardActivated }])
+  );
+
 export const cgnUpsertModelMock = jest
   .fn()
   .mockImplementation(() => TE.of({ ...aUserCgn, card: aUserCardPending }));
@@ -157,10 +170,16 @@ export const cgnUpdateModelMock = jest
   .fn()
   .mockImplementation(<T>(input: T) => TE.of(input));
 
+export const cgnDeleteVersionModelMock = jest
+  .fn()
+  .mockImplementation(() => TE.of("Delete success"));
+
 export const userCgnModelMock = ({
   findLastVersionByModelId: cgnFindLastVersionByModelIdMock,
+  findAllCgnCards: cgnFindAllCgnCardsModelMock,
   upsert: cgnUpsertModelMock,
-  update: cgnUpdateModelMock
+  update: cgnUpdateModelMock,
+  deleteVersion: cgnDeleteVersionModelMock
 } as unknown) as UserCgnModel;
 
 // mock some eyca card entities
@@ -192,6 +211,12 @@ export const eycaFindLastVersionByModelIdMock = jest
   .fn()
   .mockImplementation(() => TE.right(O.none));
 
+export const eycaFindAllEycaCardsModelMock = jest
+  .fn()
+  .mockImplementation(() =>
+    TE.right([{ ...aUserEycaCard, card: aUserEycaCardActivated }])
+  );
+
 export const eycaUpsertModelMock = jest
   .fn()
   .mockImplementation(() =>
@@ -202,10 +227,16 @@ export const eycaUpdateModelMock = jest
   .fn()
   .mockImplementation(<T>(input: T) => TE.of(input));
 
+export const eycaDeleteVersionModelMock = jest
+  .fn()
+  .mockImplementation(() => TE.of("Delete success"));
+
 export const userEycaCardModelMock = ({
   findLastVersionByModelId: eycaFindLastVersionByModelIdMock,
+  findAllEycaCards: eycaFindAllEycaCardsModelMock,
   upsert: eycaUpsertModelMock,
-  update: eycaUpdateModelMock
+  update: eycaUpdateModelMock,
+  deleteVersion: eycaDeleteVersionModelMock
 } as unknown) as UserEycaCardModel;
 
 // mock interaction with ccdb
@@ -214,6 +245,10 @@ export const preIssueEycaCardMock = jest
   .mockImplementation(() => TE.right(ccdbNumberMock));
 
 export const updateCcdbEycaCardMock = jest
+  .fn()
+  .mockImplementation(() => TE.right("responsemock"));
+
+export const deleteCcdbEycaCardMock = jest
   .fn()
   .mockImplementation(() => TE.right("responsemock"));
 
@@ -245,6 +280,10 @@ export const servicesClientMock = {
 
 // mock storage
 export const storeCardExpirationMock = jest
+  .fn()
+  .mockImplementation(() => TE.right(({} as unknown) as ServiceResponse));
+
+export const deleteCardExpirationMock = jest
   .fn()
   .mockImplementation(() =>
     TE.right(({} as unknown) as TableService.EntityMetadata)

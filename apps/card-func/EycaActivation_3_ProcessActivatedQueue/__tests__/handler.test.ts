@@ -14,7 +14,7 @@ eycaFindLastVersionByModelIdMock.mockReturnValue(
   TE.right(aUserEycaCardPending)
 );
 
-describe("ProcessActivation", () => {
+describe("ProcessActivatedEycaQueue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

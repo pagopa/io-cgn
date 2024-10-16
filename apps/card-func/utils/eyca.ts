@@ -203,13 +203,14 @@ export const preIssueCard = (
     )
   );
 
+export type DeleteEycaCard = ReturnType<typeof deleteCard>;
+
 export const deleteCard = (
   redisClientFactory: RedisClientFactory,
   eycaClient: ReturnType<EycaAPIClient>,
   username: NonEmptyString,
-  password: NonEmptyString,
-  ccdbNumber: CcdbNumber
-): TE.TaskEither<Error, NonEmptyString> =>
+  password: NonEmptyString
+) => (ccdbNumber: CcdbNumber): TE.TaskEither<Error, NonEmptyString> =>
   pipe(
     retrieveCcdbSessionId(redisClientFactory, eycaClient, username, password),
     TE.chain(sessionId =>

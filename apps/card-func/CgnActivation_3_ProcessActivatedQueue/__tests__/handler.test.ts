@@ -25,7 +25,7 @@ cgnFindLastVersionByModelIdMock.mockReturnValue(
   TE.right(O.some({ ...aUserCgn, card: aUserCardPending }))
 );
 
-describe("ProcessActivation", () => {
+describe("ProcessActivatedCgnQueue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
