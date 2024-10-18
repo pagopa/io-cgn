@@ -5,8 +5,10 @@ import * as TE from "fp-ts/lib/TaskEither";
 import { IConfig } from "./config";
 import {
   CardActivatedMessage,
+  CardExpiredMessage,
   CardPendingDeleteMessage,
-  CardPendingMessage
+  CardPendingMessage,
+  MessageToSendMessage
 } from "../types/queue-message";
 import { toBase64 } from "./base64";
 
@@ -86,6 +88,12 @@ export class QueueStorage {
       toBase64(message)
     );
 
-  enqueueMessageToSendMessage = (message: string) =>
-    this.enqueueMessage(this.config.MESSAGES_QUEUE_NAME, message);
+  enqueueExpiredCGNMessage = (message: CardExpiredMessage) =>
+    this.enqueueMessage(this.config.EXPIRED_CGN_QUEUE_NAME, toBase64(message));
+
+  enqueueExpiredEYCAMessage = (message: CardExpiredMessage) =>
+    this.enqueueMessage(this.config.EXPIRED_EYCA_QUEUE_NAME, toBase64(message));
+
+  enqueueMessageToSendMessage = (message: MessageToSendMessage) =>
+    this.enqueueMessage(this.config.MESSAGES_QUEUE_NAME, toBase64(message));
 }

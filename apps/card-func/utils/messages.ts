@@ -1,13 +1,16 @@
-/* eslint-disable sonarjs/no-duplicate-string, sort-keys */
 import { MessageContent } from "@pagopa/io-functions-commons/dist/generated/definitions/MessageContent";
 import { format } from "date-fns";
 import { Card } from "../generated/definitions/Card";
-import { CardActivated } from "../generated/definitions/CardActivated";
-import { CardExpired } from "../generated/definitions/CardExpired";
-import { CardPending } from "../generated/definitions/CardPending";
-import { CardPendingDelete } from "../generated/definitions/CardPendingDelete";
 import { CardRevoked } from "../generated/definitions/CardRevoked";
-import { assertNever } from "./types";
+import { EycaCard } from "../generated/definitions/EycaCard";
+
+export enum MessageTypeEnum {
+  "CARD_ACTIVATED" = "CARD_ACTIVATED",
+  "CARD_REVOKED" = "CARD_REVOKED",
+  "CARD_EXPIRED" = "CARD_EXPIRED",
+  "CARD_ERROR" = "CARD_ERROR",
+  "EYCA_CARD_EXPIRED" = "EYCA_CARD_EXPIRED"
+}
 
 export const MESSAGES = {
   CardRevoked: (card: CardRevoked): MessageContent =>
@@ -49,48 +52,51 @@ Inizia subito a usarla!
       markdown: `Ti avvisiamo che da oggi non è più possibile utilizzare la tua Carta Giovani Nazionale.
 
 Grazie per aver partecipato all'iniziativa!`
+    } as MessageContent),
+  EycaExpired: (): MessageContent =>
+    ({
+      subject: "La tua Carta EYCA è scaduta",
+      markdown: `Ti avvisiamo che da oggi non è più possibile utilizzare la tua Carta Giovani Nazionale per acquisti sul circuito EYCA.
+    
+    La Carta rimane valida per gli acquisti in Italia!`
+    } as MessageContent),
+  CardError: (): MessageContent =>
+    ({
+      subject: "Abbiamo riscontrato dei problemi",
+      markdown: `---
+      it:
+          cta_1: 
+              text: "Riprova"
+              action: "ioit://CTA_START_CGN"
+      en:
+          cta_1: 
+              text: "Retry"
+              action: "ioit://CTA_START_CGN"
+      ---
+      Ci dispiace, ma per un errore nella lavorazione della tua richiesta, non è stato possibile attivare Carta Giovani Nazionale.
+      
+      Prova ad inserire una nuova richiesta.
+      `
     } as MessageContent)
 };
 
-export const getMessage = (card: Card): MessageContent => {
-  if (CardRevoked.is(card)) {
-    return MESSAGES.CardRevoked(card);
+export const getMessage = (
+  messageType: MessageTypeEnum,
+  card: Card | EycaCard
+): MessageContent => {
+  switch (messageType) {
+    case MessageTypeEnum.CARD_ACTIVATED:
+      return MESSAGES.CardActivated();
+    case MessageTypeEnum.CARD_REVOKED:
+      if (!CardRevoked.is(card)) throw new Error("Card is not revoked");
+      return MESSAGES.CardRevoked(card);
+    case MessageTypeEnum.CARD_EXPIRED:
+      return MESSAGES.CardExpired();
+    case MessageTypeEnum.EYCA_CARD_EXPIRED:
+      return MESSAGES.EycaExpired();
+    case MessageTypeEnum.CARD_ERROR:
+      return MESSAGES.CardError();
+    default:
+      throw new Error("Unexpected Card status");
   }
-  if (CardActivated.is(card)) {
-    return MESSAGES.CardActivated();
-  }
-  if (CardExpired.is(card)) {
-    return MESSAGES.CardExpired();
-  }
-  if (CardPending.is(card) || CardPendingDelete.is(card)) {
-    throw new Error("Unexpected Card status");
-  }
-
-  return assertNever(card);
 };
-
-export const getEycaExpirationMessage = (): MessageContent =>
-  ({
-    subject: "La tua Carta EYCA è scaduta",
-    markdown: `Ti avvisiamo che da oggi non è più possibile utilizzare la tua Carta Giovani Nazionale per acquisti sul circuito EYCA.
-
-La Carta rimane valida per gli acquisti in Italia!`
-  } as MessageContent);
-export const getErrorMessage = (): MessageContent =>
-  ({
-    subject: "Abbiamo riscontrato dei problemi",
-    markdown: `---
-it:
-    cta_1: 
-        text: "Riprova"
-        action: "ioit://CTA_START_CGN"
-en:
-    cta_1: 
-        text: "Retry"
-        action: "ioit://CTA_START_CGN"
----
-Ci dispiace, ma per un errore nella lavorazione della tua richiesta, non è stato possibile attivare Carta Giovani Nazionale.
-
-Prova ad inserire una nuova richiesta.
-`
-  } as MessageContent);

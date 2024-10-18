@@ -1,0 +1,16 @@
+{
+  "bindings": [
+    {
+        "schedule": "0 0 0 * * *",
+        "name": "updateExpiredEycaTimer",
+        "type": "timerTrigger",
+        "direction": "in"
+    }
+  ],
+  "retry": {
+    "strategy": "exponentialBackoff",
+    "maxRetryCount": 5,
+    "delayInterval": "00:00:30"
+  },
+  "scriptFile": "../dist/EycaExpired_1_Start/index.js"
+}

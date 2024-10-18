@@ -49,9 +49,12 @@ export const queryUsers = async (
 
 export const getExpiredCardUsers = (
   tableService: TableService,
-  expiredCardTableName: string,
+  expiredCardTableName: string
+): ((
   refDate: string
-): TE.TaskEither<Error, ReadonlyArray<ExpiredCardRowKey>> =>
+) => TE.TaskEither<Error, ReadonlyArray<ExpiredCardRowKey>>) => (
+  refDate: string
+) =>
   // get a function that can query the expired cgns table
   pipe(
     TE.of(getPagedQuery(tableService, expiredCardTableName)),
