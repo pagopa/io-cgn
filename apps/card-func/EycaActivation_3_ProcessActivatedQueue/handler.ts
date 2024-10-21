@@ -14,6 +14,8 @@ import { CardActivatedMessage } from "../types/queue-message";
 import { fromBase64 } from "../utils/base64";
 import { throwError, trackError } from "../utils/errors";
 import { UpdateCcdbEycaCard } from "../utils/eyca";
+import { QueueStorage } from "../utils/queue";
+import { MessageTypeEnum } from "../utils/messages";
 
 /**
  * Update EYCA Card on cosmos
@@ -56,7 +58,8 @@ const getUserEycaCard = (
 
 export const handler = (
   userEycaCardModel: UserEycaCardModel,
-  updateCcdbEycaCard: UpdateCcdbEycaCard
+  updateCcdbEycaCard: UpdateCcdbEycaCard,
+  queueStorage: QueueStorage
 ) => (
   context: Context,
   activatedEycaMessage: CardActivatedMessage
@@ -92,6 +95,13 @@ export const handler = (
           expiration_date: new Date(activatedEycaMessage.expiration_date),
           status: ActivatedStatusEnum.ACTIVATED
         }
+      })
+    ),
+    TE.chain(eycaCard =>
+      queueStorage.enqueueMessageToSendMessage({
+        fiscal_code: activatedEycaMessage.fiscal_code,
+        message_type: MessageTypeEnum.CARD_ACTIVATED,
+        card: eycaCard.card
       })
     ),
     TE.map(_ => true), // do not care about result

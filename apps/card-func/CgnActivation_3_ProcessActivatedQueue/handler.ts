@@ -23,6 +23,7 @@ import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
+import { MessageTypeEnum } from "../utils/messages";
 
 /**
  * Gets a CGN CARD
@@ -140,72 +141,84 @@ const getEycaExpirationDateIfEligibleTask = (
   );
 
 export const handler = (
-  userCgnModel: UserCgnModel,
-  servicesClient: ServicesAPIClient,
-  queueStorage: QueueStorage,
-  eycaUpperBoundAge: NonNegativeInteger
-) => (
-  context: Context,
-  activatedCgnMessage: CardActivatedMessage
-): Promise<boolean> =>
-  pipe(
-    // get the card
-    getCgnCard(userCgnModel, activatedCgnMessage.fiscal_code),
-    TE.chain(userCgn =>
-      isCardActivated(userCgn)
-        ? // card already activated mean we should go on
-          TE.of(true)
-        : // else we process
-          pipe(
-            // upsert special service
-            upsertServiceActivation(
-              servicesClient,
-              ActivationStatusEnum.ACTIVE,
-              activatedCgnMessage.fiscal_code
-            ),
-            TE.chain(_ =>
-              // update card with activation data
-              updateCgnCard(userCgnModel, {
-                ...userCgn,
-                card: {
-                  status: activatedCgnMessage.status,
-                  activation_date: activatedCgnMessage.activation_date,
-                  expiration_date: activatedCgnMessage.expiration_date
-                }
-              })
-            ),
-            TE.chain(_ =>
-              pipe(
-                // get eyca expiration date if eligible
-                getEycaExpirationDateIfEligibleTask(
-                  activatedCgnMessage.fiscal_code,
-                  eycaUpperBoundAge
-                ),
-                TE.chainW(
-                  O.fold(
-                    // no expiration date means no eyca eligibility
-                    () => TE.of(true),
-                    // send pending eyca message to queue
-                    expirationDate =>
-                      queueStorage.enqueuePendingEYCAMessage({
-                        request_id: activatedCgnMessage.request_id,
-                        fiscal_code: activatedCgnMessage.fiscal_code,
-                        activation_date: new Date(),
-                        expiration_date: expirationDate,
-                        status: PendingStatusEnum.PENDING
-                      })
-                  )
-                )
-              )
-            )
-          )
-    ),
-    TE.mapLeft(
-      trackError(
-        context,
-        `[${activatedCgnMessage.request_id}] CgnActivation_3_ProcessActivatedQueue`
-      )
-    ),
-    TE.mapLeft(throwError),
-    TE.toUnion
-  )();
+         userCgnModel: UserCgnModel,
+         servicesClient: ServicesAPIClient,
+         queueStorage: QueueStorage,
+         eycaUpperBoundAge: NonNegativeInteger
+       ) => (
+         context: Context,
+         activatedCgnMessage: CardActivatedMessage
+       ): Promise<boolean> =>
+         pipe(
+           // get the card
+           getCgnCard(userCgnModel, activatedCgnMessage.fiscal_code),
+           TE.chain(userCgn =>
+             isCardActivated(userCgn)
+               ? // card already activated mean we should go on
+                 TE.of(true)
+               : // else we process
+                 pipe(
+                   // upsert special service
+                   upsertServiceActivation(
+                     servicesClient,
+                     ActivationStatusEnum.ACTIVE,
+                     activatedCgnMessage.fiscal_code
+                   ),
+                   TE.chain(_ =>
+                     // update card with activation data
+                     updateCgnCard(userCgnModel, {
+                       ...userCgn,
+                       card: {
+                         status: activatedCgnMessage.status,
+                         activation_date: activatedCgnMessage.activation_date,
+                         expiration_date: activatedCgnMessage.expiration_date
+                       }
+                     })
+                   ),
+                   TE.chain(userCgn =>
+                     pipe(
+                       // get eyca expiration date if eligible
+                       getEycaExpirationDateIfEligibleTask(
+                         activatedCgnMessage.fiscal_code,
+                         eycaUpperBoundAge
+                       ),
+                       TE.chainFirstW(
+                         O.fold(
+                           // no expiration date means no eyca eligibility
+                           () => TE.of(true),
+                           // send pending eyca message to queue
+                           expirationDate =>
+                             queueStorage.enqueuePendingEYCAMessage({
+                               request_id: activatedCgnMessage.request_id,
+                               fiscal_code: activatedCgnMessage.fiscal_code,
+                               activation_date: new Date(),
+                               expiration_date: expirationDate,
+                               status: PendingStatusEnum.PENDING
+                             })
+                         )
+                       ),
+                       TE.chainW(
+                         O.fold(
+                           // no expiration date means send CGN activation message
+                           () => queueStorage.enqueueMessageToSendMessage({
+                             fiscal_code: activatedCgnMessage.fiscal_code,
+                             message_type: MessageTypeEnum.CARD_ACTIVATED,
+                             card: userCgn.card
+                           }),
+                           // if we activate also eyca we should send message after eyca activation
+                           _ => TE.of(true)
+                         )
+                       )
+                     )
+                   )
+                 )
+           ),
+           TE.mapLeft(
+             trackError(
+               context,
+               `[${activatedCgnMessage.request_id}] CgnActivation_3_ProcessActivatedQueue`
+             )
+           ),
+           TE.mapLeft(throwError),
+           TE.toUnion
+         )();

@@ -3,8 +3,10 @@ import {
   aUserEycaCardPending,
   cardActivatedMessageMock,
   context,
+  enqueueMessageMock,
   eycaFindLastVersionByModelIdMock,
   eycaUpdateModelMock,
+  queueStorageMock,
   updateCcdbEycaCardMock,
   userEycaCardModelMock
 } from "../../__mocks__/mock";
@@ -24,10 +26,11 @@ describe("ProcessActivatedEycaQueue", () => {
       TE.left({ kind: "COSMOS_ERROR" })
     );
 
-    const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
-      context,
-      cardActivatedMessageMock
-    );
+    const promised = handler(
+      userEycaCardModelMock,
+      updateCcdbEycaCardMock,
+      queueStorageMock
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
@@ -41,10 +44,11 @@ describe("ProcessActivatedEycaQueue", () => {
   it("should throw when update ccdb fails", async () => {
     updateCcdbEycaCardMock.mockReturnValueOnce(TE.left(new Error("Error")));
 
-    const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
-      context,
-      cardActivatedMessageMock
-    );
+    const promised = handler(
+      userEycaCardModelMock,
+      updateCcdbEycaCardMock,
+      queueStorageMock
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -56,12 +60,33 @@ describe("ProcessActivatedEycaQueue", () => {
   it("should throw when update cosmos fails", async () => {
     eycaUpdateModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
 
-    const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
-      context,
-      cardActivatedMessageMock
+    const promised = handler(
+      userEycaCardModelMock,
+      updateCcdbEycaCardMock,
+      queueStorageMock
+    )(context, cardActivatedMessageMock);
+
+    await expect(promised).rejects.toStrictEqual(
+      new Error("COSMOS_ERROR|Cannot update cosmos EYCA")
     );
 
-    await expect(promised).rejects.toStrictEqual(new Error("COSMOS_ERROR|Cannot update cosmos EYCA"));
+    expect(eycaFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(updateCcdbEycaCardMock).toBeCalledTimes(1);
+    expect(eycaUpdateModelMock).toBeCalledTimes(1);
+  });
+
+  it("should throw when enqueue message fails", async () => {
+    enqueueMessageMock.mockReturnValueOnce(TE.left(new Error("error")));
+
+    const promised = handler(
+      userEycaCardModelMock,
+      updateCcdbEycaCardMock,
+      queueStorageMock
+    )(context, cardActivatedMessageMock);
+
+    await expect(promised).rejects.toStrictEqual(
+      new Error("error")
+    );
 
     expect(eycaFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(updateCcdbEycaCardMock).toBeCalledTimes(1);
@@ -69,10 +94,11 @@ describe("ProcessActivatedEycaQueue", () => {
   });
 
   it("should succeed and activate a pending card", async () => {
-    const promised = handler(userEycaCardModelMock, updateCcdbEycaCardMock)(
-      context,
-      cardActivatedMessageMock
-    );
+    const promised = handler(
+      userEycaCardModelMock,
+      updateCcdbEycaCardMock,
+      queueStorageMock
+    )(context, cardActivatedMessageMock);
 
     await expect(promised).resolves.toStrictEqual(true);
 

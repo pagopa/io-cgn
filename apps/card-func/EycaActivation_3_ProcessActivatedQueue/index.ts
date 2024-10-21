@@ -11,6 +11,7 @@ import { cosmosdbClient } from "../utils/cosmosdb";
 import { RedisClientFactory } from "../utils/redis";
 import { handler } from "./handler";
 import { updateCard, UpdateCcdbEycaCard } from "../utils/eyca";
+import { QueueStorage } from "../utils/queue";
 
 const config = getConfigOrThrow();
 
@@ -31,6 +32,8 @@ const updateCcdbEycaCard: UpdateCcdbEycaCard = updateCard(
   config.EYCA_API_PASSWORD
 );
 
+const queueStorage: QueueStorage = new QueueStorage(config);
+
 // eslint-disable-next-line functional/no-let
 let logger: Context["log"] | undefined;
 const contextTransport = new AzureContextTransport(() => logger, {
@@ -39,8 +42,9 @@ const contextTransport = new AzureContextTransport(() => logger, {
 winston.add(contextTransport);
 
 export const index: AzureFunction = handler(
-  userEycaCardModel,
-  updateCcdbEycaCard
-);
+         userEycaCardModel,
+         updateCcdbEycaCard,
+         queueStorage
+       );
 
 export default index;

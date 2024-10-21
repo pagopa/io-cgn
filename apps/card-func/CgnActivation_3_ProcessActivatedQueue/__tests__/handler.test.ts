@@ -134,7 +134,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
-  it("should throw when eyca pending message enqueue fails", async () => {
+  it("should throw when eyca message enqueue fails", async () => {
     enqueueMessageMock.mockReturnValueOnce(TE.left(new Error("Error")));
 
     const promised = handler(
@@ -165,7 +165,15 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueueMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1); // this is called to send eyca pending message
+    expect(enqueueMessageMock).toBeCalledWith(
+      expect.objectContaining({
+        request_id: cardActivatedMessageMock.request_id,
+        fiscal_code: cardActivatedMessageMock.fiscal_code,
+        activation_date: new Date(),
+        status: aUserCardPending.status
+      })
+    );
   });
 
   it("should succeed and activate the cgn card and not send pending eyca message if not eligible", async () => {
@@ -184,7 +192,16 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueueMessageMock).not.toBeCalled();
+    expect(enqueueMessageMock).toBeCalledTimes(1); // this is called to send cgn activation message
+    expect(enqueueMessageMock).toBeCalledWith({
+      card: {
+        activation_date: cardActivatedMessageMock.activation_date,
+        expiration_date: cardActivatedMessageMock.expiration_date,
+        status: "ACTIVATED"
+      },
+      fiscal_code: "RODFDS92S10H501T",
+      message_type: "CARD_ACTIVATED"
+    });
   });
 
   it("should succeed without activating the cgn card if already activated and not send any eyca activation message", async () => {
