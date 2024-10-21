@@ -3,7 +3,7 @@ import {
   aUserEycaCard,
   aUserEycaCardPending,
   context,
-  enqueueActivatedEYCAMessageMock,
+  enqueueMessageMock,
   eycaFindLastVersionByModelIdMock,
   eycaUpsertModelMock,
   cardPendingMessageMock,
@@ -39,7 +39,7 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).not.toHaveBeenCalled();
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(preIssueEycaCardMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when upsert to cosmos fails", async () => {
@@ -62,7 +62,7 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
     expect(preIssueEycaCardMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   }); 
 
   it("should throw when card expiration storage fails", async () => {
@@ -85,7 +85,7 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(preIssueEycaCardMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   }); 
 
   it("should throw when preIssueCard fails", async () => {
@@ -108,11 +108,11 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(preIssueEycaCardMock).toBeCalledTimes(1);
-    expect(enqueueActivatedEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when activated eyca message enqueue fails", async () => {
-    enqueueActivatedEYCAMessageMock.mockReturnValueOnce(
+    enqueueMessageMock.mockReturnValueOnce(
       TE.left(new Error("Error"))
     );
 
@@ -131,7 +131,7 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(preIssueEycaCardMock).toBeCalledTimes(1);
-    expect(enqueueActivatedEYCAMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and create a new pending card when it not exists", async () => {
@@ -148,7 +148,7 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(preIssueEycaCardMock).toBeCalledTimes(1);
-    expect(enqueueActivatedEYCAMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and recover an existing eyca card when it already exists", async () => {
@@ -167,6 +167,6 @@ describe("ProcessPendingEycaQueue", () => {
     expect(eycaUpsertModelMock).not.toBeCalled();
     expect(storeCardExpirationMock).toBeCalledTimes(1);
     expect(preIssueEycaCardMock).toBeCalledTimes(1);
-    expect(enqueueActivatedEYCAMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 });

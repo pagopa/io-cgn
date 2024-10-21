@@ -10,7 +10,7 @@ import {
   cgnFindLastVersionByModelIdMock,
   cgnUpsertModelMock,
   context,
-  enqueueActivatedCGNMessageMock,
+  enqueueMessageMock,
   makeServiceResponse,
   cardPendingMessageMock,
   queueStorageMock,
@@ -46,7 +46,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).not.toHaveBeenCalled();
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when upsert to cosmos fails", async () => {
@@ -67,7 +67,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when special service upsert throws", async () => {
@@ -88,7 +88,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when special service upsert returns non success response", async () => {
@@ -111,7 +111,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).not.toHaveBeenCalled();
-    expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when expiration storage fails", async () => {
@@ -130,11 +130,11 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
-    expect(enqueueActivatedCGNMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when activated cgn message enqueue fails", async () => {
-    enqueueActivatedCGNMessageMock.mockReturnValueOnce(
+    enqueueMessageMock.mockReturnValueOnce(
       TE.left(new Error("Error"))
     );
 
@@ -151,7 +151,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
-    expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and create a new pending card when it not exists", async () => {
@@ -168,7 +168,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
-    expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and recover an existing pending card when already existing", async () => {
@@ -195,7 +195,7 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).not.toBeCalled();
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(storeCardExpirationMock).toBeCalledTimes(1);
-    expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and recover an existing activated card when already existing", async () => {
@@ -222,6 +222,6 @@ describe("ProcessPendingCgnQueue", () => {
     expect(cgnUpsertModelMock).not.toBeCalled();
     expect(upsertServiceActivationMock).not.toBeCalled();
     expect(storeCardExpirationMock).not.toBeCalled();
-    expect(enqueueActivatedCGNMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 });

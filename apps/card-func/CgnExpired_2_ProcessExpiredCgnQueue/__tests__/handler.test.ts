@@ -81,7 +81,7 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
   });
 
   it("should succeed when no cgn exists", async () => {
-    cgnFindLastVersionByModelIdMock.mockReturnValue(TE.right(O.none));
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
       context,
@@ -96,7 +96,7 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
   });
 
   it("should succeed when cgn is already expired", async () => {
-    cgnFindLastVersionByModelIdMock.mockReturnValue(
+    cgnFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.right(
         O.some({
           ...aUserCgn,

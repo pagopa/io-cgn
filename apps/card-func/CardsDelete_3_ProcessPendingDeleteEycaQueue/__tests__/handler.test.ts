@@ -7,7 +7,7 @@ import {
   aUserEycaCardPending,
   cardPendingDeleteMessageMock,
   context,
-  enqueueActivatedEYCAMessageMock,
+  enqueueMessageMock,
   eycaFindLastVersionByModelIdMock,
   eycaUpsertModelMock,
   deleteCcdbEycaCardMock,

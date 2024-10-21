@@ -10,7 +10,7 @@ import {
   aUserCardPendingDelete,
   aUserCgn,
   context,
-  enqueuePendingCGNMessageMock,
+  enqueueMessageMock,
   cgnFindLastVersionByModelIdMock,
   queueStorageMock,
   userCgnModelMock
@@ -85,7 +85,7 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
-    expect(enqueuePendingCGNMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should return a Redirect to Resource if CGN activation re-starts", async () => {
@@ -99,12 +99,12 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
-    expect(enqueuePendingCGNMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should fail if CGN activation starts and queue service is not reachable", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
-    enqueuePendingCGNMessageMock.mockImplementationOnce(() =>
+    enqueueMessageMock.mockImplementationOnce(() =>
       TE.left(new Error("any error"))
     );
     const startCgnActivationHandler = StartCgnActivationHandler(
@@ -114,6 +114,6 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(enqueuePendingCGNMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 });

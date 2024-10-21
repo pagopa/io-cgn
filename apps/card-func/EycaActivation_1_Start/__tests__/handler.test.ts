@@ -9,7 +9,7 @@ import {
   aUserEycaCardPendingDelete,
   anEYCAUneligibleFiscalCode,
   context,
-  enqueuePendingEYCAMessageMock,
+  enqueueMessageMock,
   eycaFindLastVersionByModelIdMock,
   queueStorageMock,
   userEycaCardModelMock
@@ -84,7 +84,7 @@ describe("StartEycaActivation", () => {
     );
     const response = await startEycaActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
-    expect(enqueuePendingEYCAMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should return a Redirect to Resource if EYCA activation re-starts", async () => {
@@ -98,12 +98,12 @@ describe("StartEycaActivation", () => {
     );
     const response = await startEycaActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
-    expect(enqueuePendingEYCAMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should fail if EYCA activation starts and queue service is not reachable", async () => {
     eycaFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
-    enqueuePendingEYCAMessageMock.mockImplementationOnce(() =>
+    enqueueMessageMock.mockImplementationOnce(() =>
       TE.left(new Error("any error"))
     );
     const startEycaActivationHandler = StartEycaActivationHandler(
@@ -113,6 +113,6 @@ describe("StartEycaActivation", () => {
     );
     const response = await startEycaActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(enqueuePendingEYCAMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 });

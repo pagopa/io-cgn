@@ -10,8 +10,7 @@ import {
   aUserEycaCardActivated,
   cgnFindLastVersionByModelIdMock,
   context,
-  enqueuePendingDeleteCGNMessageMock,
-  enqueuePendingDeleteEYCAMessageMock,
+  enqueueMessageMock,
   eycaFindLastVersionByModelIdMock,
   queueStorageMock,
   userCgnModelMock,
@@ -35,8 +34,7 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should return an Internal Error if an error occurs during UserEycaCard retrieve", async () => {
@@ -50,13 +48,12 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should return an Internal Error if UserCgn has no expiration_date", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserCgn, card: aUserCardPending}))
+      TE.right(O.some({ ...aUserCgn, card: aUserCardPending }))
     );
     const StartCardsDelete = StartCardsDeleteHandler(
       userCgnModelMock,
@@ -65,14 +62,15 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(response.detail).toBe("Internal server error: Cannot find user CGN card expiration");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(response.detail).toBe(
+      "Internal server error: Cannot find user CGN card expiration"
+    );
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should return an Internal Error if UserEycaCard has no expiration_date", async () => {
     eycaFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserEycaCard, card: aUserCardPending}))
+      TE.right(O.some({ ...aUserEycaCard, card: aUserCardPending }))
     );
     const StartCardsDelete = StartCardsDeleteHandler(
       userCgnModelMock,
@@ -81,17 +79,18 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseErrorInternal");
-    expect(response.detail).toBe("Internal server error: Cannot find user EYCA card expiration");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(response.detail).toBe(
+      "Internal server error: Cannot find user EYCA card expiration"
+    );
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should return a ResponseSuccessAccepted if delete request is accepted because there are both cards", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserCgn, card: aUserCardActivated}))
+      TE.right(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
     eycaFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserEycaCard, card: aUserEycaCardActivated}))
+      TE.right(O.some({ ...aUserEycaCard, card: aUserEycaCardActivated }))
     );
 
     const StartCardsDelete = StartCardsDeleteHandler(
@@ -101,13 +100,12 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessAccepted");
-    expect(enqueuePendingDeleteCGNMessageMock).toHaveBeenCalledTimes(1);
-    expect(enqueuePendingDeleteEYCAMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(2);
   });
 
   it("should return a ResponseSuccessAccepted if delete request is accepted because there is just cgn card", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserCgn, card: aUserCardActivated}))
+      TE.right(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
 
     const StartCardsDelete = StartCardsDeleteHandler(
@@ -117,13 +115,12 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessAccepted");
-    expect(enqueuePendingDeleteCGNMessageMock).toHaveBeenCalledTimes(1);
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should return a ResponseSuccessAccepted if delete request is accepted because there just an eyca card", async () => {
     eycaFindLastVersionByModelIdMock.mockImplementationOnce(() =>
-      TE.right(O.some({...aUserEycaCard, card: aUserEycaCardActivated}))
+      TE.right(O.some({ ...aUserEycaCard, card: aUserEycaCardActivated }))
     );
 
     const StartCardsDelete = StartCardsDeleteHandler(
@@ -133,8 +130,7 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessAccepted");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).toHaveBeenCalledTimes(1);
+    expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
   it("should return a ResponseSuccessAccepted if delete request is accepted because there are no cards", async () => {
@@ -145,7 +141,6 @@ describe("StartCgnDelete", () => {
     );
     const response = await StartCardsDelete(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessAccepted");
-    expect(enqueuePendingDeleteCGNMessageMock).not.toHaveBeenCalled();
-    expect(enqueuePendingDeleteEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 });

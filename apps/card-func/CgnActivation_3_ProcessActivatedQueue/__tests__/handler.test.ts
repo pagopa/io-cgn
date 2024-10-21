@@ -11,7 +11,7 @@ import {
   cgnFindLastVersionByModelIdMock,
   cgnUpdateModelMock,
   context,
-  enqueuePendingEYCAMessageMock,
+  enqueueMessageMock,
   makeServiceResponse,
   queueStorageMock,
   servicesClientMock,
@@ -49,7 +49,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
     expect(cgnUpdateModelMock).not.toHaveBeenCalled();
-    expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when query to cosmos does not find cgn card", async () => {
@@ -69,7 +69,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toHaveBeenCalled();
     expect(cgnUpdateModelMock).not.toHaveBeenCalled();
-    expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when special service upsert throws", async () => {
@@ -89,7 +89,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).not.toHaveBeenCalled();
-    expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when special service upsert returns non success response", async () => {
@@ -111,7 +111,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).not.toHaveBeenCalled();
-    expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when update model fails", async () => {
@@ -131,13 +131,11 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueuePendingEYCAMessageMock).not.toHaveBeenCalled();
+    expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
   it("should throw when eyca pending message enqueue fails", async () => {
-    enqueuePendingEYCAMessageMock.mockReturnValueOnce(
-      TE.left(new Error("Error"))
-    );
+    enqueueMessageMock.mockReturnValueOnce(TE.left(new Error("Error")));
 
     const promised = handler(
       userCgnModelMock,
@@ -151,7 +149,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueuePendingEYCAMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and activate the cgn card and send pending eyca message if eligible", async () => {
@@ -167,7 +165,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueuePendingEYCAMessageMock).toBeCalledTimes(1);
+    expect(enqueueMessageMock).toBeCalledTimes(1);
   });
 
   it("should succeed and activate the cgn card and not send pending eyca message if not eligible", async () => {
@@ -186,7 +184,7 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).toBeCalledTimes(1);
     expect(cgnUpdateModelMock).toBeCalledTimes(1);
-    expect(enqueuePendingEYCAMessageMock).not.toBeCalled();
+    expect(enqueueMessageMock).not.toBeCalled();
   });
 
   it("should succeed without activating the cgn card if already activated and not send any eyca activation message", async () => {
@@ -206,6 +204,6 @@ describe("ProcessActivatedCgnQueue", () => {
     expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
     expect(upsertServiceActivationMock).not.toBeCalled();
     expect(cgnUpdateModelMock).not.toBeCalled();
-    expect(enqueuePendingEYCAMessageMock).not.toBeCalled();
+    expect(enqueueMessageMock).not.toBeCalled();
   });
 });

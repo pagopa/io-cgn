@@ -81,7 +81,7 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
   });
 
   it("should succeed when no eyca exists", async () => {
-    eycaFindLastVersionByModelIdMock.mockReturnValue(TE.right(O.none));
+    eycaFindLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
       context,
@@ -96,7 +96,7 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
   });
 
   it("should succeed when eyca is already expired", async () => {
-    eycaFindLastVersionByModelIdMock.mockReturnValue(
+    eycaFindLastVersionByModelIdMock.mockReturnValueOnce(
       TE.right(
         O.some({
           ...aUserEycaCard,
