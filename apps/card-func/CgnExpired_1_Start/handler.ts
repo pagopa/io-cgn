@@ -8,22 +8,21 @@ import * as TE from "fp-ts/lib/TaskEither";
 import { ulid } from "ulid";
 import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardExpired";
 import { CardExpiredMessage } from "../types/queue-message";
-import { getExpiredCardUsers } from "../utils/card_expiration";
+import {
+  GetExpiredCardUserFunction,
+  getExpiredCardUsers
+} from "../utils/card_expiration";
 import { throwError, trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
+import { debugPipe } from "../utils/debug";
 
 export const getUpdateExpiredCgnHandler = (
-  tableService: TableService,
-  cgnExpirationTableName: NonEmptyString,
+  getExpiredCardUsersFunction: GetExpiredCardUserFunction,
   queueStorage: QueueStorage
 ) => async (context: Context): Promise<boolean> =>
   pipe(
     date_fns.format(Date.now(), "yyyy-MM-dd"),
-    getExpiredCardUsers(
-      // using custom Exponential backoff retry policy for expired card's query operation
-      tableService.withFilter(new ExponentialRetryPolicyFilter(5)),
-      cgnExpirationTableName
-    ),
+    getExpiredCardUsersFunction,
     TE.map(
       RA.map(({ activationDate, expirationDate, fiscalCode }) =>
         queueStorage.enqueueExpiredCGNMessage({

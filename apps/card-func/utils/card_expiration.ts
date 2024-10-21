@@ -47,6 +47,8 @@ export const queryUsers = async (
   return entries;
 };
 
+export type GetExpiredCardUserFunction = ReturnType<typeof getExpiredCardUsers>;
+
 export const getExpiredCardUsers = (
   tableService: TableService,
   expiredCardTableName: string
