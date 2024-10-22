@@ -34,7 +34,9 @@ module "function_app_cgn_card" {
       "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled"      = "1"
       "AzureWebJobs.CardsDelete_2_ProcessPendingDeleteCgnQueue.Disabled"  = "1"
       "AzureWebJobs.CardsDelete_3_ProcessPendingDeleteEycaQueue.Disabled" = "1"
+      "AzureWebJobs.CgnExpired_1_Start.Disabled"                          = "1"
       "AzureWebJobs.CgnExpired_2_ProcessExpiredCgnQueue.Disabled"         = "1"
+      "AzureWebJobs.EycaExpired_1_Start.Disabled"                         = "1"
       "AzureWebJobs.EycaExpired_2_ProcessExpiredEycaQueue.Disabled"       = "1"
       "AzureWebJobs.SendMessage_ProcessMessagesQueue.Disabled"            = "1"
   })
@@ -46,7 +48,9 @@ module "function_app_cgn_card" {
     "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled",
     "AzureWebJobs.CardsDelete_2_ProcessPendingDeleteCgnQueue.Disabled",
     "AzureWebJobs.CardsDelete_3_ProcessPendingDeleteEycaQueue.Disabled",
+    "AzureWebJobs.CgnExpired_1_Start.Disabled",
     "AzureWebJobs.CgnExpired_2_ProcessExpiredCgnQueue.Disabled",
+    "AzureWebJobs.EycaExpired_1_Start.Disabled",
     "AzureWebJobs.EycaExpired_2_ProcessExpiredEycaQueue.Disabled",
     "AzureWebJobs.SendMessage_ProcessMessagesQueue.Disabled"
   ]
