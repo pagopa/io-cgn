@@ -28,17 +28,27 @@ module "function_app_cgn_card" {
   slot_app_settings = merge(
     local.cgn_card.app_settings, {
       // disable queue triggered functions on staging slot
-      "AzureWebJobs.CgnActivation_2_ProcessPendingQueue.Disabled"    = "1"
-      "AzureWebJobs.CgnActivation_3_ProcessActivatedQueue.Disabled"  = "1"
-      "AzureWebJobs.EycaActivation_2_ProcessPendingQueue.Disabled"   = "1"
-      "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled" = "1"
+      "AzureWebJobs.CgnActivation_2_ProcessPendingQueue.Disabled"         = "1"
+      "AzureWebJobs.CgnActivation_3_ProcessActivatedQueue.Disabled"       = "1"
+      "AzureWebJobs.EycaActivation_2_ProcessPendingQueue.Disabled"        = "1"
+      "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled"      = "1"
+      "AzureWebJobs.CardsDelete_2_ProcessPendingDeleteCgnQueue.Disabled"  = "1"
+      "AzureWebJobs.CardsDelete_3_ProcessPendingDeleteEycaQueue.Disabled" = "1"
+      "AzureWebJobs.CgnExpired_2_ProcessExpiredCgnQueue.Disabled"         = "1"
+      "AzureWebJobs.EycaExpired_2_ProcessExpiredEycaQueue.Disabled"       = "1"
+      "AzureWebJobs.SendMessage_ProcessMessagesQueue.Disabled"            = "1"
   })
 
   sticky_app_setting_names = [
     "AzureWebJobs.CgnActivation_2_ProcessPendingQueue.Disabled",
     "AzureWebJobs.CgnActivation_3_ProcessActivatedQueue.Disabled",
     "AzureWebJobs.EycaActivation_2_ProcessPendingQueue.Disabled",
-    "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled"
+    "AzureWebJobs.EycaActivation_3_ProcessActivatedQueue.Disabled",
+    "AzureWebJobs.CardsDelete_2_ProcessPendingDeleteCgnQueue.Disabled",
+    "AzureWebJobs.CardsDelete_3_ProcessPendingDeleteEycaQueue.Disabled",
+    "AzureWebJobs.CgnExpired_2_ProcessExpiredCgnQueue.Disabled",
+    "AzureWebJobs.EycaExpired_2_ProcessExpiredEycaQueue.Disabled",
+    "AzureWebJobs.SendMessage_ProcessMessagesQueue.Disabled"
   ]
 
   tags = var.tags
