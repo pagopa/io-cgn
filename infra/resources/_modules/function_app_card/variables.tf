@@ -152,6 +152,16 @@ variable "pending_delete_eyca_queue_name" {
   description = "Pending Delete EYCA queue name"
 }
 
+variable "expired_cgn_queue_name" {
+  type        = string
+  description = "Expired CGN queue name"
+}
+
+variable "expired_eyca_queue_name" {
+  type        = string
+  description = "Expired EYCA queue name"
+}
+
 variable "messages_queue_name" {
   type        = string
   description = "Messages queue name"

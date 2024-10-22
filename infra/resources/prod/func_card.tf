@@ -89,6 +89,8 @@ module "functions_cgn_card" {
   activated_eyca_queue_name      = "activatedeyca"
   pending_delete_cgn_queue_name  = "pendingdeletecgn"
   pending_delete_eyca_queue_name = "pendingdeleteeyca"
+  expired_cgn_queue_name         = "expiredcgn"
+  expired_eyca_queue_name        = "expiredeyca"
   messages_queue_name            = "messages"
 
   eyca_api_base_url = data.azurerm_key_vault_secret.eyca_api_base_url.value

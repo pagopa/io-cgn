@@ -35,6 +35,8 @@ locals {
       ACTIVATED_EYCA_QUEUE_NAME      = var.activated_eyca_queue_name
       PENDING_DELETE_CGN_QUEUE_NAME  = var.pending_delete_cgn_queue_name
       PENDING_DELETE_EYCA_QUEUE_NAME = var.pending_delete_eyca_queue_name
+      EXPIRED_CGN_QUEUE_NAME         = var.expired_cgn_queue_name
+      EXPIRED_EYCA_QUEUE_NAME        = var.expired_eyca_queue_name
       MESSAGES_QUEUE_NAME            = var.messages_queue_name
 
       // EYCA CCDB
