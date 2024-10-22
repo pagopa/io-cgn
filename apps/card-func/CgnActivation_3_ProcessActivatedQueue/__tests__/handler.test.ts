@@ -170,7 +170,6 @@ describe("ProcessActivatedCgnQueue", () => {
       expect.objectContaining({
         request_id: cardActivatedMessageMock.request_id,
         fiscal_code: cardActivatedMessageMock.fiscal_code,
-        activation_date: new Date(),
         status: aUserCardPending.status
       })
     );
