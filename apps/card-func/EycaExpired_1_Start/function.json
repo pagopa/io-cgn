@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+        "schedule": "0 0 2 * * *",
+        "name": "updateExpiredEycaTimer",
+        "type": "timerTrigger",
+        "direction": "in"
+    }
+  ],
+  "scriptFile": "../dist/EycaExpired_1_Start/index.js"
+}

@@ -72,6 +72,10 @@ variable "ai_sampling_percentage" {
 }
 
 # REPO DEFINED VARIABLES
+variable "nat_gateway_id" {
+  type        = string
+  description = "The ID of the NAT Gateway"
+}
 
 variable "redis_url" {
   type        = string
@@ -136,6 +140,31 @@ variable "activated_cgn_queue_name" {
 variable "activated_eyca_queue_name" {
   type        = string
   description = "Activated EYCA queue name"
+}
+
+variable "pending_delete_cgn_queue_name" {
+  type        = string
+  description = "Pending Delete CGN queue name"
+}
+
+variable "pending_delete_eyca_queue_name" {
+  type        = string
+  description = "Pending Delete EYCA queue name"
+}
+
+variable "expired_cgn_queue_name" {
+  type        = string
+  description = "Expired CGN queue name"
+}
+
+variable "expired_eyca_queue_name" {
+  type        = string
+  description = "Expired EYCA queue name"
+}
+
+variable "messages_queue_name" {
+  type        = string
+  description = "Messages queue name"
 }
 
 variable "eyca_api_base_url" {
