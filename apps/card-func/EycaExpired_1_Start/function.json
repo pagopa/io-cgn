@@ -7,10 +7,5 @@
         "direction": "in"
     }
   ],
-  "retry": {
-    "strategy": "exponentialBackoff",
-    "maxRetryCount": 5,
-    "delayInterval": "00:00:15"
-  },
   "scriptFile": "../dist/EycaExpired_1_Start/index.js"
 }
