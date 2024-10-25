@@ -30,23 +30,23 @@ paths:
           description: Service unavailable.
           schema:
             "$ref": "#/definitions/ProblemJson"
-  /merchants:
+  /search:
     post:
-      operationId: getMerchants
-      summary: List of merchants
+      operationId: Search
+      summary: Search merchants or discounts
       description: |
-        List of merchants with search in name and description
+        List of merchants and discounts with the token in name and/or description
       parameters:
         - in: body
           name: body
           required: false
           schema:
-            $ref: '#/definitions/MerchantSearchRequest'
+            $ref: '#/definitions/SearchRequest'
       responses:
         "200":
-          description: List of merchants for the given query parameters
+          description: List of merchants/discounts for the given query parameters
           schema:
-            $ref: "#/definitions/Merchants"
+            $ref: "#/definitions/SearchResult"
         "500":
           description: Service unavailable.
           schema:
@@ -233,7 +233,7 @@ definitions:
         type: array
         items:
           "$ref": "#/definitions/ProductCategory"
-  MerchantsSearch:
+  SearchResult:
     type: object
     required:
       - items
@@ -241,8 +241,8 @@ definitions:
       items:
         type: array
         items:
-          $ref: "#/definitions/MerchantsSearchItem"
-  MerchantsSearchItem:
+          $ref: "#/definitions/SearchItem"
+  SearchItem:
     type: object
     required:
       - id
@@ -359,12 +359,12 @@ definitions:
     - api
     - landingpage
     - bucket
-  MerchantSearchRequest:
+  SearchRequest:
     type: object
     properties:
       token:
         type: string
-        description: Text used for searching merchants by their name and description
+        description: Text used for searching merchants/discounts by their name and description
         minLength: 1
       page:
         type: integer

@@ -1,6 +1,6 @@
 /* tslint:disable: no-any */
-import { MerchantSearchRequest } from "../../generated/definitions/MerchantSearchRequest";
-import { GetMerchantsHandler } from "../handler";
+import { SearchRequest } from "../../generated/definitions/SearchRequest";
+import { Search, SearchHandler } from "../handler";
 
 const anEmptyArrayPromise = new Promise(resolve => {
   resolve([]);
@@ -36,15 +36,15 @@ const cgnOperatorDbMock = { query: queryMock };
 
 const searchRequestBody = {};
 
-describe("GetOnlineMerchantsHandler", () => {
+describe("SearchHandler", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("should return the result when no parameter is passed", async () => {
-    const response = await GetMerchantsHandler(cgnOperatorDbMock as any)(
+    const response = await SearchHandler(cgnOperatorDbMock as any)(
       {} as any,
-      searchRequestBody as MerchantSearchRequest
+      searchRequestBody as SearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -60,9 +60,9 @@ describe("GetOnlineMerchantsHandler", () => {
       return anEmptyArrayPromise;
     });
 
-    const response = await GetMerchantsHandler(cgnOperatorDbMock as any)(
+    const response = await SearchHandler(cgnOperatorDbMock as any)(
       {} as any,
-      { token: "A Company" } as MerchantSearchRequest
+      { token: "A Company" } as SearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -75,9 +75,9 @@ describe("GetOnlineMerchantsHandler", () => {
       return anEmptyArrayPromise;
     });
 
-    const response = await GetMerchantsHandler(cgnOperatorDbMock as any)(
+    const response = await SearchHandler(cgnOperatorDbMock as any)(
       {} as any,
-      { page: 2, pageSize: 10 } as MerchantSearchRequest
+      { page: 2, pageSize: 10 } as SearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -91,9 +91,9 @@ describe("GetOnlineMerchantsHandler", () => {
         })
     );
 
-    const response = await GetMerchantsHandler(cgnOperatorDbMock as any)(
+    const response = await SearchHandler(cgnOperatorDbMock as any)(
       {} as any,
-      { page: 0, pageSize: 20 } as MerchantSearchRequest
+      { page: 0, pageSize: 20 } as SearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");

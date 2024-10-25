@@ -21,36 +21,25 @@ import {
 import { flow, identity, pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import { toLowerCase } from "fp-ts/lib/string";
-import { OnlineMerchants } from "../generated/definitions/OnlineMerchants";
 
-import { OnlineMerchantSearchRequest } from "../generated/definitions/OnlineMerchantSearchRequest";
-import { DiscountCodeTypeFromModel } from "../models/DiscountCodeTypes";
-import OnlineMerchantModel from "../models/OnlineMerchantModel";
-import { ProductCategoryFromModel } from "../models/ProductCategories";
-import { errorsToError } from "../utils/conversions";
-import {
-  selectMerchantsQuery,
-  selectOnlineMerchantsQuery
-} from "../utils/postgres_queries";
-import { MerchantSearchRequest } from "../generated/definitions/MerchantSearchRequest";
-import { MerchantsSearch } from "../generated/definitions/MerchantsSearch";
+import { SearchRequest } from "../generated/definitions/SearchRequest";
+import { SearchResult } from "../generated/definitions/SearchResult";
 import MerchantsModel from "../models/MerchantsModel";
+import { errorsToError } from "../utils/conversions";
+import { selectMerchantsQuery } from "../utils/postgres_queries";
 
 type ResponseTypes =
-  | IResponseSuccessJson<MerchantsSearch>
+  | IResponseSuccessJson<SearchResult>
   | IResponseErrorInternal;
 
-type IGetOnlineMerchantsHandler = (
+type ISearchHandler = (
   context: Context,
-  searchRequest: MerchantSearchRequest
+  searchRequest: SearchRequest
 ) => Promise<ResponseTypes>;
 
-export const GetMerchantsHandler = (
+export const SearchHandler = (
   cgnOperatorDb: Sequelize
-): IGetOnlineMerchantsHandler => async (
-  _,
-  searchRequest
-): Promise<ResponseTypes> =>
+): ISearchHandler => async (_, searchRequest): Promise<ResponseTypes> =>
   pipe(
     TE.tryCatch(
       () =>
@@ -87,20 +76,18 @@ export const GetMerchantsHandler = (
       )
     ),
     TE.chain(
-      flow(MerchantsSearch.decode, TE.fromEither, TE.mapLeft(errorsToError))
+      flow(SearchResult.decode, TE.fromEither, TE.mapLeft(errorsToError))
     ),
     TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
     TE.toUnion
   )();
 
-export const GetMerchants = (
-  cgnOperatorDb: Sequelize
-): express.RequestHandler => {
-  const handler = GetMerchantsHandler(cgnOperatorDb);
+export const Search = (cgnOperatorDb: Sequelize): express.RequestHandler => {
+  const handler = SearchHandler(cgnOperatorDb);
 
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredBodyPayloadMiddleware(OnlineMerchantSearchRequest)
+    RequiredBodyPayloadMiddleware(SearchRequest)
   );
 
   return wrapRequestHandler(middlewaresWrap(handler));
