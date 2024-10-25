@@ -30,13 +30,32 @@ paths:
           description: Service unavailable.
           schema:
             "$ref": "#/definitions/ProblemJson"
+  /merchants:
+    post:
+      operationId: getMerchants
+      summary: List of merchants
+      description: |
+        List of merchants with search in name and description
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/MerchantSearchRequest'
+      responses:
+        "200":
+          description: List of merchants for the given query parameters
+          schema:
+            $ref: "#/definitions/Merchants"
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson" 
   "/online-merchants":
     post:
       operationId: getOnlineMerchants
       summary: List of online merchants
-      description: 'List of online merchants alphabetically ordered
-
-        '
+      description: 'List of online merchants alphabetically ordered'
       parameters:
       - in: body
         name: body
@@ -214,6 +233,34 @@ definitions:
         type: array
         items:
           "$ref": "#/definitions/ProductCategory"
+  MerchantsSearch:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/MerchantsSearchItem"
+  MerchantsSearchItem:
+    type: object
+    required:
+      - id
+      - name
+      - description
+      - newDiscounts
+    properties:
+      id:
+        type: string
+        minLength: 1
+      name:
+        type: string
+        minLength: 1
+      description:
+        type: string
+        minLength: 1
+      newDiscounts:
+        type: boolean
   OnlineMerchants:
     type: object
     required:
@@ -312,6 +359,23 @@ definitions:
     - api
     - landingpage
     - bucket
+  MerchantSearchRequest:
+    type: object
+    properties:
+      token:
+        type: string
+        description: Text used for searching merchants by their name and description
+        minLength: 1
+      page:
+        type: integer
+        description: page of result
+        default: 0
+        minimum: 0
+      pageSize:
+        type: integer
+        description: elements per page
+        default: 100
+        minimum: 1
   OnlineMerchantSearchRequest:
     type: object
     properties:
