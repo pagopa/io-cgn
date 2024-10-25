@@ -7,6 +7,16 @@ import { ProductCategoryToQueryColumn } from "../models/ProductCategories";
 import { OrderingEnum } from "../generated/definitions/OfflineMerchantSearchRequest";
 import { OfflineMerchantSearchRequest } from "../generated/definitions/OfflineMerchantSearchRequest";
 
+const tokenFilterQueryPart = (token: O.Option<string>): string =>
+  pipe(
+    token,
+    O.map(
+      __ =>
+        " AND searchable_name LIKE :token_filter AND searchable_description LIKE :token_filter "
+    ),
+    O.getOrElse(() => "")
+  );
+
 const categoryFilter = (
   productCategoriesFilter: O.Option<ReadonlyArray<ProductCategory>>
 ): string =>
@@ -75,6 +85,23 @@ const orderingParameter = (
         O.map(_ => "distance"),
         O.getOrElse(() => "searchable_name")
       );
+
+export const selectMerchantsQuery = (
+  token: O.Option<string>,
+  page: O.Option<number>,
+  maybePageSize: O.Option<number>
+): string => `
+SELECT
+  id,
+  name,
+  description,
+  new_discounts
+FROM merchant
+WHERE 1 = 1
+  ${tokenFilterQueryPart(token)}
+ORDER BY name ASC
+LIMIT ${pageSize(maybePageSize)}
+OFFSET ${offset(page, maybePageSize)}`;
 
 export const selectOnlineMerchantsQuery = (
   nameFilter: O.Option<string>,
