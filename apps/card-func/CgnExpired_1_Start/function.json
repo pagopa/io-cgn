@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+        "schedule": "0 0 2 * * *",
+        "name": "updateExpiredCgnTimer",
+        "type": "timerTrigger",
+        "direction": "in"
+    }
+  ],
+  "scriptFile": "../dist/CgnExpired_1_Start/index.js"
+}
