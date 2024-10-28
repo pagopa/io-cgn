@@ -2,7 +2,7 @@
   "name": "card-func",
   "description": "Functions exposed to the citizen",
   "author": "IO CGN",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "license": "MIT",
   "scripts": {
     "prebuild": "shx rm -rf dist && yarn generate:definitions && yarn generate:api-eyca && yarn generate:api-services",
