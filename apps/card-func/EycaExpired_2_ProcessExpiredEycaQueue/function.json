@@ -1,7 +1,7 @@
 {
   "bindings": [
     {
-      "queueName": "%PENDING_EYCA_QUEUE_NAME%",
+      "queueName": "%EXPIRED_EYCA_QUEUE_NAME%",
       "connection": "CGN_STORAGE_CONNECTION_STRING",
       "name": "queueMessage",
       "type": "queueTrigger",
