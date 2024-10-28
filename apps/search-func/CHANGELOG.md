@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.2.1
+
+### Patch Changes
+
+- 71a00ea: fixed spec id
+
 ## 3.2.0
 
 ### Minor Changes
