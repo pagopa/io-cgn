@@ -5,7 +5,7 @@ import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as AR from "fp-ts/ReadonlyArray";
 import { StatusEnum as PendingDeleteStatusEnum } from "../generated/definitions/CardPendingDelete";
-import { EycaCardActivated } from "../generated/definitions/EycaCardActivated";
+import { EycaCommonCard } from "../generated/definitions/EycaCommonCard";
 import { EycaCardPendingDelete } from "../generated/definitions/EycaCardPendingDelete";
 import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
 import { CardPendingDeleteMessage } from "../types/queue-message";
@@ -20,14 +20,14 @@ import { DeleteCardExpirationFunction } from "../utils/table_storage";
 const upsertPendingDeleteEycaCard = (
   userEycaCardModel: UserEycaCardModel,
   userEycaCard: UserEycaCard,
-  eycaCardActivated: EycaCardActivated,
+  eycaCommonCard: EycaCommonCard,
   fiscalCode: FiscalCode
 ) =>
   pipe(
     userEycaCardModel.upsert({
       ...userEycaCard,
       card: {
-        ...eycaCardActivated,
+        ...eycaCommonCard,
         status: PendingDeleteStatusEnum.PENDING_DELETE
       },
       fiscalCode,
@@ -62,14 +62,14 @@ const createOrGetPendingDeleteEycaCard = (
             ? TE.of(O.some(userEycaCard))
             : pipe(
                 userEycaCard.card,
-                EycaCardActivated.decode,
+                EycaCommonCard.decode,
                 TE.fromEither,
                 TE.mapLeft(_ => new Error("Card is not activated")),
-                TE.chainW(eycaCardActivated =>
+                TE.chainW(eycaCommonCard =>
                   upsertPendingDeleteEycaCard(
                     userEycaCardModel,
                     userEycaCard,
-                    eycaCardActivated,
+                    eycaCommonCard,
                     fiscalCode
                   )
                 ),

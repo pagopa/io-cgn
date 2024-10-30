@@ -412,6 +412,19 @@ definitions:
     pattern: "^[A-Z][0-9]{3}-[A-Z][0-9]{3}-[A-Z][0-9]{3}-[A-Z][0-9]{3}$"
     minLength: 1
 
+  EycaCommonCard:
+    type: object
+    properties:
+      activation_date:
+        $ref: "#/definitions/Timestamp"
+      expiration_date:
+        $ref: "#/definitions/Timestamp"
+      card_number:
+        $ref: "#/definitions/CcdbNumber"
+    required:
+      - activation_date
+      - expiration_date
+      - card_number
   EycaCardActivated:
     allOf:
       - $ref: "#/definitions/CardActivated"

@@ -16,6 +16,7 @@ import {
 } from "../../__mocks__/mock";
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
 import { StartEycaActivationHandler } from "../handler";
+import { InstanceId } from "../../generated/definitions/InstanceId";
 
 describe("StartEycaActivation", () => {
   beforeEach(() => {
@@ -84,6 +85,9 @@ describe("StartEycaActivation", () => {
     );
     const response = await startEycaActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
@@ -98,6 +102,9 @@ describe("StartEycaActivation", () => {
     );
     const response = await startEycaActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
