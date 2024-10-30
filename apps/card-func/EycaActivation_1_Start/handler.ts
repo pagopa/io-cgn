@@ -18,7 +18,11 @@ import {
   ResponseErrorInternal,
   ResponseSuccessRedirectToResource
 } from "@pagopa/ts-commons/lib/responses";
-import { FiscalCode, Ulid } from "@pagopa/ts-commons/lib/strings";
+import {
+  FiscalCode,
+  NonEmptyString,
+  Ulid
+} from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
@@ -34,12 +38,13 @@ import {
 } from "../utils/cgn_checks";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
+import { InstanceId } from "../generated/definitions/InstanceId";
 
 type IStartEycaActivationHandler = (
   context: Context,
   fiscalCode: FiscalCode
 ) => Promise<
-  | IResponseSuccessRedirectToResource<Ulid, string>
+  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
   | IResponseErrorInternal
   | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorConflict
@@ -134,10 +139,16 @@ export const StartEycaActivationHandler = (
       )
     ),
     TE.map(pendingEycaMessage =>
-      ResponseSuccessRedirectToResource(
-        pendingEycaMessage.request_id,
-        `/api/v1/cgn/${fiscalCode}/eyca/activation`,
-        pendingEycaMessage.request_id
+      pipe(
+        {
+          id: pendingEycaMessage.request_id.valueOf() as NonEmptyString
+        },
+        instanceid =>
+          ResponseSuccessRedirectToResource(
+            instanceid,
+            `/api/v1/cgn/${fiscalCode}/eyca/activation`,
+            instanceid
+          )
       )
     ),
     TE.toUnion

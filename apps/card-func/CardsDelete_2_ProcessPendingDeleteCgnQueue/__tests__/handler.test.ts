@@ -6,7 +6,9 @@ import * as TE from "fp-ts/lib/TaskEither";
 import {
   aFiscalCode,
   aUserCardActivated,
+  aUserCardExpired,
   aUserCardPendingDelete,
+  aUserCardRevoked,
   aUserCgn,
   cardPendingDeleteMessageMock,
   cgnDeleteVersionModelMock,
@@ -173,6 +175,58 @@ describe("ProcessPendingDeleteCgnQueue", () => {
   });
 
   it("should succeed and delete cards when existing in activated status", async () => {
+    const promised = handler(
+      userCgnModelMock,
+      servicesClientMock,
+      deleteCardExpirationMock
+    )(context, cardPendingDeleteMessageMock);
+
+    await expect(promised).resolves.toStrictEqual(true);
+
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toHaveBeenCalledTimes(1);
+    expect(deleteCardExpirationMock).toHaveBeenCalledTimes(1);
+    expect(cgnFindAllCgnCardsModelMock).toHaveBeenCalledTimes(1);
+    expect(cgnDeleteVersionModelMock).toHaveBeenCalledTimes(1);
+    expect(upsertServiceActivationMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("should succeed and delete cards when existing in revoked status", async () => {
+    cgnFindLastVersionByModelIdMock.mockReturnValue(
+      TE.right(
+        O.some({
+          ...aUserCgn,
+          card: aUserCardRevoked
+        })
+      )
+    );
+
+    const promised = handler(
+      userCgnModelMock,
+      servicesClientMock,
+      deleteCardExpirationMock
+    )(context, cardPendingDeleteMessageMock);
+
+    await expect(promised).resolves.toStrictEqual(true);
+
+    expect(cgnFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(cgnUpsertModelMock).toHaveBeenCalledTimes(1);
+    expect(deleteCardExpirationMock).toHaveBeenCalledTimes(1);
+    expect(cgnFindAllCgnCardsModelMock).toHaveBeenCalledTimes(1);
+    expect(cgnDeleteVersionModelMock).toHaveBeenCalledTimes(1);
+    expect(upsertServiceActivationMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("should succeed and delete cards when existing in expired status", async () => {
+    cgnFindLastVersionByModelIdMock.mockReturnValue(
+      TE.right(
+        O.some({
+          ...aUserCgn,
+          card: aUserCardExpired
+        })
+      )
+    );
+
     const promised = handler(
       userCgnModelMock,
       servicesClientMock,

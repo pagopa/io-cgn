@@ -15,7 +15,8 @@ import {
   userEycaCardModelMock,
   eycaFindAllEycaCardsModelMock,
   eycaDeleteVersionModelMock,
-  aUserEycaCardPendingDelete
+  aUserEycaCardPendingDelete,
+  aUserEycaCardExpired
 } from "../../__mocks__/mock";
 import { handler } from "../handler";
 
@@ -140,6 +141,32 @@ describe("ProcessActivation", () => {
   });
 
   it("should succeed and delete cards when existing in activated status", async () => {
+    const promised = handler(
+      userEycaCardModelMock,
+      deleteCardExpirationMock,
+      deleteCcdbEycaCardMock
+    )(context, cardPendingDeleteMessageMock);
+
+    await expect(promised).resolves.toStrictEqual(true);
+
+    expect(eycaFindLastVersionByModelIdMock).toBeCalledTimes(1);
+    expect(eycaUpsertModelMock).toBeCalledTimes(1);
+    expect(deleteCardExpirationMock).toBeCalledTimes(1);
+    expect(deleteCcdbEycaCardMock).toBeCalledTimes(1);
+    expect(eycaFindAllEycaCardsModelMock).toBeCalledTimes(1);
+    expect(eycaDeleteVersionModelMock).toBeCalledTimes(1);
+  });
+
+  it("should succeed and delete cards when existing in expired status", async () => {
+    eycaFindLastVersionByModelIdMock.mockReturnValueOnce(
+      TE.right(
+        O.some({
+          fiscalCode: aFiscalCode,
+          card: aUserEycaCardExpired
+        })
+      )
+    );
+
     const promised = handler(
       userEycaCardModelMock,
       deleteCardExpirationMock,

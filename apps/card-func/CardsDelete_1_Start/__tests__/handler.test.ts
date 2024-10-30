@@ -17,6 +17,7 @@ import {
   userEycaCardModelMock
 } from "../../__mocks__/mock";
 import { StartCardsDeleteHandler } from "../handler";
+import { InstanceId } from "../../generated/definitions/InstanceId";
 
 describe("StartCgnDelete", () => {
   beforeEach(() => {
@@ -85,7 +86,7 @@ describe("StartCgnDelete", () => {
     expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
-  it("should return a ResponseSuccessAccepted if delete request is accepted because there are both cards", async () => {
+  it("should return a Redirect to Resource if delete request is accepted because there are both cards", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.right(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
@@ -99,11 +100,14 @@ describe("StartCgnDelete", () => {
       queueStorageMock
     );
     const response = await StartCardsDelete(context, aFiscalCode);
-    expect(response.kind).toBe("IResponseSuccessAccepted");
+    expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(2);
   });
 
-  it("should return a ResponseSuccessAccepted if delete request is accepted because there is just cgn card", async () => {
+  it("should return a Redirect to Resource if delete request is accepted because there is just cgn card", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.right(O.some({ ...aUserCgn, card: aUserCardActivated }))
     );
@@ -114,11 +118,14 @@ describe("StartCgnDelete", () => {
       queueStorageMock
     );
     const response = await StartCardsDelete(context, aFiscalCode);
-    expect(response.kind).toBe("IResponseSuccessAccepted");
+    expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
-  it("should return a ResponseSuccessAccepted if delete request is accepted because there just an eyca card", async () => {
+  it("should return a Redirect to Resource if delete request is accepted because there just an eyca card", async () => {
     eycaFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.right(O.some({ ...aUserEycaCard, card: aUserEycaCardActivated }))
     );
@@ -129,18 +136,24 @@ describe("StartCgnDelete", () => {
       queueStorageMock
     );
     const response = await StartCardsDelete(context, aFiscalCode);
-    expect(response.kind).toBe("IResponseSuccessAccepted");
+    expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
-  it("should return a ResponseSuccessAccepted if delete request is accepted because there are no cards", async () => {
+  it("should return a Redirect to Resource if delete request is accepted because there are no cards", async () => {
     const StartCardsDelete = StartCardsDeleteHandler(
       userCgnModelMock,
       userEycaCardModelMock,
       queueStorageMock
     );
     const response = await StartCardsDelete(context, aFiscalCode);
-    expect(response.kind).toBe("IResponseSuccessAccepted");
+    expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 });

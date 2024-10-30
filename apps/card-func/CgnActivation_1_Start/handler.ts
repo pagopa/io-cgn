@@ -18,7 +18,11 @@ import {
   ResponseErrorInternal,
   ResponseSuccessRedirectToResource
 } from "@pagopa/ts-commons/lib/responses";
-import { FiscalCode, Ulid } from "@pagopa/ts-commons/lib/strings";
+import {
+  FiscalCode,
+  NonEmptyString,
+  Ulid
+} from "@pagopa/ts-commons/lib/strings";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -33,12 +37,13 @@ import {
 } from "../utils/cgn_checks";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
+import { InstanceId } from "../generated/definitions/InstanceId";
 
 type IStartCgnActivationHandler = (
   context: Context,
   fiscalCode: FiscalCode
 ) => Promise<
-  | IResponseSuccessRedirectToResource<Ulid, string>
+  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
   | IResponseErrorInternal
   | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorConflict
@@ -146,10 +151,16 @@ export const StartCgnActivationHandler = (
       )
     ),
     TE.map(pendingCgnMessage =>
-      ResponseSuccessRedirectToResource(
-        pendingCgnMessage.request_id,
-        `/api/v1/cgn/${fiscalCode}/activation`,
-        pendingCgnMessage.request_id
+      pipe(
+        {
+          id: pendingCgnMessage.request_id.valueOf() as NonEmptyString
+        },
+        instanceid =>
+          ResponseSuccessRedirectToResource(
+            instanceid,
+            `/api/v1/cgn/${fiscalCode}/delete`,
+            instanceid
+          )
       )
     ),
     TE.toUnion

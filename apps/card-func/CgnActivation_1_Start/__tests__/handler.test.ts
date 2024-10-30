@@ -17,6 +17,7 @@ import {
 } from "../../__mocks__/mock";
 import { StartCgnActivationHandler } from "../handler";
 import { DEFAULT_CGN_UPPER_BOUND_AGE } from "../../utils/config";
+import { InstanceId } from "../../generated/definitions/InstanceId";
 
 describe("StartCgnActivation", () => {
   beforeEach(() => {
@@ -85,6 +86,9 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
@@ -99,6 +103,9 @@ describe("StartCgnActivation", () => {
     );
     const response = await startCgnActivationHandler(context, aFiscalCode);
     expect(response.kind).toBe("IResponseSuccessRedirectToResource");
+    if (response.kind === "IResponseSuccessRedirectToResource") {
+      expect(InstanceId.is(response.payload)).toBe(true);
+    }
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 

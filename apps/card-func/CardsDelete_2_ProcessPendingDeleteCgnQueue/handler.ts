@@ -22,6 +22,7 @@ import { CardPendingDeleteMessage } from "../types/queue-message";
 import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
 import { DeleteCardExpirationFunction } from "../utils/table_storage";
+import { CommonCard } from "../generated/definitions/CommonCard";
 
 /**
  * Upsert a PENDING_DELETE CGN Card on cosmos
@@ -30,14 +31,14 @@ import { DeleteCardExpirationFunction } from "../utils/table_storage";
 const upsertPendingDeleteCgnCard = (
   userCgnModel: UserCgnModel,
   userCgn: UserCgn,
-  cardActivated: CardActivated,
+  commonCard: CommonCard,
   fiscalCode: FiscalCode
 ) =>
   pipe(
     userCgnModel.upsert({
       ...userCgn,
       card: {
-        ...cardActivated,
+        ...commonCard,
         status: PendingDeleteStatusEnum.PENDING_DELETE
       },
       fiscalCode,
@@ -72,14 +73,14 @@ const createOrGetPendingDeleteCgnCard = (
             ? TE.of(O.some(userCgn))
             : pipe(
                 userCgn.card,
-                CardActivated.decode,
+                CommonCard.decode,
                 TE.fromEither,
                 TE.mapLeft(_ => new Error("Card is not activated")),
-                TE.chainW(cardActivated =>
+                TE.chainW(commonCard =>
                   upsertPendingDeleteCgnCard(
                     userCgnModel,
                     userCgn,
-                    cardActivated,
+                    commonCard,
                     fiscalCode
                   )
                 ),
