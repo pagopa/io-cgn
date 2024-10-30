@@ -169,7 +169,7 @@ describe("GetEycaCardStatusHandler", () => {
     expect(response.kind).toBe("IResponseErrorNotFound");
   });
 
-  it("should return Not found if EYCA card is missing and CGN card is Pending", async () => {
+  it("should return a pending EYCA card if it is missing and CGN card is Pending", async () => {
     findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     findLastVersionCgnByModelIdMock.mockImplementationOnce(() =>
       TE.of(O.some({ ...aUserCgn, card: aPendingEycaCard }))
@@ -180,7 +180,7 @@ describe("GetEycaCardStatusHandler", () => {
       DEFAULT_EYCA_UPPER_BOUND_AGE
     );
     const response = await handler({} as any, aFiscalCode);
-    expect(response.kind).toBe("IResponseErrorNotFound");
+    expect(response.kind).toBe("IResponseSuccessJson");
   });
 
   it("should return not authorized if no userEycaCard is found and user is not eligible to get it", async () => {
@@ -194,16 +194,49 @@ describe("GetEycaCardStatusHandler", () => {
     expect(response.kind).toBe("IResponseErrorForbiddenNotAuthorized");
   });
 
-  it("should return conflict if no userEycaCard is found and CGN is already activated", async () => {
+  it("should return a pending EYCA card if no userEycaCard is found and CGN has been activated less than 60 seconds ago", async () => {
     findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
+    findLastVersionCgnByModelIdMock.mockImplementationOnce(() =>
+      TE.of(
+        O.some({
+          ...aUserCgn,
+          card: {
+            ...aUserCgn.card,
+            activation_date: new Date(new Date().getTime() - 59999)
+          }
+        })
+      )
+    );
     const handler = GetEycaStatusHandler(
       userEycaCardModelMock as any,
       userCgnModelMock as any,
       DEFAULT_EYCA_UPPER_BOUND_AGE
     );
     const response = await handler({} as any, aFiscalCode);
-    expect(response.kind).toBe("IResponseErrorConflict");
+    expect(response.kind).toBe("IResponseSuccessJson");
   });
+
+    it("should return conflict if no userEycaCard is found and CGN has been activated more than 60 seconds ago", async () => {
+      findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
+      findLastVersionCgnByModelIdMock.mockImplementationOnce(() =>
+        TE.of(
+          O.some({
+            ...aUserCgn,
+            card: {
+              ...aUserCgn.card,
+              activation_date: new Date(new Date().getTime() - 60001)
+            }
+          })
+        )
+      );
+      const handler = GetEycaStatusHandler(
+        userEycaCardModelMock as any,
+        userCgnModelMock as any,
+        DEFAULT_EYCA_UPPER_BOUND_AGE
+      );
+      const response = await handler({} as any, aFiscalCode);
+      expect(response.kind).toBe("IResponseErrorConflict");
+    });
 
   it("should return internal error if no userEycaCard is found and eligibility check on user fails", async () => {
     findLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));

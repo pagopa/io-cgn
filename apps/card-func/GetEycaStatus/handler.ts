@@ -46,7 +46,7 @@ type IGetEycaStatusHandler = (
 ) => Promise<ResponseTypes>;
 
 const pendingEycaTE = TE.of({
-  status: PendingStatusEnum.PENDING
+  card: { status: PendingStatusEnum.PENDING }
 });
 
 const conflictEycaTE = TE.left(
@@ -126,8 +126,7 @@ export const GetEycaStatusHandler = (
                     tooEarlyToDetermineEycaFailure(cgnCard.activation_date))
                   ? pendingEycaTE
                   : conflictEycaTE;
-              }),
-              TE.chainW(() => TE.left(notFoundError))
+              })
             )
           )
         )
