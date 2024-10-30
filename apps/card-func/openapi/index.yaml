@@ -420,7 +420,7 @@ definitions:
       expiration_date:
         $ref: "#/definitions/Timestamp"
       card_number:
-            $ref: "#/definitions/CcdbNumber"
+        $ref: "#/definitions/CcdbNumber"
     required:
       - activation_date
       - expiration_date
