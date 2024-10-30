@@ -7,6 +7,7 @@ import {
   withRequestMiddlewares,
   wrapRequestHandler
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
+import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
   IResponseErrorConflict,
   IResponseErrorForbiddenNotAuthorized,
@@ -22,13 +23,15 @@ import {
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import { flow, pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
-
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
-import { CardPending } from "../generated/definitions/CardPending";
+import {
+  CardPending,
+  StatusEnum as PendingStatusEnum
+} from "../generated/definitions/CardPending";
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { UserCgnModel } from "../models/user_cgn";
 import { UserEycaCardModel } from "../models/user_eyca_card";
 import { isEycaEligible } from "../utils/cgn_checks";
+import { CardActivated } from "../generated/definitions/CardActivated";
 
 type ErrorTypes =
   | IResponseErrorNotFound
@@ -42,12 +45,26 @@ type IGetEycaStatusHandler = (
   fiscalCode: FiscalCode
 ) => Promise<ResponseTypes>;
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function GetEycaStatusHandler(
+const pendingEycaTE = TE.of({
+  card: { status: PendingStatusEnum.PENDING }
+});
+
+const conflictEycaTE = TE.left(
+  ResponseErrorConflict(
+    "EYCA Card is missing while citizen is eligible to obtain it"
+  )
+);
+
+const timeToWaitInMilliseconds = 60000; // 60 seconds
+
+const tooEarlyToDetermineEycaFailure = (activationDate: Date) =>
+  new Date().getTime() - activationDate.getTime() <= timeToWaitInMilliseconds;
+
+export const GetEycaStatusHandler = (
   userEycaCardModel: UserEycaCardModel,
   userCgnModel: UserCgnModel,
   eycaUpperBoundAge: NonNegativeInteger
-): IGetEycaStatusHandler {
+): IGetEycaStatusHandler => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   return async (_, fiscalCode) =>
     pipe(
@@ -94,16 +111,22 @@ export function GetEycaStatusHandler(
                   TE.fromOption(() => notFoundError)
                 )
               ),
-              TE.chainW(
-                TE.fromPredicate(
-                  userCgn => CardPending.is(userCgn.card),
-                  () =>
-                    ResponseErrorConflict(
-                      "EYCA Card is missing while citizen is eligible to obtain it"
-                    )
-                )
-              ),
-              TE.chainW(() => TE.left(notFoundError))
+              TE.chainW(userCgn => {
+                const cgnCard = userCgn.card;
+                const isCgnPending = CardPending.is(cgnCard);
+                const isCgnActivated = CardActivated.is(cgnCard);
+
+                // we check if a cgn card is pending or if a reasonable amount of time
+                // is passed from an activated cgn:
+                // - if cgn is pending or activated less tha T ago we return a "fake" pending eyca
+                // - if it's passed greater that T time then we return a conflict
+                // T = 60 seconds
+                return isCgnPending ||
+                  (isCgnActivated &&
+                    tooEarlyToDetermineEycaFailure(cgnCard.activation_date))
+                  ? pendingEycaTE
+                  : conflictEycaTE;
+              })
             )
           )
         )
@@ -111,14 +134,13 @@ export function GetEycaStatusHandler(
       TE.map(userEycaCard => ResponseSuccessJson(userEycaCard.card)),
       TE.toUnion
     )();
-}
+};
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function GetEycaStatus(
+export const GetEycaStatus = (
   userEycaCardModel: UserEycaCardModel,
   userCgnModel: UserCgnModel,
   eycaUpperBoundAge: NonNegativeInteger
-): express.RequestHandler {
+): express.RequestHandler => {
   const handler = GetEycaStatusHandler(
     userEycaCardModel,
     userCgnModel,
@@ -131,4 +153,4 @@ export function GetEycaStatus(
   );
 
   return wrapRequestHandler(middlewaresWrap(handler));
-}
+};
