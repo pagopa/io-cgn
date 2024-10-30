@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.2
+
+### Patch Changes
+
+- c463a03: fixes
+
 ## 4.0.1
 
 ### Patch Changes
