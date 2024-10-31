@@ -43,25 +43,29 @@ export const SearchHandler = (
   pipe(
     TE.tryCatch(
       () =>
-        cgnOperatorDb.query(
-          selectMerchantsQuery(
-            O.fromNullable(searchRequest.token),
-            O.fromNullable(searchRequest.page),
-            O.fromNullable(searchRequest.pageSize)
-          ),
-          {
-            model: MerchantsModel,
-            raw: true,
-            replacements: {
-              token_filter: `%${pipe(
+        searchRequest.token && searchRequest.token.length >= 3
+          ? // we query db only if searchRequest.token.length >= 3
+            cgnOperatorDb.query(
+              selectMerchantsQuery(
                 O.fromNullable(searchRequest.token),
-                O.fold(() => "", identity),
-                toLowerCase
-              )}%`
-            },
-            type: QueryTypes.SELECT
-          }
-        ),
+                O.fromNullable(searchRequest.page),
+                O.fromNullable(searchRequest.pageSize)
+              ),
+              {
+                model: MerchantsModel,
+                raw: true,
+                replacements: {
+                  token_filter: `%${pipe(
+                    O.fromNullable(searchRequest.token),
+                    O.fold(() => "", identity),
+                    toLowerCase
+                  )}%`
+                },
+                type: QueryTypes.SELECT
+              }
+            )
+          : // else we return empty list
+            Promise.resolve([]),
       E.toError
     ),
     TE.map(

@@ -30,7 +30,22 @@ paths:
           description: Service unavailable.
           schema:
             "$ref": "#/definitions/ProblemJson"
-  /search:
+  "/count":
+    get:
+      operationId: count
+      summary: Count merchants and discounts to search within
+      description: |
+        Count merchants and discountsto search within
+      responses:
+        "200":
+          description: Count of merchants/discounts
+          schema:
+            $ref: "#/definitions/CountResult"
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson" 
+  "/search":
     post:
       operationId: search
       summary: Search merchants or discounts
@@ -227,12 +242,19 @@ definitions:
   PublishedProductCategories:
     type: object
     required:
-    - items
+      - items
     properties:
       items:
         type: array
         items:
           "$ref": "#/definitions/ProductCategory"
+  CountResult:
+    type: object
+    required:
+      - count
+    properties:
+      count:
+        type: number
   SearchResult:
     type: object
     required:
