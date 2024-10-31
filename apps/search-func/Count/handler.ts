@@ -44,7 +44,7 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
     TE.toUnion
   )();
 
-export const Search = (cgnOperatorDb: Sequelize): express.RequestHandler => {
+export const Count = (cgnOperatorDb: Sequelize): express.RequestHandler => {
   const handler = CountHandler(cgnOperatorDb);
 
   const middlewaresWrap = withRequestMiddlewares(ContextMiddleware());

@@ -6,7 +6,7 @@ import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middl
 import * as express from "express";
 import * as winston from "winston";
 import { cgnOperatorDb } from "../client/sequelize";
-import { Search } from "./handler";
+import { Count } from "./handler";
 
 // eslint-disable-next-line functional/no-let
 let logger: Context["log"] | undefined;
@@ -18,7 +18,7 @@ winston.add(contextTransport);
 const app = express();
 secureExpressApp(app);
 
-app.get("/api/v1/cgn/operator-search/count", Search(cgnOperatorDb));
+app.get("/api/v1/cgn/operator-search/count", Count(cgnOperatorDb));
 
 const azureFunctionHandler = createAzureFunctionHandler(app);
 
