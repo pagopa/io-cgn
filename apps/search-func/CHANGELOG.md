@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.2.2
+
+### Patch Changes
+
+- 7d7dbb4: New count endpoint and various fixes
+
 ## 3.2.1
 
 ### Patch Changes
