@@ -474,7 +474,7 @@ definitions:
       token:
         type: string
         description: Text used for searching merchants/discounts by their name and description
-        minLength: 1
+        minLength: 3
       page:
         type: integer
         description: page of result
