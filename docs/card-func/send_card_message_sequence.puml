@@ -1,0 +1,17 @@
+@startuml Sequence attivazione CGN
+participant "CGN Card Functions" as cf
+participant "Services API" as services
+queue "'messages' Queue" as messages
+
+cf -> messages : Insert card related message
+
+group CGN PENDING_DELETE
+  messages -> cf : Start "SendMessage_ProcessMessagesQueue"
+  activate cf
+  cf -> services: Get user profile 
+  cf -> cf: Check profile and create the message to send
+  cf -> services: Send message
+  deactivate cf
+end
+
+@enduml
