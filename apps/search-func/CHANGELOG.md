@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.3.2
+
+### Patch Changes
+
+- c2ff7ea: fixed query
+
 ## 3.3.1
 
 ### Patch Changes
