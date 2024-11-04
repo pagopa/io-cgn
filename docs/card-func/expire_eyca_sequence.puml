@@ -1,0 +1,26 @@
+@startuml Sequence scadenza EYCA
+participant "CGN Card Functions" as cf
+queue "'expiredeyca' Queue" as expired
+queue "'messages' Queue" as messages
+database "CosmosDB" as cosmos
+collections "Storage" as storage
+
+group EYCA CHECK [Parte ogni notte in base a cron]
+  cf -> storage: GET tutte le EYCA expiration di oggi
+  loop Per ogni EYCA in scadenza
+    cf -> expired : Insert EXPIRE EYCA message
+  end
+end
+
+group EYCA EXPIRED
+  expired -> cf : Start "EycaExpired_2_ProcessExpiredEycaQueue"
+  activate cf
+  cf -> cosmos: GET carta EYCA
+  alt se EYCA non eliminata o già scaduta
+    cf -> cosmos : Update carta EYCA EXPIRED
+    cf -> messages : Insert EYCA EXPIRED message
+  end
+  deactivate cf 
+end
+
+@enduml

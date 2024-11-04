@@ -1,0 +1,26 @@
+@startuml Sequence scadenza CGN
+participant "CGN Card Functions" as cf
+queue "'expiredcgn' Queue" as expired
+queue "'messages' Queue" as messages
+database "CosmosDB" as cosmos
+collections "Storage" as storage
+
+group CGN CHECK [Parte ogni notte in base a cron]
+  cf -> storage: GET tutte le CGN expiration di oggi
+  loop Per ogni CGN in scadenza
+    cf -> expired : Insert EXPIRE CGN message
+  end
+end
+
+group CGN EXPIRED
+  expired -> cf : Start "CgnExpired_2_ProcessExpiredCgnQueue"
+  activate cf
+  cf -> cosmos: GET carta CGN
+  alt se CGN non eliminata o già scaduta
+    cf -> cosmos : Update carta CGN EXPIRED
+    cf -> messages : Insert CGN EXPIRED message
+  end
+  deactivate cf 
+end
+
+@enduml

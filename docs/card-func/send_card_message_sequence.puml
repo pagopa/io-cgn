@@ -1,4 +1,4 @@
-@startuml Sequence attivazione CGN
+@startuml Sequence invio messaggi CGN/EYCA
 participant "CGN Card Functions" as cf
 participant "Services API" as services
 queue "'messages' Queue" as messages
