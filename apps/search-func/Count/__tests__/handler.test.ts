@@ -3,9 +3,9 @@ import { CountHandler } from "../handler";
 
 const contextMock = {} as Context;
 
-const aCountMock = 10;
+const aCountMock = { count: 10 };
 
-const anExpectedResponse = {count: aCountMock};
+const anExpectedResponse = aCountMock;
 
 const queryMock = jest.fn().mockImplementation((_, __) => {
   return new Promise(resolve => {
