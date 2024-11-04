@@ -16,7 +16,6 @@ import { flow, pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import { QueryTypes, Sequelize } from "sequelize";
 import { CountResult } from "../generated/definitions/CountResult";
-import CountModel from "../models/CountModel";
 import { errorsToError } from "../utils/conversions";
 import { countMerchantsQuery } from "../utils/postgres_queries";
 
@@ -31,7 +30,6 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
     TE.tryCatch(
       () =>
         cgnOperatorDb.query(countMerchantsQuery, {
-          model: CountModel,
           raw: true,
           type: QueryTypes.SELECT
         }),
@@ -39,7 +37,7 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
     ),
     TE.chain(results =>
       pipe(
-        results[0], // this select will just have a result
+        { count: results[0] }, // there is just a result
         CountResult.decode,
         TE.fromEither,
         TE.mapLeft(errorsToError)
