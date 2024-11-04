@@ -37,7 +37,7 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
     ),
     TE.chain(results =>
       pipe(
-        { count: results[0] }, // there is just a result
+        results[0], // there is just a result
         CountResult.decode,
         TE.fromEither,
         TE.mapLeft(errorsToError)
