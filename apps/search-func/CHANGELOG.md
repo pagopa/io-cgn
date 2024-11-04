@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.3.1
+
+### Patch Changes
+
+- 71159d4: fixed count result
+
 ## 3.3.0
 
 ### Minor Changes
