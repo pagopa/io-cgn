@@ -1,0 +1,13 @@
+@startuml Sequence conta operatori CGN
+actor "CIT" as cit
+participant "IO Backend" as be
+participant "CGN Search Functions" as sf
+database "Postgres" as db
+
+cit -> be: GET /search [body: { token: "..." }]
+be -> sf: GET /search [body: { token: "..." }]
+sf -> db: SELECT * FROM merchant WHERE\n    name LIKE '%token%' OR\n    description LIKE '%token%'
+sf -> be: SearchResult "{ items: [...] }"
+be -> cit: SearchResult "{ items: [...] }"
+
+@enduml

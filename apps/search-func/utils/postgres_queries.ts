@@ -12,7 +12,7 @@ const tokenFilterQueryPart = (token: O.Option<string>): string =>
     token,
     O.map(
       __ =>
-        " AND searchable_name LIKE :token_filter AND searchable_description LIKE :token_filter "
+        " AND (searchable_name LIKE :token_filter OR searchable_description LIKE :token_filter) "
     ),
     O.getOrElse(() => "")
   );

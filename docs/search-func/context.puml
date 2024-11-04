@@ -1,0 +1,16 @@
+@startuml CGN Search Functions
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Contesto CGN Search Functions (io-cgn)
+
+Person(cit, "CIT")
+Boundary(boundary, "IO Backend"){
+  System(backend, "IO Backend")
+  System(searchfunc, "CGN Search Functions")
+  Rel(backend, searchfunc, "Invoca", "Ricerca operatori e agevolazioni")
+}
+
+Rel(cit,backend, "Cerca operatori e agevolazioni CGN")
+
+@enduml

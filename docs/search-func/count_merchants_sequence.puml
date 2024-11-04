@@ -1,0 +1,13 @@
+@startuml Sequence conta operatori CGN
+actor "CIT" as cit
+participant "IO Backend" as be
+participant "CGN Search Functions" as sf
+database "Postgres" as db
+
+cit -> be: GET /count
+be -> sf: GET /count
+sf -> db: SELECT COUNT(*) FROM merchant
+sf -> be: CountResult "{ count: ... }"
+be -> cit: CountResult "{ count: ... }"
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml CGN Search Functions
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container CGN Search Functions (io-cgn)
+
+Person(cit, "CIT")
+System(backend, "IO Backend")
+
+Container_Boundary(cgnfunc, "Search Functions",""){
+  System(searchfunc, "CGN Search Functions")
+  Container(redis, "Redis")
+  ContainerDb(postgres, "Postgres")
+}
+
+Rel(backend, searchfunc, "Invoca", "Functions di ricerca operatori e agevolazioni")
+Rel(cit,backend, "Cerca operatori e agevolazioni CGN")
+Rel(searchfunc,postgres, "Legge le viste materializzate e le tabelle con operatori e agevolazioni")
+Rel(searchfunc,redis, "Cacha operatori, agevolazioni e codici sconto bucket/api")
+
+@enduml
