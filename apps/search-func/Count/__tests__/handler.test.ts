@@ -9,7 +9,7 @@ const anExpectedResponse = aCountMock;
 
 const queryMock = jest.fn().mockImplementation((_, __) => {
   return new Promise(resolve => {
-    resolve(aCountMock);
+    resolve([aCountMock]);
   });
 });
 
