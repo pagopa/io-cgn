@@ -37,8 +37,13 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
         }),
       E.toError
     ),
-    TE.chain(
-      flow(CountResult.decode, TE.fromEither, TE.mapLeft(errorsToError))
+    TE.chain(results =>
+      pipe(
+        results[0], // this select will just have a result
+        CountResult.decode,
+        TE.fromEither,
+        TE.mapLeft(errorsToError)
+      )
     ),
     TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
     TE.toUnion
