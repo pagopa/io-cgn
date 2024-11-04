@@ -86,7 +86,7 @@ const orderingParameter = (
         O.getOrElse(() => "searchable_name")
       );
 
-export const countMerchantsQuery = `SELECT COUNT(*) AS count FROM merchant`;
+export const countMerchantsQuery = `SELECT COUNT(*)::integer AS count FROM merchant`;
 
 export const selectMerchantsQuery = (
   token: O.Option<string>,
