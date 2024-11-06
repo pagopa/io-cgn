@@ -202,8 +202,6 @@ export const GetMerchantHandler = (
         id: merchant.agreement_fk,
         imageUrl: `${cdnBaseUrl}/${merchant.image_url}`,
         name: merchant.name,
-        supportType: merchant.support_type,
-        supportValue: merchant.support_value,
         websiteUrl: pipe(O.fromNullable(merchant.website_url), O.toUndefined)
       })
     ),
