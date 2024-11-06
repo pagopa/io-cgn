@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.3.3
+
+### Patch Changes
+
+- f81fc87: fixed query error
+
 ## 3.3.2
 
 ### Patch Changes
