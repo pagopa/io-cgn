@@ -75,7 +75,7 @@ describe("SearchHandler", () => {
 
   it("should add to the db query the merchant name filter, lowering its case", async () => {
     queryMock.mockImplementationOnce((query, params) => {
-      expect(query).toMatch(/AND searchable_name LIKE/);
+      expect(query).toMatch(/AND \(searchable_name LIKE/);
       expect(params.replacements.token_filter).toBe("%abc%");
       return anEmptyArrayPromise;
     });
