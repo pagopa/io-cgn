@@ -178,9 +178,7 @@ SELECT
     p.website_url,
     p.discount_code_type,
     p.all_national_addresses,
-    a.image_url,
-    p.support_type,
-    p.support_value
+    a.image_url
 FROM profile p
 JOIN agreement a ON (p.agreement_fk = a.agreement_k)
 WHERE agreement_fk = :merchant_id
