@@ -16,11 +16,6 @@ locals {
       ATTRIBUTE_AUTHORITY_POSTGRES_DB_SSL_ENABLED = true
       ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI = var.attribute_authority_postgres_db_admin_connection_string
 
-      # APP INSIGHTS
-      APPINSIGHTS_INSTRUMENTATIONKEY  = var.ai_instrumentation_key
-      APPINSIGHTS_CONNECTION_STRING   = var.ai_connection_string
-      APPINSIGHTS_SAMPLING_PERCENTAGE = var.ai_sampling_percentage
-
       # Keepalive fields are all optionals
       FETCH_KEEPALIVE_ENABLED             = "true"
       FETCH_KEEPALIVE_SOCKET_ACTIVE_TTL   = "110000"

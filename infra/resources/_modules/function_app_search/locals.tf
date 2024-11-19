@@ -4,11 +4,6 @@ locals {
       FUNCTIONS_WORKER_PROCESS_COUNT = 4
       NODE_ENV                       = "production"
 
-      // APP INSIGHTS
-      APPINSIGHTS_INSTRUMENTATIONKEY  = var.ai_instrumentation_key
-      APPINSIGHTS_CONNECTION_STRING   = var.ai_connection_string
-      APPINSIGHTS_SAMPLING_PERCENTAGE = var.ai_sampling_percentage
-
       // POSTGRES
       CGN_POSTGRES_DB_ADMIN_URI   = var.cgn_postgres_db_admin_connection_string
       CGN_POSTGRES_DB_SSL_ENABLED = "true"

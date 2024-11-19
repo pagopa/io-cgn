@@ -1,5 +1,6 @@
 module "app_service_attribute_authority" {
   source = "../_modules/app_service_attribute_authority_uat"
+  provider                  = azurerm.uatesercenti
 
   prefix              = local.prefix
   env_short           = local.env_short

@@ -19,6 +19,12 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  alias           = "prodesercenti"
+  subscription_id = "74da48a3-b0e7-489d-8172-da79801086ed"
+}
+
 resource "azurerm_resource_group" "itn_cgn" {
   name     = "${local.project}-${local.domain}-rg-01"
   location = local.location
