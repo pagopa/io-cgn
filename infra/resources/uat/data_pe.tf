@@ -1,14 +1,10 @@
-data "azurerm_subscription" "current" {}
-
-data "azurerm_client_config" "current" {}
-
-data "azurerm_virtual_network" "vnet_common_itn" {
-  name                = "${local.project}-common-vnet-01"
-  resource_group_name = "${local.project}-common-rg-01"
+data "azurerm_resource_group" "weu_pe_monitor_rg" {
+  provider = azurerm.uatesercenti
+  name     = "cgnonboardingportal-u-monitor-rg"
 }
 
-data "azurerm_application_insights" "common" {
-  provider                  = azurerm.uatesercenti
-  name                = "${local.project_legacy}-ai-common"
-  resource_group_name = data.azurerm_resource_group.weu_common.name
+data "azurerm_application_insights" "ai_cgn_pe" {
+  provider            = azurerm.uatesercenti
+  name                = "cgnonboardingportal-u-app-insights"
+  resource_group_name = data.azurerm_resource_group.weu_pe_monitor_rg.name
 }
