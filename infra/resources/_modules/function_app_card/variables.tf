@@ -62,6 +62,7 @@ variable "ai_instrumentation_key" {
 }
 
 variable "ai_connection_string" {
+  sensitive   = true
   type        = string
   description = "The connection string to connect to application insights"
 }

@@ -62,6 +62,7 @@ variable "ai_instrumentation_key" {
 }
 
 variable "ai_connection_string" {
+  sensitive   = true
   type        = string
   description = "The connection string to connect to application insights"
 }
@@ -73,7 +74,7 @@ variable "ai_sampling_percentage" {
 
 # REPO DEFINED VARIABLES
 variable "attribute_authority_tier" {
-  type = string
+  type        = string
   description = "The tier for attribute authority app service"
 }
 
