@@ -1,4 +1,4 @@
-name: Release Infrastructure UAT
+name: Release Infrastructure IO
 
 on:
   workflow_dispatch:
@@ -6,14 +6,14 @@ on:
     branches:
       - main
     paths:
-      - "infra/resources/**"
+      - "infra-io/resources/**"
 
 jobs:
   infra_release:
     uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
-    name: Release Infrastructure
+    name: Release Infrastructure IO PROD
     secrets: inherit
     with:
-      environment: uat
-      base_path: infra/resources
+      environment: prod
+      base_path: infra-io/resources
       use_private_agent: true

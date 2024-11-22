@@ -1,3 +1,7 @@
+data "azurerm_subscription" "current" {}
+
+data "azurerm_client_config" "current" {}
+
 data "azurerm_resource_group" "weu_pe_monitor_rg" {
   provider = azurerm.uatesercenti
   name     = "cgnonboardingportal-u-monitor-rg"

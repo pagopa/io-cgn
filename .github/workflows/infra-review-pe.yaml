@@ -1,0 +1,32 @@
+name: PR Infrastructure Plan Portale Esercenti
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - ".github/workflows/infra-**-pe.yaml"
+      - "infra-pe/resources/**"
+
+jobs:
+  infra_review_uat:
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    name: Infra review PE UAT
+    secrets: inherit
+    with:
+      environment: uat
+      base_path: infra-pe/resources
+      use_private_agent: true
+
+  infra_review_prod:
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    name: Infra review PE PROD
+    secrets: inherit
+    with:
+      environment: prod
+      base_path: infra-pe/resources
+      use_private_agent: true

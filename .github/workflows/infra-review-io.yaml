@@ -1,4 +1,4 @@
-name: PR Infrastructure Plan UAT
+name: PR Infrastructure Plan IO
 
 on:
   workflow_dispatch:
@@ -9,15 +9,15 @@ on:
       - reopened
       - ready_for_review
     paths:
-      - ".github/workflows/infra-**.yaml"
-      - "infra/resources/**"
+      - ".github/workflows/infra-**-io.yaml"
+      - "infra-io/resources/**"
 
 jobs:
   infra_review:
     uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
-    name: PR Prod WestEurope
+    name: Infra review IO PROD
     secrets: inherit
     with:
-      environment: uat
-      base_path: infra/resources
+      environment: prod
+      base_path: infra-io/resources
       use_private_agent: true
