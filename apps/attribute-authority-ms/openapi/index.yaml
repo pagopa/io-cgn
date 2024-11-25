@@ -1,0 +1,426 @@
+swagger: "2.0"
+info:
+  version: 1.1.0
+  title: ADE Attribute Authority Microservice Mock
+  contact:
+    name: IO team
+    url: https://forum.italia.it/c/progetto-io
+  x-logo:
+    url: https://io.italia.it/assets/img/io-logo-blue.svg
+host: api.cd.italia.it
+schemes:
+  - https
+paths:
+  "/organizations":
+    get:
+      produces:
+        - application/json
+      operationId: getOrganizations
+      tags:
+        - AttributeAuthority
+      summary: Get organizations
+      description: Get all organizations
+      parameters:
+        - $ref: "#/parameters/SearchQuery"
+        - $ref: "#/parameters/PageNumber"
+        - $ref: "#/parameters/PageSize"
+        - $ref: "#/parameters/SortBy"
+        - $ref: "#/parameters/SortDirection"
+      responses:
+        "200":
+          description: List of organizations.
+          schema:
+            $ref: "#/definitions/Organizations"
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: upsertOrganization
+      tags:
+        - AttributeAuthority
+      summary: Upsert organization.
+      description: Update or insert an organization.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/OrganizationWithReferentsPost"
+      responses:
+        "200":
+          description: Upserted organization.
+          schema:
+            $ref: "#/definitions/OrganizationWithReferents"
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/organization/{keyOrganizationFiscalCode}":
+    get:
+      produces:
+        - application/json
+      operationId: getOrganization
+      tags:
+        - AttributeAuthority
+      summary: Get organization
+      description: Get an organization by fiscal code
+      parameters:
+        - $ref: "#/parameters/KeyOrganizationFiscalCode"
+      responses:
+        "200":
+          description: An organization with referents.
+          schema:
+            $ref: "#/definitions/OrganizationWithReferents"
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    delete:
+      produces:
+        - application/json
+      operationId: deleteOrganization
+      tags:
+        - AttributeAuthority
+      summary: Delete organization.
+      description: Delete an organization
+      parameters:
+        - $ref: "#/parameters/KeyOrganizationFiscalCode"
+      responses:
+        "200":
+          description: Deleted.
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/organization/{keyOrganizationFiscalCode}/referents":
+    get:
+      produces:
+        - application/json
+      operationId: getReferents
+      tags:
+        - AttributeAuthority
+      summary: Get referents
+      description: Get all referents for a organization
+      parameters:
+        - $ref: "#/parameters/KeyOrganizationFiscalCode"
+      responses:
+        "200":
+          description: List of referents.
+          schema:
+            $ref: "#/definitions/Referents"
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: insertReferent
+      tags:
+        - AttributeAuthority
+      summary: Insert referent.
+      description: Insert a referent fiscalcode.
+      parameters:
+        - $ref: "#/parameters/KeyOrganizationFiscalCode"
+        - $ref: "#/parameters/ReferentFiscalCodeBody"
+      responses:
+        "200":
+          description: Inserted referent.
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/organization/{keyOrganizationFiscalCode}/referents/{referentFiscalCode}":
+    delete:
+      produces:
+        - application/json
+      operationId: deleteReferent
+      tags:
+        - AttributeAuthority
+      summary: Delete referent.
+      description: Delete a referent
+      parameters:
+        - $ref: "#/parameters/KeyOrganizationFiscalCode"
+        - $ref: "#/parameters/ReferentFiscalCode"
+      responses:
+        "200":
+          description: Deleted.
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/companies":
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: getUserCompanies
+      summary: |
+        Get User Companies
+      description: |
+        Get Companies related to a specific user
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/GetCompaniesBody"
+      responses:
+        "200":
+          description: User Found.
+          schema:
+            $ref: "#/definitions/Companies"
+        "404":
+          description: Not found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/ping":
+    get:
+      produces:
+        - application/json
+      operationId: ping
+      summary: |
+        Ping
+      description: |
+        ping ade service
+      responses:
+        "200":
+          description: OK.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+parameters:
+  KeyOrganizationFiscalCode:
+    in: path
+    name: keyOrganizationFiscalCode
+    description: Organization fiscal code
+    required: true
+    type: string
+    minLength: 8
+    maxLength: 16
+  ReferentFiscalCode:
+    in: path
+    name: referentFiscalCode
+    description: Referent fiscal code
+    required: true
+    type: string
+    pattern: '^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$'
+  ReferentFiscalCodeBody:
+    in: body
+    name: body
+    required: true
+    schema:
+      $ref: "#/definitions/ReferentFiscalCode"
+  SearchQuery:
+    in: query
+    name: searchQuery
+    description: String to search in organization name o fiscal code
+    required: false
+    type: string
+    minLength: 1
+    maxLength: 100
+  PageSize:
+    name: pageSize
+    in: query
+    description: Page size
+    required: false
+    type: integer
+    default: 20
+  PageNumber:
+    name: page
+    in: query
+    description: Page number
+    required: false
+    type: integer
+    default: 0
+  SortBy:
+    name: sortBy
+    in: query
+    description: The field to sort by
+    required: false
+    type: string
+    enum:
+      - fiscalCode
+      - name
+      - pec
+      - insertedAt
+  SortDirection:
+    name: sortDirection
+    in: query
+    description: The direction of the sort
+    required: false
+    type: string
+    default: ASC
+    enum:
+      - ASC
+      - DESC
+
+definitions:
+  FiscalCode:
+    $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.7.0/openapi/definitions.yaml#/FiscalCode"
+  ProblemJson:
+    $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.7.0/openapi/definitions.yaml#/ProblemJson"
+  EmailAddress:
+    $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.7.0/openapi/definitions.yaml#/EmailAddress"
+  Timestamp:
+    $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v22.7.0/openapi/definitions.yaml#/Timestamp"
+
+  KeyOrganizationFiscalCode:
+    type: object
+    properties:
+      keyOrganizationFiscalCode:
+        type: string
+        minLength: 8
+        maxLength: 16
+    required:
+      - keyOrganizationFiscalCode
+
+  OrganizationFiscalCode:
+    type: object
+    properties:
+      organizationFiscalCode:
+        type: string
+        minLength: 8
+        maxLength: 16
+    required:
+      - organizationFiscalCode
+
+  OrganizationName:
+    type: object
+    properties:
+      organizationName:
+        type: string
+        minLength: 1
+        maxLength: 100
+    required:
+      - organizationName
+
+  ReferentFiscalCode:
+    type: object
+    properties:
+      referentFiscalCode:
+        $ref: "#/definitions/FiscalCode"
+    required:
+      - referentFiscalCode
+
+  Organization:
+    allOf:
+      - $ref: "#/definitions/OrganizationFiscalCode"
+      - $ref: "#/definitions/OrganizationName"
+      - type: object
+        properties:
+          pec:
+            $ref: "#/definitions/EmailAddress"
+        required:
+          - pec
+
+  Referents:
+    type: array
+    items:
+      $ref: "#/definitions/FiscalCode"
+
+  OrganizationWithReferentsPost:
+    allOf:
+      - $ref: "#/definitions/KeyOrganizationFiscalCode"
+      - $ref: "#/definitions/Organization"
+      - type: object
+        properties:
+          referents:
+            $ref: "#/definitions/Referents"
+        required:
+          - referents
+
+  OrganizationWithReferents:
+    allOf:
+      - $ref: "#/definitions/OrganizationWithReferentsPost"
+      - type: object
+        properties:
+          insertedAt:
+            $ref: "#/definitions/Timestamp"
+        required:
+          - insertedAt
+
+  Organizations:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/OrganizationWithReferents"
+      count:
+        type: integer
+
+  ###################################################################
+  # Old models to leave hub SPID login /companies binding unaltered #
+  ###################################################################
+
+  GetCompaniesBody:
+    type: object
+    properties:
+      fiscalCode:
+        $ref: "#/definitions/FiscalCode"
+    required:
+      - fiscalCode
+
+  Company:
+    type: object
+    properties:
+      fiscalCode:
+        type: string
+        minLength: 8
+        maxLength: 16
+      organizationName:
+        type: string
+        minLength: 1
+        maxLength: 100
+      pec:
+        $ref: "#/definitions/EmailAddress"
+    required:
+      - fiscalCode
+      - organizationName
+      - pec
+
+  Companies:
+    type: array
+    items:
+      $ref: "#/definitions/Company"
+
+  UserCompanies:
+    type: object
+    properties:
+      fiscalCode:
+        $ref: "#/definitions/FiscalCode"
+      companies:
+        $ref: "#/definitions/Companies"
+    required:
+      - fiscalCode
+      - companies

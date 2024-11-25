@@ -1,0 +1,10 @@
+node_modules
+generated
+coverage
+dist
+.env
+
+
+# eslint section
+!.eslintrc.js
+.eslintcache
