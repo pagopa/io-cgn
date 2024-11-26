@@ -30,7 +30,7 @@ module "runner_commons" {
 }
 
 module "container_app_job" {
-  source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_job_gh_runner_v2?ref=v8.50.0"
+  source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_job_gh_runner_v2?ref=v8.60.0"
 
   location            = local.location.weu
   prefix              = local.prefix

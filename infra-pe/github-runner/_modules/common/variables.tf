@@ -1,7 +1,7 @@
 variable "prefix" {
   type        = string
   description = "IO Prefix"
-  default = "io"
+  default     = "io"
 }
 
 variable "env" {
@@ -15,11 +15,11 @@ variable "env_short" {
 }
 
 variable "repository" {
-    type        = string
-    description = "Name of the repository"
+  type        = string
+  description = "Name of the repository"
 }
 
 variable "tags" {
-    type = map
-    description = "Tags for the resources"
+  type        = map(any)
+  description = "Tags for the resources"
 }
