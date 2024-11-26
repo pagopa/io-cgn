@@ -37,3 +37,9 @@ variable "pep_snet_cidr" {
   type        = list(string)
   description = "CIDR block allocated in the private endpoints subnet"
 }
+
+variable "ddos_protection_enabled" {
+  type        = bool
+  description = "Enable DDoS protection"
+  default     = true
+}

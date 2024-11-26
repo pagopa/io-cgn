@@ -34,8 +34,9 @@ module "networking" {
 
   resource_group_name = azurerm_resource_group.itn_cgn_pe.name
 
-  vnet_cidr_block = "10.30.0.0/16"
-  pep_snet_cidr   = ["10.30.2.0/23"]
+  vnet_cidr_block         = "10.25.0.0/16"
+  pep_snet_cidr           = ["10.25.2.0/23"]
+  ddos_protection_enabled = false
 
   tags = local.tags
 }
