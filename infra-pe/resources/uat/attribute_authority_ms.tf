@@ -9,13 +9,13 @@ module "app_service_attribute_authority" {
 
   resource_group_name = azurerm_resource_group.itn_cgn_pe.name
 
-  attribute_authority_tier = "xs"
+  attribute_authority_tier = "s"
 
   ai_instrumentation_key = data.azurerm_application_insights.ai_cgn_pe.instrumentation_key
   ai_connection_string   = data.azurerm_application_insights.ai_cgn_pe.connection_string
   ai_sampling_percentage = 100
 
-  cidr_subnet_cgn_attribute_authority  = "10.30.0.0/26"
+  cidr_subnet_cgn_attribute_authority  = "10.25.0.0/26"
   private_endpoint_subnet_id           = module.networking.pep_snet.id
   private_dns_zone_resource_group_name = azurerm_resource_group.itn_cgn_pe.name
 
@@ -27,4 +27,6 @@ module "app_service_attribute_authority" {
   attribute_authority_postgres_db_admin_connection_string = ""
 
   tags = local.tags
+
+  depends_on = [module.networking, module.dns]
 }

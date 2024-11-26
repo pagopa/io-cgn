@@ -40,3 +40,20 @@ module "networking" {
 
   tags = local.tags
 }
+
+#-----------#
+# DNS ZONES #
+#-----------#
+
+module "dns" {
+  source = "../_modules/dns"
+
+  resource_group_name = azurerm_resource_group.itn_cgn_pe.name
+
+  virtual_network = {
+    id   = module.networking.vnet_common.id
+    name = module.networking.vnet_common.name
+  }
+
+  tags = local.tags
+}
