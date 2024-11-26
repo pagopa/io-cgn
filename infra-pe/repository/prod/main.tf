@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.94.0"
+      version = "<= 3.116.0"
     }
 
     github = {
@@ -14,9 +14,9 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfappprodio"
+    storage_account_name = "tfinfprodesercenti"
     container_name       = "terraform-state"
-    key                  = "io-cgn.repository.tfstate"
+    key                  = "io-pe-cgn.repository.prod.tfstate"
   }
 }
 
@@ -29,6 +29,11 @@ provider "github" {
   owner = "pagopa"
 }
 
-data "azurerm_client_config" "current" {}
+module "repo_environment" {
+  source    = "../_modules/repo_environment"
+  env       = "prod"
+  env_short = "p"
+  domain    = "pe-cgn"
 
-data "azurerm_subscription" "current" {}
+  repository = "io-cgn"
+}

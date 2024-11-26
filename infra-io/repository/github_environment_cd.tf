@@ -1,5 +1,5 @@
 resource "github_repository_environment" "github_repository_environment_prod_cd" {
-  environment = "prod-cd"
+  environment = "io-prod-cd"
   repository  = local.repository
 
   reviewers {
@@ -27,7 +27,7 @@ resource "github_actions_environment_secret" "env_prod_cd_secrets" {
 
 # App Prod CD
 resource "github_repository_environment" "github_repository_environment_app_prod_cd" {
-  environment = "app-prod-cd"
+  environment = "io-app-prod-cd"
   repository  = local.repository
 
   reviewers {

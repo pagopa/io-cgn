@@ -1,5 +1,5 @@
 resource "github_repository_environment" "github_repository_environment_prod_ci" {
-  environment = "prod-ci"
+  environment = "io-prod-ci"
   repository  = local.repository
 
   deployment_branch_policy {

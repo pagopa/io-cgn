@@ -2,7 +2,7 @@ locals {
   prefix    = "io"
   env_short = "p"
   env       = "prod"
-  location  = "westeurope"
+  location  = "italynorth"
   project   = "${local.prefix}-${local.env_short}"
   domain    = "cgn"
 
@@ -23,15 +23,6 @@ locals {
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
-      ],
-      io-p-itn-cgn-rg-01 = [
-        "Key Vault Reader",
-        "Key Vault Crypto User",
-        "Key Vault Secrets User",
-        "Role Based Access Control Administrator",
-      ],
-      io-p-rg-operations = [
-        "Role Based Access Control Administrator"
       ]
     }
   }
@@ -39,20 +30,11 @@ locals {
     subscription = [
       "Reader",
       "Reader and Data Access",
-      "PagoPA IaC Reader",
-      "DocumentDB Account Contributor"
+      "PagoPA IaC Reader"
     ]
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
-      ],
-      io-p-itn-cgn-rg-01 = [
-        "Key Vault Reader",
-        "Key Vault Secrets User",
-        "Role Based Access Control Administrator",
-      ],
-      io-p-rg-operations = [
-        "Role Based Access Control Administrator"
       ]
     }
   }

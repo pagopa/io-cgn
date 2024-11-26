@@ -2,15 +2,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.100.0"
+      version = "<= 3.116.0"
     }
   }
 
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfappprodio"
+    storage_account_name = "tfinfuatesercenti"
     container_name       = "terraform-state"
-    key                  = "io-cgn.github-runner.prod.tfstate"
+    key                  = "io-pe-cgn.github-runner.uat.tfstate"
   }
 }
 
@@ -19,24 +19,44 @@ provider "azurerm" {
   }
 }
 
-module "container_app_job_selfhosted_runner" {
-  source = "github.com/pagopa/dx//infra/modules/github_selfhosted_runner_on_container_app_jobs?ref=main"
+module "runner_commons" {
+  source = "../_modules/common"
 
-  prefix    = local.prefix
-  env_short = local.env_short
+  prefix     = local.prefix
+  env_short  = local.env_short
+  env        = local.env
+  repository = local.repo_name
+  tags       = local.tags
+}
 
-  repo_name = local.repo_name
+module "container_app_job" {
+  source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_job_gh_runner_v2?ref=v8.50.0"
 
-  container_app_environment = {
-    name                = "${local.prefix}-${local.env_short}-github-runner-cae"
-    resource_group_name = "${local.prefix}-${local.env_short}-github-runner-rg"
+  location            = local.location.weu
+  prefix              = local.prefix
+  env_short           = local.env_short
+  resource_group_name = module.runner_commons.container_app_environment.resource_group_name
+  runner_labels       = [local.env]
+
+  key_vault_name        = "cgnonboardingportal-${local.env_short}-kv"
+  key_vault_rg          = "cgnonboardingportal-${local.env_short}-sec-rg"
+  key_vault_secret_name = "github-runner-pat"
+
+  environment_name = module.runner_commons.container_app_environment.name
+  environment_rg   = module.runner_commons.container_app_environment.resource_group_name
+
+  job = {
+    name = "infra"
+  }
+  job_meta = {
+    repo = local.repo_name
   }
 
-  key_vault = {
-    name                = "${local.prefix}-${local.env_short}-kv-common"
-    resource_group_name = "${local.prefix}-${local.env_short}-rg-common"
+  container = {
+    cpu    = 1
+    memory = "2Gi"
+    image  = "ghcr.io/pagopa/github-self-hosted-runner-azure:latest"
   }
 
   tags = local.tags
 }
-

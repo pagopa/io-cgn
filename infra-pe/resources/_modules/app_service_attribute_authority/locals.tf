@@ -14,7 +14,7 @@ locals {
 
       # Postgres
       ATTRIBUTE_AUTHORITY_POSTGRES_DB_SSL_ENABLED = true
-      ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI = var.attribute_authority_postgres_db_admin_connection_string
+      ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI         = var.attribute_authority_postgres_db_admin_connection_string
 
       # Keepalive fields are all optionals
       FETCH_KEEPALIVE_ENABLED             = "true"

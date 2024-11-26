@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.100.0"
+      version = "<= 3.116.0"
     }
   }
 
@@ -26,6 +26,7 @@ module "federated_identities" {
   env_short = local.env_short
   env       = local.env
   domain    = local.domain
+  location  = local.location
 
   repositories = [local.repo_name]
 
@@ -50,6 +51,7 @@ module "app_federated_identities" {
   env          = "app-${local.env}"
   domain       = "${local.domain}-app"
   repositories = [local.repo_name]
+  location     = local.location
   tags         = local.tags
 
   continuos_integration = { enable = false }

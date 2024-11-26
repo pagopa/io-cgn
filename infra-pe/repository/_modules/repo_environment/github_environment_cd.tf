@@ -1,6 +1,6 @@
-resource "github_repository_environment" "github_repository_environment_prod_cd" {
-  environment = "prod-cd"
-  repository  = local.repository
+resource "github_repository_environment" "github_repository_environment_cd" {
+  environment = "pe-${var.env}-cd"
+  repository  = var.repository
 
   reviewers {
     teams = matchkeys(
@@ -16,19 +16,19 @@ resource "github_repository_environment" "github_repository_environment_prod_cd"
   }
 }
 
-resource "github_actions_environment_secret" "env_prod_cd_secrets" {
+resource "github_actions_environment_secret" "env_cd_secrets" {
   for_each = local.cd.secrets
 
-  repository      = local.repository
-  environment     = github_repository_environment.github_repository_environment_prod_cd.environment
+  repository      = var.repository
+  environment     = github_repository_environment.github_repository_environment_cd.environment
   secret_name     = each.key
   plaintext_value = each.value
 }
 
-# App Prod CD
-resource "github_repository_environment" "github_repository_environment_app_prod_cd" {
-  environment = "app-prod-cd"
-  repository  = local.repository
+# Portale Esercenti App CD
+resource "github_repository_environment" "github_repository_environment_app_cd" {
+  environment = "pe-app-${var.env}-cd"
+  repository  = var.repository
 
   reviewers {
     teams = matchkeys(
@@ -44,11 +44,11 @@ resource "github_repository_environment" "github_repository_environment_app_prod
   }
 }
 
-resource "github_actions_environment_secret" "env_app_prod_cd_secrets" {
+resource "github_actions_environment_secret" "env_app_cd_secrets" {
   for_each = local.app_cd.secrets
 
-  repository      = local.repository
-  environment     = github_repository_environment.github_repository_environment_app_prod_cd.environment
+  repository      = var.repository
+  environment     = github_repository_environment.github_repository_environment_app_cd.environment
   secret_name     = each.key
   plaintext_value = each.value
 }

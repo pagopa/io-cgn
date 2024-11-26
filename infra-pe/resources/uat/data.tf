@@ -3,12 +3,10 @@ data "azurerm_subscription" "current" {}
 data "azurerm_client_config" "current" {}
 
 data "azurerm_resource_group" "weu_pe_monitor_rg" {
-  provider = azurerm.uatesercenti
-  name     = "cgnonboardingportal-u-monitor-rg"
+  name = "cgnonboardingportal-${local.env_short}-monitor-rg"
 }
 
 data "azurerm_application_insights" "ai_cgn_pe" {
-  provider            = azurerm.uatesercenti
-  name                = "cgnonboardingportal-u-app-insights"
+  name                = "cgnonboardingportal-${local.env_short}-app-insights"
   resource_group_name = data.azurerm_resource_group.weu_pe_monitor_rg.name
 }

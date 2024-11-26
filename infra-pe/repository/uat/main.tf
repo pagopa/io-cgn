@@ -14,9 +14,9 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfappprodio"
+    storage_account_name = "tfinfuatesercenti"
     container_name       = "terraform-state"
-    key                  = "io-cgn.io-repository.tfstate"
+    key                  = "io-pe-cgn.repository.uat.tfstate"
   }
 }
 
@@ -29,6 +29,11 @@ provider "github" {
   owner = "pagopa"
 }
 
-data "azurerm_client_config" "current" {}
+module "repo_environment" {
+  source    = "../_modules/repo_environment"
+  env       = "uat"
+  env_short = "u"
+  domain    = "pe-cgn"
 
-data "azurerm_subscription" "current" {}
+  repository = "io-cgn"
+}

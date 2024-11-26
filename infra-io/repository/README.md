@@ -6,7 +6,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >= 3.94.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | <= 3.116.0 |
 | <a name="requirement_github"></a> [github](#requirement\_github) | 5.45.0 |
 
 ## Providers
@@ -28,9 +28,6 @@ No modules.
 | [github_actions_environment_secret.env_prod_cd_secrets](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/actions_environment_secret) | resource |
 | [github_actions_environment_secret.env_prod_ci_secrets](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/actions_environment_secret) | resource |
 | [github_actions_secret.repo_secrets](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/actions_secret) | resource |
-| [github_branch_default.default_main](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/branch_default) | resource |
-| [github_branch_protection.protection_main](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/branch_protection) | resource |
-| [github_repository.io_cgn](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/repository) | resource |
 | [github_repository_environment.github_repository_environment_app_prod_cd](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/repository_environment) | resource |
 | [github_repository_environment.github_repository_environment_prod_cd](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/repository_environment) | resource |
 | [github_repository_environment.github_repository_environment_prod_ci](https://registry.terraform.io/providers/integrations/github/5.45.0/docs/resources/repository_environment) | resource |
