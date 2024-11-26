@@ -26,7 +26,14 @@ const filterByNameOrFiscalCode = (searchQuery?: string) =>
       where: {
         [Op.or]: [
           { fiscal_code: { [Op.iLike]: `%${searchQuery}%` } },
-          { name: { [Op.iLike]: `%${searchQuery}%` } }
+          { name: { [Op.iLike]: `%${searchQuery}%` } },
+          {
+            referents: {
+              some: {
+                fiscal_code: { [Op.iLike]: `%${searchQuery}%` }
+              }
+            }
+          }
         ]
       }
     })),
@@ -89,6 +96,7 @@ export const getOrganizations = (
       TE.tryCatch(
         () =>
           OrganizationModel.count({
+            include: [OrganizationModel.associations.referents],
             ...filterByNameOrFiscalCode(searchQuery),
             ...paging(page, pageSize),
             ...ordering(sortBy, sortDirection)
