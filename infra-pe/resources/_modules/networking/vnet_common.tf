@@ -6,7 +6,7 @@ module "vnet_common" {
   resource_group_name = var.resource_group_name
 
   address_space        = [var.vnet_cidr_block]
-  ddos_protection_plan = local.ddos_protection_plan
+  ddos_protection_plan = var.ddos_protection_enabled ? local.ddos_protection_plan : null
 
   tags = var.tags
 }
