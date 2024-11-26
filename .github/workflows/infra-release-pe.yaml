@@ -10,7 +10,7 @@ on:
 
 jobs:
   infra_release_uat:
-    uses: pagopa/dx/.github/workflows/infra_apply.yaml@ces-534-allow-infra-gh-actions-use-labels
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
     name: Release Infrastructure PE UAT
     secrets: inherit
     with:
@@ -21,7 +21,7 @@ jobs:
       use_labels: true
 
   infra_release_prod:
-    uses: pagopa/dx/.github/workflows/infra_apply.yaml@ces-534-allow-infra-gh-actions-use-labels
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
     name: Release Infrastructure PE PROD
     secrets: inherit
     with:
