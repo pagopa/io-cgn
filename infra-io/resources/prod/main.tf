@@ -19,11 +19,13 @@ provider "azurerm" {
   features {}
 }
 
+# RESOURCE GROUP
 resource "azurerm_resource_group" "itn_cgn" {
   name     = "${local.project}-${local.domain}-rg-01"
   location = local.location
 }
 
+# KEY VAULTS
 module "key_vaults" {
   source = "../_modules/key_vaults"
 
@@ -36,6 +38,7 @@ module "key_vaults" {
   tags = local.tags
 }
 
+# REDIS
 module "redis_cgn" {
   source = "github.com/pagopa/terraform-azurerm-v3//redis_cache?ref=v8.21.0"
 
