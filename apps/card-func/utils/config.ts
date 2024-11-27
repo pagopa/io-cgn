@@ -45,8 +45,6 @@ export type CgnServiceParams = t.TypeOf<typeof CgnServiceParams>;
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.intersection([
   t.interface({
-    APPINSIGHTS_INSTRUMENTATIONKEY: NonEmptyString,
-
     CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
     EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
 
