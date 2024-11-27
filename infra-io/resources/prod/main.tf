@@ -5,6 +5,7 @@ terraform {
     storage_account_name = "tfappprodio"
     container_name       = "terraform-state"
     key                  = "io-cgn.resources.tfstate"
+    storage_use_azuread  = true
   }
 
   required_providers {

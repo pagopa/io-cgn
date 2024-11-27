@@ -31,9 +31,9 @@ provider "github" {
 
 module "repo_environment" {
   source    = "../_modules/repo_environment"
-  env       = "uat"
-  env_short = "u"
-  domain    = "pe-cgn"
+  env       = local.env
+  env_short = local.env_short
+  domain    = local.domain
 
-  repository = "io-cgn"
+  repository = local.repository
 }
