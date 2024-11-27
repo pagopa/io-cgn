@@ -2072,6 +2072,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pagopa/ts-commons@npm:^13.1.2":
+  version: 13.1.2
+  resolution: "@pagopa/ts-commons@npm:13.1.2"
+  dependencies:
+    abort-controller: "npm:^3.0.0"
+    agentkeepalive: "npm:^4.1.4"
+    applicationinsights: "npm:^2.9.5"
+    jose: "npm:^4.15.5"
+    json-set-map: "npm:^1.1.2"
+    jsonwebtoken: "npm:^9.0.1"
+    node-fetch: "npm:^2.6.0"
+    semver: "npm:^7.5.2"
+    ulid: "npm:^2.3.0"
+    validator: "npm:^13.7.0"
+  peerDependencies:
+    fp-ts: ^2.16.5
+    io-ts: ^2.2.21
+  checksum: 10c0/1152c604bcb04d2b4557feb214b79fa643a387cc1ba0a967e9e2071694b9d0af11602d4a9571ff2891a9ac532c30bb12da38e8269a46610d220fcde953dcf093
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -4438,13 +4459,13 @@ __metadata:
     "@pagopa/express-azure-functions": "npm:^4.0.1"
     "@pagopa/io-functions-commons": "npm:^28.1.0"
     "@pagopa/openapi-codegen-ts": "npm:^12.0.3"
-    "@pagopa/ts-commons": "npm:^11.0.0"
+    "@pagopa/ts-commons": "npm:^13.1.2"
     "@types/express": "npm:^4.17.9"
     "@types/jest": "npm:^29.5.12"
     "@types/node-fetch": "npm:^2.5.7"
     "@types/redis": "npm:^2.8.28"
     "@types/vfile-message": "npm:^2.0.0"
-    applicationinsights: "npm:^1.8.10"
+    applicationinsights: "npm:^2.9.5"
     auto-changelog: "npm:2.2.1"
     azure-storage: "npm:^2.10.3"
     date-fns: "npm:^2.16.1"
