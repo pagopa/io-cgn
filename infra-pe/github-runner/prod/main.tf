@@ -25,6 +25,7 @@ module "runner_commons" {
   prefix     = local.prefix
   env_short  = local.env_short
   env        = local.env
+  domain     = local.domain
   repository = local.repo_name
   tags       = local.tags
 }
@@ -35,15 +36,15 @@ module "container_app_job" {
   location            = local.location.weu
   prefix              = local.prefix
   env_short           = local.env_short
-  resource_group_name = module.runner_commons.resource_group_name
+  resource_group_name = module.runner_commons.container_app_environment.resource_group_name
   runner_labels       = [local.env]
 
   key_vault_name        = "cgnonboardingportal-${local.env_short}-kv"
   key_vault_rg          = "cgnonboardingportal-${local.env_short}-sec-rg"
   key_vault_secret_name = "github-runner-pat"
 
-  environment_name = module.container_app_environment_runner.name
-  environment_rg   = module.container_app_environment_runner.resource_group_name
+  environment_name = module.runner_commons.container_app_environment.name
+  environment_rg   = module.runner_commons.container_app_environment.resource_group_name
 
   job = {
     name = "infra"

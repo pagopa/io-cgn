@@ -24,7 +24,7 @@ module "federated_identities" {
 
   prefix    = local.prefix
   env_short = local.env_short
-  env       = local.env
+  env       = "io-${local.env}"
   domain    = local.domain
   location  = local.location
 
