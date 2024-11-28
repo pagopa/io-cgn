@@ -17,7 +17,7 @@ jobs:
     secrets: inherit
     with:
       workspace_name: card-func
-      environment: app-prod-cd
+      environment: io-app-prod-cd
       resource_group_name: io-p-itn-cgn-rg-01
       function_app_name: io-p-itn-cgn-card-func-01
       health_check_path: "/api/v1/cgn/health"
