@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.3
+
+### Patch Changes
+
+- 3772331: fixed app insights
+
 ## 4.0.2
 
 ### Patch Changes
