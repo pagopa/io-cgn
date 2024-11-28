@@ -25,6 +25,7 @@ module "runner_commons" {
   prefix     = local.prefix
   env_short  = local.env_short
   env        = local.env
+  domain     = local.domain
   repository = local.repo_name
   tags       = local.tags
 }

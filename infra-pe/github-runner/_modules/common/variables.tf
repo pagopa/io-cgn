@@ -4,6 +4,11 @@ variable "prefix" {
   default     = "io"
 }
 
+variable "domain" {
+    type = string
+    description = "Domain name"
+}
+
 variable "env" {
   type        = string
   description = "Environment"

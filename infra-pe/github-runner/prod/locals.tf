@@ -3,6 +3,7 @@ locals {
   env_short = "p"
   env       = "prod"
   repo_name = "io-cgn"
+  domain    = "pe-cgn"
   project   = "${local.prefix}-${local.env_short}"
   location  = { weu = "westeurope", itn = "italynorth" }
 
