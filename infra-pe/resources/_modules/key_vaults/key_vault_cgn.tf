@@ -1,4 +1,4 @@
-resource "azurerm_key_vault" "cgn" {
+resource "azurerm_key_vault" "cgn-pe" {
   name                = "${var.project}-cgn-pe-kv-01"
   location            = var.location
   resource_group_name = var.resource_group_name
