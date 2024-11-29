@@ -28,3 +28,20 @@ variable "tags" {
   type        = map(any)
   description = "Tags for the resources"
 }
+
+variable "vnet" {
+    type = object({
+      name = string
+      resource_group_name = string
+    })
+
+    description = "Virtual Network configuration"
+}
+
+variable "snet" {
+    type = object({
+      cidr = string
+    })
+
+    description = "Subnet configuration"
+}

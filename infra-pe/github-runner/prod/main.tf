@@ -28,6 +28,16 @@ module "runner_commons" {
   domain     = local.domain
   repository = local.repo_name
   tags       = local.tags
+
+
+  vnet = {
+    name = "${local.project}-itn-${local.domain}-vnet-01"
+    resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
+  }
+
+  snet = {
+    cidr = "10.26.200.0/23"
+  }
 }
 
 module "container_app_job" {
