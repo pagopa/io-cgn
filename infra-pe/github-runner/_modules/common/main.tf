@@ -10,7 +10,7 @@ module "container_app_environment_runner" {
   source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_environment_v2?ref=v8.50.0"
 
   resource_group_name = azurerm_resource_group.rg_github_runner.name
-  location            = local.location.weu
+  location            = local.location.itn
   name                = "${local.project}-github-runner-cae"
 
   subnet_id              = module.subnet_runner.id
