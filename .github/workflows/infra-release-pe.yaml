@@ -1,0 +1,32 @@
+name: Release Infrastructure Portale Esercenti
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "infra-pe/resources/**"
+
+jobs:
+  infra_release_uat:
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
+    name: Release Infrastructure PE UAT
+    secrets: inherit
+    with:
+      environment: uat
+      base_path: infra-pe/resources
+      override_github_environment: pe-uat
+      use_private_agent: true
+      use_labels: true
+
+  infra_release_prod:
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
+    name: Release Infrastructure PE PROD
+    secrets: inherit
+    with:
+      environment: prod
+      base_path: infra-pe/resources
+      override_github_environment: pe-prod
+      use_private_agent: true
+      use_labels: true
