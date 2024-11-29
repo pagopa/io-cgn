@@ -20,7 +20,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "itn_cgn_pe" {
-  name     = "${local.project}-${local.domain}-pe-rg-01"
+  name     = "${local.project}-${local.domain}-rg-01"
   location = local.location
 }
 
