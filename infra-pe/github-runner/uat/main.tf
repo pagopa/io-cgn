@@ -48,8 +48,8 @@ module "container_app_job" {
   resource_group_name = module.runner_commons.container_app_environment.resource_group_name
   runner_labels       = [local.env]
 
-  key_vault_name        = "cgnonboardingportal-${local.env_short}-kv"
-  key_vault_rg          = "cgnonboardingportal-${local.env_short}-sec-rg"
+  key_vault_name        = "${local.project}-${local.domain}-kv-01"
+  key_vault_rg          = "${local.project}-${local.domain}-rg-01"
   key_vault_secret_name = "github-runner-pat"
 
   environment_name = module.runner_commons.container_app_environment.name

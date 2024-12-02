@@ -23,6 +23,9 @@ locals {
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
+      ],
+      io-p-itn-cgn-pe-rg-01 = [
+        "Key Vault Administrator"
       ]
     }
   }
@@ -35,6 +38,9 @@ locals {
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
+      ],
+      io-p-itn-cgn-pe-rg-01 = [
+        "Key Vault Secrets User"
       ]
     }
   }
