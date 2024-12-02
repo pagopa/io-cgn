@@ -24,7 +24,7 @@ module "postgresql_db" {
   db_username = data.azurerm_key_vault_secret.db_administrator_login.value
   db_password = data.azurerm_key_vault_secret.db_administrator_login_password.value
 
-  tier                  = "l"
+  tier                  = "m"
   db_version            = 16
   storage_mb            = 262144
   backup_retention_days = 14
