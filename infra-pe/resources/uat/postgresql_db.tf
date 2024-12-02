@@ -28,7 +28,7 @@ module "postgresql_db" {
   db_version            = 16
   storage_mb            = 32768
   backup_retention_days = 7
-  pgbouncer_enabled     = true
+  pgbouncer_enabled     = false
 
   tags = local.tags
 }
