@@ -10,7 +10,7 @@ locals {
     secrets = {
       "ARM_CLIENT_ID"       = data.azurerm_user_assigned_identity.identity_ci.client_id
       "ARM_SUBSCRIPTION_ID" = data.azurerm_subscription.current.subscription_id
-      "ARM_TENANT_ID" = data.azurerm_client_config.current.tenant_id
+      "ARM_TENANT_ID"       = data.azurerm_client_config.current.tenant_id
     }
   }
 
@@ -18,7 +18,7 @@ locals {
     secrets = {
       "ARM_CLIENT_ID"       = data.azurerm_user_assigned_identity.identity_cd.client_id
       "ARM_SUBSCRIPTION_ID" = data.azurerm_subscription.current.subscription_id
-      "ARM_TENANT_ID" = data.azurerm_client_config.current.tenant_id
+      "ARM_TENANT_ID"       = data.azurerm_client_config.current.tenant_id
     }
 
     reviewers_teams = ["io-cgn-contributors", "engineering-team-cloud-eng"]
@@ -28,7 +28,7 @@ locals {
     secrets = {
       "ARM_CLIENT_ID"       = data.azurerm_user_assigned_identity.identity_app_cd.client_id
       "ARM_SUBSCRIPTION_ID" = data.azurerm_subscription.current.subscription_id
-      "ARM_TENANT_ID" = data.azurerm_client_config.current.tenant_id
+      "ARM_TENANT_ID"       = data.azurerm_client_config.current.tenant_id
     }
 
     reviewers_teams = ["io-cgn-contributors", "engineering-team-cloud-eng"]

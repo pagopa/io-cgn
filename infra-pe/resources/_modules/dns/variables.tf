@@ -19,7 +19,7 @@ variable "virtual_network" {
 variable "private_dns_zones" {
   type        = map(any)
   description = "Private DNS zones"
-  default     = {
+  default = {
     "redis"                    = "privatelink.redis.cache.windows.net"
     "psql"                     = "privatelink.postgres.database.azure.com"
     "servicebus"               = "privatelink.servicebus.windows.net"
