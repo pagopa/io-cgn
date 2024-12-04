@@ -68,3 +68,49 @@ resource "azurerm_subnet_nat_gateway_association" "functions_messages_citizen_su
   subnet_id      = module.function_app_cgn_card.subnet.id
   nat_gateway_id = var.nat_gateway_id
 }
+
+# Autoscaler
+
+module "function_cgn_card_autoscaler" {
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
+
+  resource_group_name = var.resource_group_name
+
+  target_service = {
+    function_app_name = module.function_app_cgn_card.function_app.function_app.name
+  }
+
+  scheduler = {
+    maximum = 10
+    normal_load = {
+      default = 6
+      minimum = 3
+    }
+  }
+
+  scale_metrics = {
+    cpu = {
+      upper_threshold   = 70
+      increase_by       = 2
+      cooldown_increase = 2
+
+      lower_threshold   = 15
+      decrease_by       = 1
+      cooldown_decrease = 1
+    }
+    requests = {
+      upper_threshold           = 450
+      increase_by               = 2
+      cooldown_increase         = 1
+      statistic_increase        = "Average"
+      time_aggregation_increase = "Average"
+
+      lower_threshold   = 75
+      decrease_by       = 1
+      cooldown_decrease = 1
+    }
+  }
+
+  tags = var.tags
+}
+
