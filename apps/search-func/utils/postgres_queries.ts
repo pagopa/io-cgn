@@ -43,7 +43,7 @@ const pageNumber = (maybePage: O.Option<number>): number =>
 const pageSize = (maybePageSize: O.Option<number>): number =>
   pipe(
     maybePageSize,
-    O.getOrElse(() => 100)
+    O.getOrElse(() => 200)
   );
 
 const offset = (
