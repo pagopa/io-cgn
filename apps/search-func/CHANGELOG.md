@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.3.4
+
+### Patch Changes
+
+- 373d7c1: fixed page size
+
 ## 3.3.3
 
 ### Patch Changes
