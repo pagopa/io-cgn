@@ -5,8 +5,8 @@ variable "prefix" {
 }
 
 variable "domain" {
-    type = string
-    description = "Domain name"
+  type        = string
+  description = "Domain name"
 }
 
 variable "env" {
@@ -30,18 +30,18 @@ variable "tags" {
 }
 
 variable "vnet" {
-    type = object({
-      name = string
-      resource_group_name = string
-    })
+  type = object({
+    name                = string
+    resource_group_name = string
+  })
 
-    description = "Virtual Network configuration"
+  description = "Virtual Network configuration"
 }
 
 variable "snet" {
-    type = object({
-      cidr = string
-    })
+  type = object({
+    cidr = string
+  })
 
-    description = "Subnet configuration"
+  description = "Subnet configuration"
 }

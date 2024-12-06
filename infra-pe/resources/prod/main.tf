@@ -40,6 +40,24 @@ module "networking" {
   tags = local.tags
 }
 
+module "vpn" {
+  source = "../_modules/vpn"
+
+  location            = local.location
+  location_short      = local.location_short
+  resource_group_name = azurerm_resource_group.itn_cgn_pe.name
+  project             = local.project
+  prefix              = local.prefix
+  env_short           = local.env_short
+
+  subscription_current     = data.azurerm_subscription.current
+  virtual_network          = module.networking.vnet_common
+  vpn_cidr_subnet          = ["10.26.133.0/24"]
+  dnsforwarder_cidr_subnet = ["10.26.252.8/29"]
+
+  tags = local.tags
+}
+
 #-----------#
 # DNS ZONES #
 #-----------#

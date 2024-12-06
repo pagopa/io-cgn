@@ -15,7 +15,7 @@ module "app_service_attribute_authority" {
   node_version        = 20
 
   tier = var.attribute_authority_tier
-  
+
   # SETTINGS
   app_settings      = local.attribute_authority.app_settings
   slot_app_settings = local.attribute_authority.app_settings
