@@ -31,7 +31,7 @@ module "runner_commons" {
 
 
   vnet = {
-    name = "${local.project}-itn-${local.domain}-vnet-01"
+    name                = "${local.project}-itn-${local.domain}-vnet-01"
     resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
   }
 
