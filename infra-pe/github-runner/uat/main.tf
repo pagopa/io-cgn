@@ -30,7 +30,7 @@ module "runner_commons" {
   tags       = local.tags
 
   vnet = {
-    name = "${local.project}-itn-${local.domain}-vnet-01"
+    name                = "${local.project}-itn-${local.domain}-vnet-01"
     resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
   }
 
