@@ -29,7 +29,8 @@ export class RedisClientFactory {
           this.createClusterRedisClient(
             this.config.REDIS_URL,
             this.config.REDIS_PASSWORD,
-            this.config.REDIS_PORT
+            this.config.REDIS_PORT,
+            this.config.REDIS_TLS_ENABLED
           )
         ),
         O.getOrElse(() =>
@@ -58,11 +59,12 @@ export class RedisClientFactory {
       Record<string, never>
     >({
       password,
+      pingInterval: 1000 * 60 * 9,
       socket: {
         port: redisPort,
         tls: useTls
       },
-      url: `redis://${redisUrl}`
+      url: useTls ? `rediss://${redisUrl}` : `redis://${redisUrl}`
     });
     await redisClientConnection.connect();
     return redisClientConnection;
@@ -71,7 +73,8 @@ export class RedisClientFactory {
   protected readonly createClusterRedisClient = async (
     redisUrl: string,
     password?: string,
-    port?: string
+    port?: string,
+    useTls: boolean = true
   ): Promise<RedisClient> => {
     const redisPort: number = parseInt(port || DEFAULT_REDIS_PORT, 10);
     const redisClientConnection = redis.createCluster<
@@ -80,12 +83,15 @@ export class RedisClientFactory {
       Record<string, never>
     >({
       defaults: {
+        pingInterval: 1000 * 60 * 9,
         legacyMode: true,
         password
       },
       rootNodes: [
         {
-          url: `redis://${redisUrl}:${redisPort}`
+          url: useTls
+            ? `rediss://${redisUrl}:${redisPort}`
+            : `redis://${redisUrl}:${redisPort}`
         }
       ],
       useReplicas: true
