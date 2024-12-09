@@ -47,7 +47,7 @@ module "app_federated_identities" {
 
   prefix       = local.prefix
   env_short    = local.env_short
-  env          = "app-pe-${local.env}"
+  env          = "pe-app-${local.env}"
   domain       = "${local.domain}-app"
   repositories = [local.repo_name]
   tags         = local.tags
