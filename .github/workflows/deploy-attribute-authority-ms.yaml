@@ -1,0 +1,37 @@
+name: Deploy App Service (attribute-authority-ms)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/attribute-authority-ms/CHANGELOG.md"
+      - ".github/workflows/deploy-attribute-authority-ms.yaml"
+
+jobs:
+
+  deploy_uat:
+    name: Deploy Attribute Authority UAT
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
+    secrets: inherit
+    with:
+      workspace_name: attribute-authority-ms
+      environment: pe-app-uat
+      resource_group_name: io-u-itn-cgn-pe-rg-01
+      function_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
+      health_check_path: "/ping"
+      use_staging_slot: true
+
+  deploy_prod:
+    needs: deploy_uat
+    name: Deploy Attribute Authority PROD
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
+    secrets: inherit
+    with:
+      workspace_name: attribute-authority-ms
+      environment: pe-app-prod
+      resource_group_name: io-p-itn-cgn-pe-rg-01
+      function_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
+      health_check_path: "/ping"
+      use_staging_slot: true
