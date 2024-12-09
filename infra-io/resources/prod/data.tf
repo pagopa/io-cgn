@@ -49,3 +49,8 @@ data "azurerm_storage_account" "storage_api" {
   name                = replace("${local.project_legacy}stapi", "-", "")
   resource_group_name = format("%s-rg-internal", local.project_legacy)
 }
+
+data "azurerm_storage_account" "storage_cgn" {
+  name                = replace("${local.project_legacy}stcgn", "-", "")
+  resource_group_name = format("%s-rg-cgn", local.project_legacy)
+}
