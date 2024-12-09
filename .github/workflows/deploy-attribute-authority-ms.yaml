@@ -21,7 +21,7 @@ jobs:
       resource_group_name: io-u-itn-cgn-pe-rg-01
       function_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
       health_check_path: "/ping"
-      use_staging_slot: true
+      use_staging_slot: false
 
   deploy_prod:
     needs: deploy_uat
