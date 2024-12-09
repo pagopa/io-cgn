@@ -58,6 +58,7 @@ export class RedisClientFactory {
       Record<string, never>,
       Record<string, never>
     >({
+      legacyMode: false,
       password,
       pingInterval: 1000 * 60 * 9,
       socket: {
