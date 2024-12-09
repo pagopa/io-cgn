@@ -62,7 +62,10 @@ export class RedisClientFactory {
       pingInterval: 1000 * 60 * 9,
       socket: {
         port: redisPort,
-        tls: useTls
+        tls: useTls,
+        checkServerIdentity: (_hostname, _cert) => undefined,
+        keepAlive: 2000,
+        reconnectStrategy: retries => Math.min(retries * 100, 3000)
       },
       url: useTls ? `rediss://${redisUrl}` : `redis://${redisUrl}`
     });
