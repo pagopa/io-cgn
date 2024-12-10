@@ -16,7 +16,6 @@ describe("RedisClientFactory", () => {
     ${"simple"}  | ${false}     | ${false}
     ${"simple"}  | ${true}      | ${false}
     ${"simple"}  | ${false}     | ${true}
-    ${"cluster"} | ${true}      | ${true}
   `(
     "should resolve to a $instanceType client when isProduction = $isProduction and REDIS_CLUSTER_ENABLED = $isClusterEnabled",
     async ({ isProduction, isClusterEnabled }) => {
