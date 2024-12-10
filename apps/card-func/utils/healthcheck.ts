@@ -17,7 +17,7 @@ import * as TE from "fp-ts/lib/TaskEither";
 
 import { sequenceT } from "fp-ts/lib/Apply";
 import fetch from "node-fetch";
-import { RedisClientFactory } from "../utils/redis";
+import { getRedisClientFactory } from "../utils/redis";
 import { getConfig, IConfig } from "./config";
 
 type ProblemSource =
@@ -163,7 +163,7 @@ export const checkRedisConnection = (
 ): HealthCheck<"RedisConnection", true> =>
   pipe(
     TE.tryCatch(
-      () => new RedisClientFactory(config).getInstance(),
+      () => getRedisClientFactory(config).getInstance(),
       toHealthProblems("RedisConnection")
     ),
     TE.map(_ => true)
