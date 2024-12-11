@@ -2,7 +2,7 @@
   "name": "merchant-func",
   "description": "Functions exposed to the merchants with API integration",
   "author": "IO team",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "license": "MIT",
   "scripts": {
     "prebuild": "shx rm -rf dist && yarn generate:definitions",

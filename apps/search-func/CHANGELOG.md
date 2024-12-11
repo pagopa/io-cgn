@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.3.5
+
+### Patch Changes
+
+- 83cacf0: updated redis integration
+
 ## 3.3.4
 
 ### Patch Changes

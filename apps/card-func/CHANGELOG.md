@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.4
+
+### Patch Changes
+
+- 83cacf0: updated redis integration
+
 ## 4.0.3
 
 ### Patch Changes
