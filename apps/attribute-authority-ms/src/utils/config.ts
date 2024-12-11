@@ -23,9 +23,6 @@ export const IConfig = t.interface({
 
   // eslint-disable-next-line sort-keys
   ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI: NonEmptyString,
-  BLOB_NAME: NonEmptyString,
-  CONTAINER_NAME: NonEmptyString,
-  STORAGE_CONNECTION_STRING: NonEmptyString,
   // eslint-disable-next-line sort-keys
   SERVER_PORT: NonNegativeInteger
 });
