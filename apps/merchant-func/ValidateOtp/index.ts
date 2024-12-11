@@ -5,7 +5,7 @@ import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/ex
 import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
-import { RedisClientFactory } from "../utils/redis";
+import { getRedisClientFactory } from "../utils/redis";
 import { getConfigOrThrow } from "../utils/config";
 import { ValidateOtp } from "./handler";
 
@@ -22,7 +22,7 @@ winston.add(contextTransport);
 const app = express();
 secureExpressApp(app);
 
-const redisClientFactory = new RedisClientFactory(config);
+const redisClientFactory = getRedisClientFactory(config);
 
 // Add express route
 app.post("/api/v1/merchant/cgn/otp/validate", ValidateOtp(redisClientFactory));

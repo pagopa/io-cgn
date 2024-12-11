@@ -5,17 +5,17 @@ import { IConfig } from "./config";
 export type RedisClient = redis.RedisClientType;
 
 /**
- * Redis client factory singleton
+ * RedisClientFactory singleton
  */
 let redisClientFactory: RedisClientFactory;
 
 export const getRedisClientFactory = (config: IConfig) => {
-  if(!redisClientFactory) {
+  if (!redisClientFactory) {
     const newRedisClientFactory = new RedisClientFactory(config);
     redisClientFactory = newRedisClientFactory;
   }
   return redisClientFactory;
-}
+};
 
 /**
  * Class that instantiate connection to Redis

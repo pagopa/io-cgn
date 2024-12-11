@@ -4,6 +4,22 @@ import { IConfig } from "./config";
 
 export type RedisClient = redis.RedisClientType;
 
+/**
+ * RedisClientFactory singleton
+ */
+let redisClientFactory: RedisClientFactory;
+
+export const getRedisClientFactory = (config: IConfig) => {
+  if (!redisClientFactory) {
+    const newRedisClientFactory = new RedisClientFactory(config);
+    redisClientFactory = newRedisClientFactory;
+  }
+  return redisClientFactory;
+};
+
+/**
+ * Class that instantiate connection to Redis
+ */
 export class RedisClientFactory {
   protected readonly config: IConfig;
   // eslint-disable-next-line functional/prefer-readonly-type
