@@ -1,3 +1,8 @@
+data "azurerm_key_vault_secret" "attribute_authority_postgresql_connection_string" {
+  name         = "attribute-authority-postgresql-connection-string"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
 module "app_service_attribute_authority" {
   source = "../_modules/app_service_attribute_authority"
 
