@@ -9,7 +9,7 @@
   "scripts": {
     "prebuild": "shx rm -rf dist && yarn generate:definitions",
     "build": "tsc",
-    "start": "dotenv -e .env node dist/src/server.js",
+    "start": "node --env-file=.env dist/src/server.js",
     "generate:definitions": "shx rm -rf generated/definitions && gen-api-models --api-spec openapi/index.yaml --out-dir generated/definitions",
     "dist:modules": "modclean -r -n default:safe && yarn install --production",
     "predeploy": "yarn generate:definitions && yarn build && yarn dist:modules",
