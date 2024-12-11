@@ -19,7 +19,7 @@ jobs:
       workspace_name: attribute-authority-ms
       environment: pe-app-uat
       resource_group_name: io-u-itn-cgn-pe-rg-01
-      function_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
+      web_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
       health_check_path: "/ping"
       use_staging_slot: false
 
@@ -32,6 +32,6 @@ jobs:
       workspace_name: attribute-authority-ms
       environment: pe-app-prod
       resource_group_name: io-p-itn-cgn-pe-rg-01
-      function_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
+      web_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
       health_check_path: "/ping"
       use_staging_slot: true
