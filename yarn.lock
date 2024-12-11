@@ -4481,7 +4481,7 @@ __metadata:
     node-fetch: "npm:^2.6.1"
     oval: "npm:^1.0.0"
     prettier: "npm:^1.18.2"
-    redis: "npm:^4.6.4"
+    redis: "npm:^4.6.15"
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:^4.3.5"
@@ -11414,7 +11414,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     oval: "npm:^1.0.0"
     prettier: "npm:^1.18.2"
-    redis: "npm:^4.6.4"
+    redis: "npm:^4.6.15"
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:^4.3.5"
@@ -14052,7 +14052,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^4.6.4":
+"redis@npm:^4.6.15":
   version: 4.7.0
   resolution: "redis@npm:4.7.0"
   dependencies:
@@ -14636,7 +14636,7 @@ __metadata:
     pg: "npm:^8.6.0"
     pg-hstore: "npm:^2.3.3"
     prettier: "npm:^1.18.2"
-    redis: "npm:^4.6.4"
+    redis: "npm:^4.6.15"
     sequelize: "npm:^6.6.2"
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"

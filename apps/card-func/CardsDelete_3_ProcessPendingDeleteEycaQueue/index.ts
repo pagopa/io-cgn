@@ -10,9 +10,8 @@ import {
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
 import { deleteCard, DeleteEycaCard, preIssueCard, PreIssueEycaCard } from "../utils/eyca";
-import { QueueStorage } from "../utils/queue";
-import { RedisClientFactory } from "../utils/redis";
-import { deleteCardExpiration, insertCardExpiration } from "../utils/table_storage";
+import { getRedisClientFactory } from "../utils/redis";
+import { deleteCardExpiration } from "../utils/table_storage";
 import { handler } from "./handler";
 
 const config = getConfigOrThrow();
@@ -30,7 +29,7 @@ const deleteEycaExpiration = deleteCardExpiration(
   config.EYCA_EXPIRATION_TABLE_NAME
 );
 
-const redisClientFactory = new RedisClientFactory(config);
+const redisClientFactory = getRedisClientFactory(config);
 
 const eycaClient = EycaAPIClient(config.EYCA_API_BASE_URL);
 

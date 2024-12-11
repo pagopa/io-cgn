@@ -8,7 +8,7 @@ import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middl
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
 
 import { getConfigOrThrow } from "../utils/config";
-import { RedisClientFactory } from "../utils/redis";
+import { getRedisClientFactory } from "../utils/redis";
 import { cgnOperatorDb } from "../client/sequelize";
 import { GetDiscountBucketCode } from "./handler";
 
@@ -30,7 +30,7 @@ app.get(
   "/api/v1/cgn/operator-search/discount-bucket-code/:discountId",
   GetDiscountBucketCode(
     cgnOperatorDb,
-    new RedisClientFactory(config),
+    getRedisClientFactory(config),
     config.CGN_BUCKET_CODE_LOCK_LIMIT
   )
 );

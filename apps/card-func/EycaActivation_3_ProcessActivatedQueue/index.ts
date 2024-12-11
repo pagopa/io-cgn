@@ -8,7 +8,7 @@ import {
 } from "../models/user_eyca_card";
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
-import { RedisClientFactory } from "../utils/redis";
+import { getRedisClientFactory } from "../utils/redis";
 import { handler } from "./handler";
 import { updateCard, UpdateCcdbEycaCard } from "../utils/eyca";
 import { QueueStorage } from "../utils/queue";
@@ -21,7 +21,7 @@ const userEycaCardsContainer = cosmosdbClient
 
 const userEycaCardModel = new UserEycaCardModel(userEycaCardsContainer);
 
-const redisClientFactory = new RedisClientFactory(config);
+const redisClientFactory = getRedisClientFactory(config);
 
 const eycaClient = EycaAPIClient(config.EYCA_API_BASE_URL);
 
