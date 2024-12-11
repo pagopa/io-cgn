@@ -4,8 +4,7 @@
   "description": "Attribute Authority Microservice",
   "author": "https://pagopa.gov.it",
   "license": "MIT",
-  "main": "dist/server.js",
-  "types": "dist/server.d.ts",
+  "main": "dist/src/server.js",
   "scripts": {
     "prebuild": "shx rm -rf dist && yarn generate:definitions",
     "build": "tsc",
