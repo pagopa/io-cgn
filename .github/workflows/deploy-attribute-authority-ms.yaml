@@ -20,8 +20,8 @@ jobs:
       environment: pe-app-uat
       resource_group_name: io-u-itn-cgn-pe-rg-01
       web_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
-      health_check_path: "/ping"
       use_staging_slot: false
+      use_private_agent: true
 
   deploy_prod:
     needs: deploy_uat
@@ -33,5 +33,5 @@ jobs:
       environment: pe-app-prod
       resource_group_name: io-p-itn-cgn-pe-rg-01
       web_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
-      health_check_path: "/ping"
       use_staging_slot: true
+      use_private_agent: true
