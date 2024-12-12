@@ -1,0 +1,47 @@
+name: Deploy App Service (onboarding-portal-backend-ms)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/deploy-onboarding-portal-backend-ms.yaml"
+
+jobs:
+  build_docker_image:
+    name: Build and push docker image
+    uses: pagopa/dx/.github/workflows/docker_image_build.yaml
+    secrets: inherit
+    with:
+      dockerfile_path: './Dockerfile'
+      dockerfile_context: '.'
+      docker_image_name: ''
+      image_description: ''
+      image_authors: 'PagoPA'
+      build_args: ''
+
+  deploy_uat:
+    name: Deploy Attribute Authority UAT
+    uses: pagopa/dx/.github/workflows/web_app_deploy.yaml@add-web-app-deploy-workflow
+    secrets: inherit
+    with:
+      workspace_name: attribute-authority-ms
+      environment: pe-app-uat
+      resource_group_name: io-u-itn-cgn-pe-rg-01
+      web_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
+      use_staging_slot: false
+      use_private_agent: true
+
+  deploy_prod:
+    needs: deploy_uat
+    name: Deploy Attribute Authority PROD
+    uses: pagopa/dx/.github/workflows/web_app_deploy.yaml@add-web-app-deploy-workflow
+    secrets: inherit
+    with:
+      workspace_name: attribute-authority-ms
+      environment: pe-app-prod
+      resource_group_name: io-p-itn-cgn-pe-rg-01
+      web_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
+      use_staging_slot: true
+      use_private_agent: true
