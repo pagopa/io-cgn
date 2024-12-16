@@ -10,6 +10,8 @@ module "app_service_onboarding_portal_backend" {
     instance_number = "01"
   }
 
+  stack               = "java"
+  java_version        = "17"
   resource_group_name = var.resource_group_name
   health_check_path   = "/actuator/health"
 
