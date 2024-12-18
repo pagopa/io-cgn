@@ -6,7 +6,7 @@ module "app_service_onboarding_portal_backend" {
     env_short       = var.env_short
     location        = var.location
     domain          = var.domain
-    app_name        = "onboarding-portal-backend"
+    app_name        = "backend"
     instance_number = "01"
   }
 
