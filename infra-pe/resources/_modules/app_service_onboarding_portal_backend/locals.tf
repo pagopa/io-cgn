@@ -9,11 +9,7 @@ locals {
       WEBSITE_SWAP_WARMUP_PING_STATUSES   = "200"
       WEBSITE_DNS_SERVER                  = "168.63.129.16"
       WEBSITES_CONTAINER_START_TIME_LIMIT = 600
-
-      # DOCKER CONTAINER REGISTRY
-      DOCKER_REGISTRY_SERVER_URL      = var.docker_registry_server_url
-      DOCKER_REGISTRY_SERVER_USERNAME = var.docker_registry_server_username
-      DOCKER_REGISTRY_SERVER_PASSWORD = var.docker_registry_server_password
+      WEBSITE_RUN_FROM_PACKAGE            = 0
 
       # ENVIRONMENT
       SPRING_PROFILES_ACTIVE     = "prod"
