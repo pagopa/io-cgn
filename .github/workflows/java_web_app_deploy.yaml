@@ -100,6 +100,7 @@ jobs:
            --resource-group ${{ inputs.resource_group_name }} \
            --name ${{ inputs.web_app_name }} \
            --src-path  ${{ env.BUNDLE_NAME }}.jar \
+           --type jar \
            --async false
 
       - name: Deploy to Staging Slot
@@ -110,6 +111,7 @@ jobs:
            --name ${{ inputs.web_app_name }} \
            --slot staging \
            --src-path  ${{ env.BUNDLE_NAME }}.jar \
+           --type jar \
            --async false
 
       - name: Swap Staging and Production Slots
