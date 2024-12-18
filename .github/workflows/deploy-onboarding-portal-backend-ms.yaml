@@ -16,7 +16,7 @@ jobs:
     secrets: inherit
     with:
       app_folder: cgn-onboarding-portal-backend
-      environment: pe-app-uat
+      environment: uat
       resource_group_name: io-u-itn-cgn-pe-rg-01
       web_app_name: io-u-itn-cgn-pe-backend-app-01
       use_staging_slot: true
@@ -30,7 +30,7 @@ jobs:
     secrets: inherit
     with:
       app_folder: cgn-onboarding-portal-backend
-      environment: pe-app-prod
+      environment: prod
       resource_group_name: io-p-itn-cgn-pe-rg-01
       web_app_name: io-p-itn-cgn-pe-backend-app-01
       use_staging_slot: true
