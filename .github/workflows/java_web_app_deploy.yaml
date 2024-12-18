@@ -99,9 +99,10 @@ jobs:
           az webapp deploy \
            --resource-group ${{ inputs.resource_group_name }} \
            --name ${{ inputs.web_app_name }} \
-           --src-path  ${{ env.BUNDLE_NAME }}.jar \
+           --src-path ./${{ env.BUNDLE_NAME }}.jar \
            --type jar \
-           --async false
+           --async false \
+           --debug
 
       - name: Deploy to Staging Slot
         if: ${{ inputs.use_staging_slot == true }}
@@ -110,9 +111,10 @@ jobs:
            --resource-group ${{ inputs.resource_group_name }} \
            --name ${{ inputs.web_app_name }} \
            --slot staging \
-           --src-path  ${{ env.BUNDLE_NAME }}.jar \
+           --src-path ./${{ env.BUNDLE_NAME }}.jar \
            --type jar \
-           --async false
+           --async false \
+           --debug
 
       - name: Swap Staging and Production Slots
         if: ${{ inputs.use_staging_slot == true }}
