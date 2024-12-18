@@ -12,7 +12,7 @@ jobs:
 
   deploy_uat:
     name: Deploy Onboarding Portal Backend UAT
-    uses: ./.github/workflows/java_web_app_deploy.yaml@main
+    uses: ./.github/workflows/java_web_app_deploy.yaml
     secrets: inherit
     with:
       app_folder: cgn-onboarding-portal-backend
@@ -25,7 +25,7 @@ jobs:
   deploy_prod:
     needs: deploy_uat
     name: Deploy Onboarding Portal Backend PROD
-    uses: ./.github/workflows/java_web_app_deploy.yaml@main
+    uses: ./.github/workflows/java_web_app_deploy.yaml
     secrets: inherit
     with:
       app_folder: cgn-onboarding-portal-backend
