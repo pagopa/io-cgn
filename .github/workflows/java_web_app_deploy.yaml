@@ -52,7 +52,7 @@ jobs:
           submodules: 'true'
 
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -90,7 +90,7 @@ jobs:
           name: ${{ env.BUNDLE_NAME }}
 
       - name: Azure Login
-        uses: azure/login@v2 # v2.0.0
+        uses: azure/login@a65d910e8af852a8061c627c456678983e180302 # v2
         env:
           ARM_USE_OIDC: true
         with:
