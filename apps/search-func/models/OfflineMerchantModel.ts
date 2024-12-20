@@ -16,4 +16,5 @@ export default class OfflineMerchantModel extends Model {
   public readonly categories_with_new_discounts?: ReadonlyArray<
     ProductCategoryEnumModelType
   >;
+  public readonly number_of_new_discounts?: number;
 }

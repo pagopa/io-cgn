@@ -383,6 +383,8 @@ definitions:
         $ref: "#/definitions/DiscountCodeType"
       newDiscounts:
         type: boolean
+      numberOfNewDiscounts:
+        type: number
 
   OfflineMerchants:
     type: object
@@ -421,6 +423,8 @@ definitions:
         minimum: 0
       newDiscounts:
         type: boolean
+      numberOfNewDiscounts:
+        type: number
 
   Address:
     type: object

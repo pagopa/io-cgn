@@ -1,5 +1,8 @@
 /* tslint:disable: no-any */
-import { DiscountCodeType, DiscountCodeTypeEnum } from "../../generated/definitions/DiscountCodeType";
+import {
+  DiscountCodeType,
+  DiscountCodeTypeEnum
+} from "../../generated/definitions/DiscountCodeType";
 import { OnlineMerchantSearchRequest } from "../../generated/definitions/OnlineMerchantSearchRequest";
 import { ProductCategoryEnum } from "../../generated/definitions/ProductCategory";
 import { DiscountCodeTypeEnumModel } from "../../models/DiscountCodeTypes";
@@ -47,7 +50,10 @@ const anOnlineMerchantResponse = {
   name: anOnlineMerchant.name,
   websiteUrl: anOnlineMerchant.website_url,
   discountCodeType: DiscountCodeTypeEnum.static,
-  productCategories: [ProductCategoryEnum.cultureAndEntertainment, ProductCategoryEnum.sports],
+  productCategories: [
+    ProductCategoryEnum.cultureAndEntertainment,
+    ProductCategoryEnum.sports
+  ],
   newDiscounts: true
 };
 
@@ -100,6 +106,47 @@ describe("GetOnlineMerchantsHandler", () => {
     }
   });
 
+  it("should return the result with numberOfNewDiscounts if new discounts are present", async () => {
+    queryMock.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolve([
+          {
+            ...anOnlineMerchant,
+            number_of_new_discounts: 1,
+            product_categories: [
+              ProductCategoryEnumModelType.cultureAndEntertainment,
+              ProductCategoryEnumModelType.home,
+              ProductCategoryEnumModelType.learning,
+              ProductCategoryEnumModelType.health
+            ]
+          }
+        ]);
+      })
+    );
+    const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
+      {} as any,
+      searchRequestBody as OnlineMerchantSearchRequest
+    );
+    expect(queryMock).toBeCalledTimes(1);
+    expect(response.kind).toBe("IResponseSuccessJson");
+    if (response.kind === "IResponseSuccessJson") {
+      expect(response.value).toEqual({
+        items: [
+          {
+            ...anOnlineMerchantResponse,
+            numberOfNewDiscounts: 1,
+            productCategories: [
+              ProductCategoryEnum.cultureAndEntertainment,
+              ProductCategoryEnum.home,
+              ProductCategoryEnum.learning,
+              ProductCategoryEnum.health
+            ]
+          }
+        ]
+      });
+    }
+  });
+
   it("should add to the db query the merchant name filter, lowering its case", async () => {
     queryMock.mockImplementationOnce((query, params) => {
       expect(query).toMatch(/AND searchable_name LIKE/);
@@ -110,7 +157,7 @@ describe("GetOnlineMerchantsHandler", () => {
 
     const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
       {} as any,
-      {merchantName: "A Company"} as OnlineMerchantSearchRequest
+      { merchantName: "A Company" } as OnlineMerchantSearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -125,7 +172,12 @@ describe("GetOnlineMerchantsHandler", () => {
 
     const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
       {} as any,
-       {productCategories: [ProductCategoryEnum.health, ProductCategoryEnum.cultureAndEntertainment]} as OnlineMerchantSearchRequest 
+      {
+        productCategories: [
+          ProductCategoryEnum.health,
+          ProductCategoryEnum.cultureAndEntertainment
+        ]
+      } as OnlineMerchantSearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -142,13 +194,16 @@ describe("GetOnlineMerchantsHandler", () => {
 
     const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
       {} as any,
-      {productCategories: [ProductCategoryEnum.travelling,
-        ProductCategoryEnum.sports,
-        ProductCategoryEnum.home,
-        ProductCategoryEnum.learning,
-        ProductCategoryEnum.sports,
-        ProductCategoryEnum.health]} as OnlineMerchantSearchRequest 
-
+      {
+        productCategories: [
+          ProductCategoryEnum.travelling,
+          ProductCategoryEnum.sports,
+          ProductCategoryEnum.home,
+          ProductCategoryEnum.learning,
+          ProductCategoryEnum.sports,
+          ProductCategoryEnum.health
+        ]
+      } as OnlineMerchantSearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -163,7 +218,7 @@ describe("GetOnlineMerchantsHandler", () => {
 
     const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
       {} as any,
-      {page: 2, pageSize: 10} as OnlineMerchantSearchRequest 
+      { page: 2, pageSize: 10 } as OnlineMerchantSearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseSuccessJson");
@@ -179,7 +234,7 @@ describe("GetOnlineMerchantsHandler", () => {
 
     const response = await GetOnlineMerchantsHandler(cgnOperatorDbMock as any)(
       {} as any,
-      {page: 0, pageSize: 20} as OnlineMerchantSearchRequest 
+      { page: 0, pageSize: 20 } as OnlineMerchantSearchRequest
     );
     expect(queryMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");
