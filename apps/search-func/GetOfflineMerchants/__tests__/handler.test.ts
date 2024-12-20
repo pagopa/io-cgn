@@ -130,6 +130,47 @@ describe("GetOfflineMerchantsHandler", () => {
     }
   });
 
+  it("should return the result with numberOfNewDiscounts if new discounts are present", async () => {
+    queryMock.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolve([
+          {
+            ...anOfflineMerchant,
+            number_of_new_discounts: 1,
+            product_categories: [
+              ProductCategoryEnumModelType.cultureAndEntertainment,
+              ProductCategoryEnumModelType.home,
+              ProductCategoryEnumModelType.learning,
+              ProductCategoryEnumModelType.health
+            ]
+          }
+        ]);
+      })
+    );
+    const response = await GetOfflineMerchantsHandler(cgnOperatorDbMock as any)(
+      mockContext,
+      aSearchRequestBody as OfflineMerchantSearchRequest
+    );
+    expect(queryMock).toBeCalledTimes(1);
+    expect(response.kind).toBe("IResponseSuccessJson");
+    if (response.kind === "IResponseSuccessJson") {
+      expect(response.value).toEqual({
+        items: [
+          {
+            ...anOfflineMerchantResponse,
+            numberOfNewDiscounts: 1,
+            productCategories: [
+              ProductCategoryEnum.cultureAndEntertainment,
+              ProductCategoryEnum.home,
+              ProductCategoryEnum.learning,
+              ProductCategoryEnum.health
+            ]
+          }
+        ]
+      });
+    }
+  });
+
   it("should add to the db query the merchant name filter, lowering its case", async () => {
     queryMock.mockImplementationOnce((query, params) => {
       expect(query).toMatch(/AND searchable_name LIKE/);

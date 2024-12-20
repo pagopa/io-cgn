@@ -95,6 +95,7 @@ export const GetOnlineMerchantsHandler = (
               ),
               O.getOrElse(() => true) // no category filter => maintain the queried flag
             ),
+          numberOfNewDiscounts: onlineMerchant.number_of_new_discounts,
           productCategories: pipe(
             [...onlineMerchant.product_categories],
             AR.map(ProductCategoryFromModel)
