@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.4.0
+
+### Minor Changes
+
+- dad3c27: Added numberOfNewDiscounts column to merchants API
+
 ## 3.3.5
 
 ### Patch Changes
