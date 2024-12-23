@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.5
+
+### Patch Changes
+
+- caa14c7: fixed message format
+
 ## 4.0.4
 
 ### Patch Changes
