@@ -18,9 +18,9 @@ jobs:
     name: Infra review IO PROD
     secrets: inherit
     with:
-      environment: io-prod-ci
+      environment: prod
       base_path: infra-io/resources
-      override_github_environment: io-prod
+      override_github_environment: io-prod-ci
       use_private_agent: true
       use_labels: true
       override_labels: io-prod
