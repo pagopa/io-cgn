@@ -119,7 +119,7 @@ SELECT
   discount_code_type,
   new_discounts,
   categories_with_new_discounts,
-  number_of_new_discounts
+  number_of_new_discounts::integer
 FROM online_merchant
 WHERE 1 = 1
   ${nameFilterQueryPart(nameFilter)}
@@ -138,7 +138,7 @@ SELECT
   full_address AS address,
   new_discounts,
   categories_with_new_discounts,
-  number_of_new_discounts,
+  number_of_new_discounts::integer,
   latitude,
   longitude${pipe(
     searchRequest.userCoordinates,
