@@ -14,7 +14,7 @@ jobs:
     name: Release Infrastructure IO PROD
     secrets: inherit
     with:
-      environment: prod
+      environment: io-prod-cd
       base_path: infra-io/resources
       override_github_environment: io-prod
       use_private_agent: true
