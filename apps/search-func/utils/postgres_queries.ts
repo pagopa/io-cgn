@@ -118,8 +118,8 @@ SELECT
   website_url,
   discount_code_type,
   new_discounts,
-  categories_with_new_discounts,
-  number_of_new_discounts::integer
+  number_of_new_discounts::integer,
+  categories_with_new_discounts
 FROM online_merchant
 WHERE 1 = 1
   ${nameFilterQueryPart(nameFilter)}
