@@ -18,25 +18,34 @@ provider "azurerm" {
   features {
   }
 }
+module "container_app_job" {
+  source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_job_gh_runner_v2?ref=v8.60.0"
 
-module "container_app_job_selfhosted_runner" {
-  source = "github.com/pagopa/dx//infra/modules/github_selfhosted_runner_on_container_app_jobs?ref=main"
+  location            = "italynorth"
+  prefix              = local.prefix
+  env_short           = local.env_short
+  resource_group_name = "${local.prefix}-${local.env_short}-itn-github-runner-rg-01"
+  runner_labels       = ["${local.prefix}-${local.env}"]
 
-  prefix    = local.prefix
-  env_short = local.env_short
+  key_vault_name        = "${local.prefix}-${local.env_short}-kv-common"
+  key_vault_rg          = "${local.prefix}-${local.env_short}-rg-common"
+  key_vault_secret_name = "github-runner-pat"
 
-  repo_name = local.repo_name
+  environment_name = "${local.prefix}-${local.env_short}-itn-github-runner-cae-01"
+  environment_rg   = "${local.prefix}-${local.env_short}-itn-github-runner-rg-01"
 
-  container_app_environment = {
-    name                = "${local.prefix}-${local.env_short}-github-runner-cae"
-    resource_group_name = "${local.prefix}-${local.env_short}-github-runner-rg"
+  job = {
+    name = "cgn"
+  }
+  job_meta = {
+    repo = local.repo_name
   }
 
-  key_vault = {
-    name                = "${local.prefix}-${local.env_short}-kv-common"
-    resource_group_name = "${local.prefix}-${local.env_short}-rg-common"
+  container = {
+    cpu    = 1
+    memory = "2Gi"
+    image  = "ghcr.io/pagopa/github-self-hosted-runner-azure:latest"
   }
 
   tags = local.tags
 }
-
