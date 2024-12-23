@@ -29,6 +29,7 @@ import { OnlineMerchantSearchRequest } from "../generated/definitions/OnlineMerc
 import { selectOnlineMerchantsQuery } from "../utils/postgres_queries";
 import { errorsToError } from "../utils/conversions";
 import { DiscountCodeTypeFromModel } from "../models/DiscountCodeTypes";
+import { withoutUndefinedValues } from "@pagopa/ts-commons/lib/types";
 
 type ResponseTypes =
   | IResponseSuccessJson<OnlineMerchants>
@@ -72,36 +73,43 @@ export const GetOnlineMerchantsHandler = (
     ),
     TE.map(
       flow(
-        AR.map(onlineMerchant => ({
-          ...onlineMerchant,
-          discountCodeType: DiscountCodeTypeFromModel(
-            onlineMerchant.discount_code_type
-          ),
-          numberOfNewDiscounts: onlineMerchant.number_of_new_discounts,
-          newDiscounts:
-            onlineMerchant.new_discounts &&
-            pipe(
-              O.fromNullable(searchRequest.productCategories),
-              O.map(filter_categories =>
-                pipe(
-                  O.fromNullable(onlineMerchant.categories_with_new_discounts),
-                  O.map(
-                    categories_with_new_discounts =>
-                      categories_with_new_discounts.filter(v =>
-                        filter_categories.includes(ProductCategoryFromModel(v))
-                      ).length > 0
-                  ),
-                  O.getOrElse(() => false) // there are no categories with new discounts
-                )
-              ),
-              O.getOrElse(() => true) // no category filter => maintain the queried flag
+        AR.map(onlineMerchant =>
+          withoutUndefinedValues({
+            ...onlineMerchant,
+            discountCodeType: DiscountCodeTypeFromModel(
+              onlineMerchant.discount_code_type
             ),
-          productCategories: pipe(
-            [...onlineMerchant.product_categories],
-            AR.map(ProductCategoryFromModel)
-          ),
-          websiteUrl: onlineMerchant.website_url
-        })),
+            numberOfNewDiscounts:
+              onlineMerchant.number_of_new_discounts ?? undefined,
+            newDiscounts:
+              onlineMerchant.new_discounts &&
+              pipe(
+                O.fromNullable(searchRequest.productCategories),
+                O.map(filter_categories =>
+                  pipe(
+                    O.fromNullable(
+                      onlineMerchant.categories_with_new_discounts
+                    ),
+                    O.map(
+                      categories_with_new_discounts =>
+                        categories_with_new_discounts.filter(v =>
+                          filter_categories.includes(
+                            ProductCategoryFromModel(v)
+                          )
+                        ).length > 0
+                    ),
+                    O.getOrElse(() => false) // there are no categories with new discounts
+                  )
+                ),
+                O.getOrElse(() => true) // no category filter => maintain the queried flag
+              ),
+            productCategories: pipe(
+              [...onlineMerchant.product_categories],
+              AR.map(ProductCategoryFromModel)
+            ),
+            websiteUrl: onlineMerchant.website_url
+          })
+        ),
         onlineMerchants => ({ items: onlineMerchants })
       )
     ),

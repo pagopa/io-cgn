@@ -104,7 +104,7 @@ export const GetOfflineMerchantsHandler = (
                 ),
                 O.getOrElse(() => true) // no category filter => maintain the queried flag
               ),
-            numberOfNewDiscounts: offlineMerchant.number_of_new_discounts,
+            numberOfNewDiscounts: offlineMerchant.number_of_new_discounts ?? undefined,
             productCategories: offlineMerchant.product_categories.map(pc =>
               ProductCategoryFromModel(pc)
             )
