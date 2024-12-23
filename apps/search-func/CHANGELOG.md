@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.4.1
+
+### Patch Changes
+
+- c6e9174: fixed numberOfNewDiscounts retrieval
+
 ## 3.4.0
 
 ### Minor Changes
