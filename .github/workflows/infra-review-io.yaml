@@ -14,7 +14,7 @@ on:
 
 jobs:
   infra_review:
-    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@gh-runner-labels-can-be-overridden
     name: Infra review IO PROD
     secrets: inherit
     with:
@@ -22,3 +22,5 @@ jobs:
       base_path: infra-io/resources
       override_github_environment: io-prod
       use_private_agent: true
+      use_labels: true
+      override_labels: io-prod
