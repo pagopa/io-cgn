@@ -1,8 +1,12 @@
 /* tslint:disable: no-any */
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { SearchRequest } from "../../generated/definitions/SearchRequest";
-import { Search, SearchHandler } from "../handler";
+import { SearchHandler } from "../handler";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
 
 const anEmptyArrayPromise = new Promise(resolve => {
   resolve([]);

@@ -6,6 +6,8 @@ import * as TE from "fp-ts/lib/TaskEither";
 import * as O from "fp-ts/lib/Option";
 import * as redisStorage from "../../utils/redis_storage";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+import { setTelemetryClient } from "../../utils/appinsights";
 
 const aDiscountFk = "1";
 const aBucketCodeK = 1;
@@ -63,10 +65,6 @@ const cgnOperatorDbMock = {
 
 const anExpectedResponse: DiscountBucketCode = { code: aBucketCode };
 
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 const popFromListMock = jest
   .fn()
   .mockImplementation(() => TE.of(O.some(aBucketCode)));
@@ -75,6 +73,12 @@ const pushInListMock = jest.fn().mockImplementation(() => TE.of(true));
 
 jest.spyOn(redisStorage, "popFromList").mockImplementation(popFromListMock);
 jest.spyOn(redisStorage, "pushInList").mockImplementation(pushInListMock);
+
+setTelemetryClient(telemetryClientMock);
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("GetDiscountBucketCodeHandler", () => {
   it("should return a IResponseSuccessJson with a discount bucket code by discount id if Redis does not contain any discount codes", async () => {

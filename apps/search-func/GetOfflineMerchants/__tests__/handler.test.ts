@@ -7,6 +7,10 @@ import {
 import { ProductCategoryEnum } from "../../generated/definitions/ProductCategory";
 import { ProductCategoryEnumModelType } from "../../models/ProductCategories";
 import { GetOfflineMerchantsHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
 
 const anEmptyArrayPromise = new Promise(resolve => {
   resolve([]);

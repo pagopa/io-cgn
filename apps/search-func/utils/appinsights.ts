@@ -15,13 +15,24 @@ const samplingPercentage = pipe(
 /** TelemetryClient singleton */
 let telemetryClient: ai.TelemetryClient;
 
+/**
+ * Sets a given telemetry client
+ * Useful for testing purposes
+ * @param tc a given, or mocked, telemetry client
+ */
+export const setTelemetryClient = (tc: ai.TelemetryClient) => {
+  telemetryClient = tc;
+};
+
+/**
+ * Initialize a singleton with a telemetry client
+ */
 export const initTelemetryClient = () => {
   if (!telemetryClient) {
     ai.setup().start();
     telemetryClient = ai.defaultClient;
     telemetryClient.config.samplingPercentage = samplingPercentage;
   }
-  return telemetryClient;
 };
 
 /**

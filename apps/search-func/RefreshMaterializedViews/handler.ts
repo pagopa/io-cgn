@@ -7,7 +7,7 @@ import { trackErrorToVoid, trackEventToVoid } from "../utils/appinsights";
 
 export const getMaterializedViewRefreshHandler = (
   cgnOperatorDb: Sequelize
-): AzureFunction => async (_: Context): Promise<void> =>
+): AzureFunction => async (_: Context): Promise<boolean> =>
   pipe(
     TE.tryCatch(
       () =>
@@ -17,7 +17,15 @@ export const getMaterializedViewRefreshHandler = (
         ),
       E.toError
     ),
-    TE.mapLeft(trackErrorToVoid),
-    TE.map(_ => trackEventToVoid("materialized.view.refreshed")),
+    TE.bimap(
+      e => {
+        trackErrorToVoid(e);
+        return false;
+      },
+      _ => {
+        trackEventToVoid("materialized.view.refreshed");
+        return true;
+      }
+    ),
     TE.toUnion
   )();

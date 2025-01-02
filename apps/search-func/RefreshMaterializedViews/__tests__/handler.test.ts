@@ -1,5 +1,8 @@
 import { getMaterializedViewRefreshHandler } from "../handler";
-import * as E from "fp-ts/lib/Either";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
 
 const queryMock = jest.fn().mockImplementation((query, __) => {
   expect(query).toBe(
@@ -24,27 +27,17 @@ describe("getMaterializedViewRefreshHandler", () => {
     )({} as any);
 
     expect(queryMock).toBeCalledTimes(1);
-    expect(E.isRight(response)).toBe(true);
-    if (E.isRight(response)) {
-      expect(response.right).toEqual("Materialized view refreshed!");
-    }
+    expect(response).toEqual(true);
   });
 
   it("should report an error if there is an issue with the db", async () => {
-    queryMock.mockImplementationOnce((_, __) => {
-      return new Promise(_ => {
-        throw Error("Query error!");
-      });
-    });
+    queryMock.mockRejectedValueOnce("cannot connect to db");
 
     const response = await getMaterializedViewRefreshHandler(
       cgnOperatorDbMock as any
     )({} as any);
 
     expect(queryMock).toBeCalledTimes(1);
-    expect(E.isLeft(response)).toBe(true);
-    if (E.isLeft(response)) {
-      expect(response.left).toStrictEqual(Error("Query error!"));
-    }
+    expect(response).toEqual(false);
   });
 });
