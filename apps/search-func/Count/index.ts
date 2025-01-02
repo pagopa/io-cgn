@@ -6,11 +6,16 @@ import * as express from "express";
 import { cgnOperatorDb } from "../client/sequelize";
 import initTelemetryClient from "../utils/appinsights";
 import { Count } from "./handler";
+import { getConfigOrThrow } from "../utils/config";
+
+// ensure config is correct
+getConfigOrThrow();
+
+// init telemetry client
+initTelemetryClient();
 
 const app = express();
 secureExpressApp(app);
-
-initTelemetryClient();
 
 app.get("/api/v1/cgn/operator-search/count", Count(cgnOperatorDb));
 

@@ -9,8 +9,10 @@ import { getRedisClientFactory } from "../utils/redis";
 import { GetDiscountBucketCode } from "./handler";
 import initTelemetryClient from "../utils/appinsights";
 
+// load config and ensure it is correct
 const config = getConfigOrThrow();
 
+// init telemetry client
 initTelemetryClient();
 
 // Setup Express
