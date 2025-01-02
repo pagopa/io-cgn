@@ -198,7 +198,7 @@ describe("ProcessActivatedCgnQueue", () => {
         expiration_date: cardActivatedMessageMock.expiration_date,
         status: "ACTIVATED"
       },
-      fiscal_code: "RODFDS92S10H501T",
+      fiscal_code: anEYCAUneligibleFiscalCode,
       message_type: "CARD_ACTIVATED"
     });
   });
