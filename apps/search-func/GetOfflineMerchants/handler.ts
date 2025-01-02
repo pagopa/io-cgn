@@ -15,7 +15,6 @@ import { Sequelize, QueryTypes } from "sequelize";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import { withoutUndefinedValues } from "@pagopa/ts-commons/lib/types";
@@ -27,6 +26,7 @@ import OfflineMerchantModel from "../models/OfflineMerchantModel";
 import { OfflineMerchantSearchRequest } from "../generated/definitions/OfflineMerchantSearchRequest";
 import { selectOfflineMerchantsQuery } from "../utils/postgres_queries";
 import { errorsToError } from "../utils/conversions";
+import { trackErrorToResponseErrorInternal } from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<OfflineMerchants>
@@ -104,7 +104,8 @@ export const GetOfflineMerchantsHandler = (
                 ),
                 O.getOrElse(() => true) // no category filter => maintain the queried flag
               ),
-            numberOfNewDiscounts: offlineMerchant.number_of_new_discounts ?? undefined,
+            numberOfNewDiscounts:
+              offlineMerchant.number_of_new_discounts ?? undefined,
             productCategories: offlineMerchant.product_categories.map(pc =>
               ProductCategoryFromModel(pc)
             )
@@ -116,10 +117,7 @@ export const GetOfflineMerchantsHandler = (
     TE.chainW(
       flow(OfflineMerchants.decode, TE.fromEither, TE.mapLeft(errorsToError))
     ),
-    TE.bimap(e => {
-      ctx.log.error(`${logPrefix}|ERROR=${e.message}`);
-      return ResponseErrorInternal(e.message);
-    }, ResponseSuccessJson),
+    TE.bimap(trackErrorToResponseErrorInternal, ResponseSuccessJson),
     TE.toUnion
   )();
 

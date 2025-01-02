@@ -38,6 +38,10 @@ import {
   SelectMerchantAddressListQuery,
   SelectMerchantProfileQuery
 } from "../utils/postgres_queries";
+import {
+  trackErrorsToResponseErrorInternal,
+  trackErrorToResponseErrorInternal
+} from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<Merchant>
@@ -65,7 +69,7 @@ const addressesTask = (
         }),
       E.toError
     ),
-    TE.mapLeft(e => ResponseErrorInternal(e.message))
+    TE.mapLeft(trackErrorToResponseErrorInternal)
   );
 
 const discountsTask = (
@@ -83,7 +87,7 @@ const discountsTask = (
         }),
       E.toError
     ),
-    TE.mapLeft(e => ResponseErrorInternal(e.message))
+    TE.mapLeft(trackErrorToResponseErrorInternal)
   );
 
 const allNationalAddressesArray = [
@@ -111,7 +115,7 @@ export const GetMerchantHandler = (
         }),
       E.toError
     ),
-    TE.bimap(e => ResponseErrorInternal(e.message), AR.head),
+    TE.bimap(trackErrorToResponseErrorInternal, AR.head),
     TE.chainW(
       TE.fromOption(() =>
         ResponseErrorNotFound("Not Found", "Merchant profile not found")
@@ -211,10 +215,7 @@ export const GetMerchantHandler = (
       flow(
         Merchant.decode,
         TE.fromEither,
-        TE.bimap(
-          e => ResponseErrorInternal(errorsToError(e).message),
-          ResponseSuccessJson
-        )
+        TE.bimap(trackErrorsToResponseErrorInternal, ResponseSuccessJson)
       )
     ),
     TE.toUnion

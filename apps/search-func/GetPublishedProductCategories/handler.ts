@@ -14,7 +14,6 @@ import { pipe, flow, identity } from "fp-ts/lib/function";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import { ProductCategoryFromModel } from "../models/ProductCategories";
@@ -23,6 +22,7 @@ import { SelectPublishedProductCategories } from "../utils/postgres_queries";
 import { errorsToError } from "../utils/conversions";
 import { PublishedProductCategoriesResult } from "../generated/definitions/PublishedProductCategoriesResult";
 import { OptionalQueryParamMiddleware } from "../middlewares/optional_query_param";
+import { trackErrorToResponseErrorInternal } from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<PublishedProductCategoriesResult>
@@ -75,7 +75,7 @@ export const GetPublishedProductCategoriesHandler = (
         TE.mapLeft(errorsToError)
       )
     ),
-    TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
+    TE.bimap(trackErrorToResponseErrorInternal, ResponseSuccessJson),
     TE.toUnion
   )();
 

@@ -17,7 +17,6 @@ import * as O from "fp-ts/lib/Option";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import { toLowerCase } from "fp-ts/lib/string";
@@ -30,6 +29,7 @@ import { selectOnlineMerchantsQuery } from "../utils/postgres_queries";
 import { errorsToError } from "../utils/conversions";
 import { DiscountCodeTypeFromModel } from "../models/DiscountCodeTypes";
 import { withoutUndefinedValues } from "@pagopa/ts-commons/lib/types";
+import { trackErrorToResponseErrorInternal } from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<OnlineMerchants>
@@ -116,7 +116,7 @@ export const GetOnlineMerchantsHandler = (
     TE.chain(
       flow(OnlineMerchants.decode, TE.fromEither, TE.mapLeft(errorsToError))
     ),
-    TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
+    TE.bimap(trackErrorToResponseErrorInternal, ResponseSuccessJson),
     TE.toUnion
   )();
 
