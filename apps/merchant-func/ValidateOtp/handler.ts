@@ -10,14 +10,12 @@ import {
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import {
-  IResponseErrorNotFound,
-  ResponseErrorInternal,
-  ResponseErrorNotFound
-} from "@pagopa/ts-commons/lib/responses";
-import {
   IResponseErrorForbiddenNotAuthorized,
   IResponseErrorInternal,
+  IResponseErrorNotFound,
   IResponseSuccessJson,
+  ResponseErrorInternal,
+  ResponseErrorNotFound,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
@@ -27,13 +25,14 @@ import { parse } from "fp-ts/lib/Json";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as t from "io-ts";
-import { RedisClientFactory } from "../utils/redis";
 import { OtpCode } from "../generated/definitions/OtpCode";
 import { OtpValidationResponse } from "../generated/definitions/OtpValidationResponse";
 import { Timestamp } from "../generated/definitions/Timestamp";
 import { ValidateOtpPayload } from "../generated/definitions/ValidateOtpPayload";
-import { mapWithPrivacyLog } from "../utils/logging";
+import { errorObfuscation } from "../utils/privacy";
+import { RedisClientFactory } from "../utils/redis";
 import { deleteTask, getTask } from "../utils/redis_storage";
+import { trackErrorToVoid } from "../utils/appinsights";
 
 // This value is used on redis to prefix key value pair of type
 // KEY            | VALUE
@@ -144,15 +143,15 @@ export const ValidateOtpHandler = (
   context,
   payload
 ): Promise<ResponseTypes> => {
-  const errorLogMapping = mapWithPrivacyLog(
-    context,
-    logPrefix,
+  const obfuscate = errorObfuscation(
     payload.otp_code.toString() as NonEmptyString
   );
   return pipe(
     retrieveOtp(redisClientFactory, payload.otp_code),
-    TE.mapLeft(_ =>
-      errorLogMapping(_, ResponseErrorInternal("Cannot validate OTP Code"))
+    TE.mapLeft(
+      flow(obfuscate, trackErrorToVoid, _ =>
+        ResponseErrorInternal("Cannot validate OTP")
+      )
     ),
     TE.chain(
       O.fold(
@@ -169,11 +168,9 @@ export const ValidateOtpHandler = (
                   otpResponseAndFiscalCode.fiscalCode
                 ),
                 TE.bimap(
-                  _ =>
-                    errorLogMapping(
-                      _,
-                      ResponseErrorInternal("Cannot invalidate OTP")
-                    ),
+                  flow(obfuscate, trackErrorToVoid, _ =>
+                    ResponseErrorInternal("Cannot invalidate OTP")
+                  ),
                   () => ({
                     expires_at: new Date()
                   })

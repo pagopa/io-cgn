@@ -8,8 +8,13 @@ import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src
 import { getRedisClientFactory } from "../utils/redis";
 import { getConfigOrThrow } from "../utils/config";
 import { ValidateOtp } from "./handler";
+import initTelemetryClient from "../utils/appinsights";
 
+// load config and ensure it is correct
 const config = getConfigOrThrow();
+
+// initialize telemetry client
+initTelemetryClient();
 
 // eslint-disable-next-line functional/no-let
 let logger: Context["log"] | undefined;

@@ -5,7 +5,6 @@ import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as date_fns from "date-fns";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { context } from "../../__mocks__/durable-functions";
 import { Otp } from "../../generated/definitions/Otp";
 import { OtpCode } from "../../generated/definitions/OtpCode";
 import { ValidateOtpPayload } from "../../generated/definitions/ValidateOtpPayload";
@@ -16,6 +15,12 @@ import {
   OTP_PREFIX,
   ValidateOtpHandler
 } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
+
+const contextMock = {} as any;
 
 const now = new Date();
 const anOtpCode = "AAAAAAAA123" as OtpCode;
@@ -59,13 +64,13 @@ describe("ValidateOtpHandler", () => {
       TE.left(new Error("Cannot read from Redis"))
     );
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayload);
+    const response = await handler(contextMock, aValidationPayload);
     expect(response.kind).toBe("IResponseErrorInternal");
   });
   it("should return an internal error if Otp payload cannot be parsed", async () => {
     getTaskMock.mockImplementationOnce(() => TE.of(O.some("")));
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayload);
+    const response = await handler(contextMock, aValidationPayload);
     expect(response.kind).toBe("IResponseErrorInternal");
   });
 
@@ -74,7 +79,10 @@ describe("ValidateOtpHandler", () => {
       TE.left("Cannot delete from Redis")
     );
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayloadWithInvalidation);
+    const response = await handler(
+      contextMock,
+      aValidationPayloadWithInvalidation
+    );
     expect(deleteTaskMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");
   });
@@ -82,7 +90,10 @@ describe("ValidateOtpHandler", () => {
   it("should return an internal error if OTP delete fails", async () => {
     deleteTaskMock.mockImplementationOnce(() => TE.of(false));
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayloadWithInvalidation);
+    const response = await handler(
+      contextMock,
+      aValidationPayloadWithInvalidation
+    );
     expect(deleteTaskMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");
   });
@@ -91,7 +102,10 @@ describe("ValidateOtpHandler", () => {
     deleteTaskMock.mockImplementationOnce(() => TE.of(true));
     deleteTaskMock.mockImplementationOnce(() => TE.of(false));
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayloadWithInvalidation);
+    const response = await handler(
+      contextMock,
+      aValidationPayloadWithInvalidation
+    );
     expect(deleteTaskMock).toBeCalledTimes(2);
     expect(response.kind).toBe("IResponseErrorInternal");
   });
@@ -99,13 +113,13 @@ describe("ValidateOtpHandler", () => {
   it("should return Not found if Otp code doesn't match on Redis", async () => {
     getTaskMock.mockImplementationOnce(() => TE.of(O.none));
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayload);
+    const response = await handler(contextMock, aValidationPayload);
     expect(response.kind).toBe("IResponseErrorNotFound");
   });
 
   it("should return success if otp validation succeed", async () => {
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayload);
+    const response = await handler(contextMock, aValidationPayload);
     expect(response.kind).toBe("IResponseSuccessJson");
     if (response.kind === "IResponseSuccessJson") {
       expect(response.value).toEqual({
@@ -116,7 +130,10 @@ describe("ValidateOtpHandler", () => {
 
   it("should return success if otp validation and delete succeed", async () => {
     const handler = ValidateOtpHandler({} as any);
-    const response = await handler(context, aValidationPayloadWithInvalidation);
+    const response = await handler(
+      contextMock,
+      aValidationPayloadWithInvalidation
+    );
     expect(deleteTaskMock).toBeCalledTimes(2);
     expect(deleteTaskMock).toHaveBeenNthCalledWith(
       1,

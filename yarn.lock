@@ -12307,7 +12307,7 @@ __metadata:
     "@types/node-fetch": "npm:^2.5.7"
     "@types/redis": "npm:^2.8.28"
     "@types/vfile-message": "npm:^2.0.0"
-    applicationinsights: "npm:^1.8.10"
+    applicationinsights: "npm:^3.4.0"
     auto-changelog: "npm:2.2.1"
     azure-storage: "npm:^2.10.3"
     date-fns: "npm:^2.16.1"
@@ -12328,7 +12328,6 @@ __metadata:
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"
     typescript: "npm:^4.3.5"
-    winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
 
