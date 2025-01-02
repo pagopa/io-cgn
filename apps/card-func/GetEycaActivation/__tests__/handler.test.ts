@@ -12,6 +12,10 @@ import {
 } from "../../__mocks__/mock";
 import { StatusEnum } from "../../generated/definitions/CgnActivationDetail";
 import { GetEycaActivationHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const handler = GetEycaActivationHandler(userEycaCardModelMock);
 

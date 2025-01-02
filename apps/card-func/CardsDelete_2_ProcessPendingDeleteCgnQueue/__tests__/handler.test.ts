@@ -1,10 +1,8 @@
 import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import {
-  aFiscalCode,
   aUserCardActivated,
   aUserCardExpired,
   aUserCardPendingDelete,
@@ -23,6 +21,10 @@ import {
   userCgnModelMock
 } from "../../__mocks__/mock";
 import { handler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 // mock return values for this test
 cgnFindLastVersionByModelIdMock.mockReturnValue(

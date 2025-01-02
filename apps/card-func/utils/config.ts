@@ -77,6 +77,11 @@ export const IConfig = t.intersection([
     MESSAGES_QUEUE_NAME: NonEmptyString,
 
     OTP_TTL_IN_SECONDS: NonNegativeInteger,
+
+    // ensure AI env vars are present
+    APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
+    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
+
     isProduction: t.boolean
   }),
   RedisParams,

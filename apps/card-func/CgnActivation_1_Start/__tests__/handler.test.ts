@@ -1,5 +1,4 @@
 import { toCosmosErrorResponse } from "@pagopa/io-functions-commons/dist/src/utils/cosmosdb_model";
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import {
@@ -18,6 +17,10 @@ import {
 import { StartCgnActivationHandler } from "../handler";
 import { DEFAULT_CGN_UPPER_BOUND_AGE } from "../../utils/config";
 import { InstanceId } from "../../generated/definitions/InstanceId";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 describe("StartCgnActivation", () => {
   beforeEach(() => {

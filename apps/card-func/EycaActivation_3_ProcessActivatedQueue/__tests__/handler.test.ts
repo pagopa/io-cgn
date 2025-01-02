@@ -11,6 +11,10 @@ import {
   userEycaCardModelMock
 } from "../../__mocks__/mock";
 import { handler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 eycaFindLastVersionByModelIdMock.mockReturnValue(
   TE.right(aUserEycaCardPending)

@@ -1,6 +1,4 @@
 ﻿import { Context } from "@azure/functions";
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import { ExponentialRetryPolicyFilter, TableService } from "azure-storage";
 import * as date_fns from "date-fns";
 import { pipe } from "fp-ts/lib/function";
 import * as RA from "fp-ts/lib/ReadonlyArray";
@@ -10,11 +8,9 @@ import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardEx
 import { CardExpiredMessage } from "../types/queue-message";
 import {
   GetExpiredCardUserFunction,
-  getExpiredCardUsers
 } from "../utils/card_expiration";
 import { throwError, trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { debugPipe } from "../utils/debug";
 
 export const getUpdateExpiredCgnHandler = (
   getExpiredCardUsersFunction: GetExpiredCardUserFunction,

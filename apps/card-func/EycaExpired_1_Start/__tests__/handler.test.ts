@@ -8,6 +8,10 @@ import {
   queueStorageMock
 } from "../../__mocks__/mock";
 import { getUpdateExpiredEycaHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 describe("EycaExpired_1_Start", () => {
   beforeEach(() => {

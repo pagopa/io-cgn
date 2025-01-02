@@ -22,6 +22,10 @@ import {
   CgnStatusUpsertRequest
 } from "../../generated/definitions/CgnStatusUpsertRequest";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const aCgnUpsertStatusRequest: CgnStatusUpsertRequest = {
   action: ActionEnum.REVOKE,

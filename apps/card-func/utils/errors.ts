@@ -1,20 +1,16 @@
 import { Context } from "@azure/functions";
-import { trackException } from "./appinsights";
+import { trackErrorToVoid } from "./appinsights";
 import { IResponse } from "@pagopa/ts-commons/lib/responses";
 import { pipe } from "fp-ts/lib/function";
 
 export const trackError = (context: Context, logPrefix: string) => (
   error: Error
 ): Error => {
-  trackException({
-    exception: error,
-    properties: {
-      detail: error.message,
-      isSuccess: false,
-      name: `cgn.exception.${logPrefix}.failure`
-    }
+  trackErrorToVoid(error, {
+    detail: error.message,
+    isSuccess: "false",
+    name: `cgn.exception.${logPrefix}.failure`
   });
-  context.log.error(error.message);
   return error;
 };
 

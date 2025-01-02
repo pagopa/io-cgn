@@ -1,52 +1,108 @@
-import { initAppInsights } from "@pagopa/ts-commons/lib/appinsights";
 import { IntegerFromString } from "@pagopa/ts-commons/lib/numbers";
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { ResponseErrorInternal } from "@pagopa/ts-commons/lib/responses";
 import * as ai from "applicationinsights";
-import {
-  EventTelemetry,
-  ExceptionTelemetry
-} from "applicationinsights/out/Declarations/Contracts";
-import * as E from "fp-ts/lib/Either";
+import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
-import * as O from "fp-ts/lib/Option";
+import { Errors } from "io-ts";
+import { errorsToError } from "./conversions";
 
-// the internal function runtime has MaxTelemetryItem per second set to 20 by default
-// @see https://github.com/Azure/azure-functions-host/blob/master/src/WebJobs.Script/Config/ApplicationInsightsLoggerOptionsSetup.cs#L29
-const DEFAULT_SAMPLING_PERCENTAGE = 20;
+const samplingPercentage = pipe(
+  process.env["APPINSIGHTS_SAMPLING_PERCENTAGE"],
+  IntegerFromString.decode,
+  E.getOrElse(_ => 5)
+);
 
-// Avoid to initialize Application Insights more than once
-export const initTelemetryClient = (
-  env = process.env
-): ai.TelemetryClient | undefined =>
-  ai.defaultClient
-    ? ai.defaultClient
-    : pipe(
-        env.APPLICATIONINSIGHTS_CONNECTION_STRING,
-        NonEmptyString.decode,
-        E.fold(
-          _ => undefined,
-          k =>
-            initAppInsights(k, {
-              disableAppInsights: env.APPINSIGHTS_DISABLE === "true",
-              samplingPercentage: pipe(
-                env.APPINSIGHTS_SAMPLING_PERCENTAGE,
-                IntegerFromString.decode,
-                E.getOrElse(() => DEFAULT_SAMPLING_PERCENTAGE)
-              )
-            })
-        )
-      );
+/** TelemetryClient singleton */
+let telemetryClient: ai.TelemetryClient;
 
-export const trackEvent = (event: EventTelemetry): void => {
-  pipe(
-    O.fromNullable(initTelemetryClient()),
-    O.map(client => O.tryCatch(() => client.trackEvent(event)))
-  );
+/**
+ * Sets a given telemetry client
+ * Useful for testing purposes
+ * @param tc a given, or mocked, telemetry client
+ */
+export const setTelemetryClient = (tc: ai.TelemetryClient) => {
+  telemetryClient = tc;
 };
 
-export const trackException = (event: ExceptionTelemetry): void => {
-  pipe(
-    O.fromNullable(initTelemetryClient()),
-    O.map(client => O.tryCatch(() => client.trackException(event)))
-  );
+/**
+ * Initialize a singleton with a telemetry client
+ */
+export const initTelemetryClient = () => {
+  if (!telemetryClient) {
+    ai.setup().start();
+    telemetryClient = ai.defaultClient;
+    telemetryClient.config.samplingPercentage = samplingPercentage;
+  }
 };
+
+/**
+ * Track an event and returns void
+ * @param name
+ * @param additionalProperties
+ */
+export const trackEventToVoid = (
+  name: string,
+  additionalProperties: Record<string, string> = {}
+) => {
+  telemetryClient.trackEvent({
+    name: name,
+    properties: additionalProperties
+  });
+};
+
+/**
+ * Track an error and returns void
+ * @param error
+ * @param additionalProperties
+ */
+export const trackErrorToVoid = (
+  error: Error,
+  additionalProperties: Record<string, string> = {}
+): void => {
+  telemetryClient.trackException({
+    exception: error,
+    properties: additionalProperties
+  });
+};
+
+/**
+ * Track an error and returns the error
+ * @param error
+ * @param additionalProperties
+ */
+export const trackErrorToError = (
+  error: Error,
+  additionalProperties: Record<string, string> = {}
+) => {
+  trackErrorToVoid(error, additionalProperties);
+  return error;
+};
+
+/**
+ * Track an error and returns a ResponseErrorInternal
+ * @param error
+ * @param additionalProperties
+ */
+export const trackErrorToResponseErrorInternal = (
+  error: Error,
+  additionalProperties: Record<string, string> = {}
+) => {
+  trackErrorToVoid(error, additionalProperties);
+  return ResponseErrorInternal(error.message);
+};
+
+/**
+ * Track some errors and returns a ResponseErrorInternal
+ * @param errors
+ * @param additionalProperties
+ */
+export const trackErrorsToResponseErrorInternal = (
+  errors: Errors,
+  additionalProperties: Record<string, string> = {}
+) => {
+  const error = errorsToError(errors);
+  trackErrorToVoid(error, additionalProperties);
+  return ResponseErrorInternal(error.message);
+};
+
+export default initTelemetryClient;
