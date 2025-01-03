@@ -1,22 +1,22 @@
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
-import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
-import { getConfig, IConfig } from "./config";
+import { pipe } from "fp-ts/lib/function";
+
+import { IConfig, getConfig } from "./config";
 
 type ProblemSource = "AzureCosmosDB" | "AzureStorage" | "Config" | "Url";
-export type HealthProblem<S extends ProblemSource> = string & {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+export type HealthProblem<S extends ProblemSource> = {
   readonly __source: S;
-};
+} & string;
 export type HealthCheck<
   S extends ProblemSource = ProblemSource,
-  True = true
-> = TE.TaskEither<ReadonlyArray<HealthProblem<S>>, True>;
+  True = true,
+> = TE.TaskEither<readonly HealthProblem<S>[], True>;
 
 // format and cast a problem message with its source
 const formatProblem = <S extends ProblemSource>(
   source: S,
-  message: string
+  message: string,
 ): HealthProblem<S> => `${source}|${message}` as HealthProblem<S>;
 
 /**
@@ -28,12 +28,12 @@ export const checkConfigHealth = (): HealthCheck<"Config", IConfig> =>
   pipe(
     getConfig(),
     TE.fromEither,
-    TE.mapLeft(errors =>
-      errors.map(e =>
+    TE.mapLeft((errors) =>
+      errors.map((e) =>
         // give each problem its own line
-        formatProblem("Config", readableReport([e]))
-      )
-    )
+        formatProblem("Config", readableReport([e])),
+      ),
+    ),
   );
 
 /**
@@ -45,6 +45,6 @@ export const checkApplicationHealth = (): HealthCheck<ProblemSource, true> =>
   pipe(
     void 0,
     TE.of,
-    TE.chain(_ => checkConfigHealth()),
-    TE.map(_ => true)
+    TE.chain(() => checkConfigHealth()),
+    TE.map(() => true),
   );

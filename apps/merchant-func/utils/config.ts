@@ -7,34 +7,34 @@
 
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import * as O from "fp-ts/lib/Option";
 import * as E from "fp-ts/lib/Either";
+import * as O from "fp-ts/lib/Option";
 import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
 
 export const RedisParams = t.intersection([
   t.interface({
-    REDIS_URL: NonEmptyString
+    REDIS_URL: NonEmptyString,
   }),
   t.partial({
     REDIS_CLUSTER_ENABLED: t.boolean,
     REDIS_PASSWORD: NonEmptyString,
     REDIS_PORT: NonEmptyString,
-    REDIS_TLS_ENABLED: t.boolean
-  })
+    REDIS_TLS_ENABLED: t.boolean,
+  }),
 ]);
 
 // global app configuration
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.intersection([
   t.interface({
+    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
     // ensure AI env vars are present
     APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
-    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
 
-    isProduction: t.boolean
+    isProduction: t.boolean,
   }),
-  RedisParams
+  RedisParams,
 ]);
 
 // No need to re-evaluate this object for each call
@@ -43,16 +43,16 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   REDIS_CLUSTER_ENABLED: pipe(
     process.env.REDIS_CLUSTER_ENABLED,
     O.fromNullable,
-    O.map(v => v.toLowerCase() === "true"),
-    O.toUndefined
+    O.map((v) => v.toLowerCase() === "true"),
+    O.toUndefined,
   ),
   REDIS_TLS_ENABLED: pipe(
     process.env.REDIS_TLS_ENABLED,
     O.fromNullable,
-    O.map(v => v.toLowerCase() === "true"),
-    O.toUndefined
+    O.map((v) => v.toLowerCase() === "true"),
+    O.toUndefined,
   ),
-  isProduction: process.env.NODE_ENV === "production"
+  isProduction: process.env.NODE_ENV === "production",
 });
 
 /**
@@ -73,7 +73,7 @@ export const getConfig = (): t.Validation<IConfig> => errorOrConfig;
 export const getConfigOrThrow = (): IConfig =>
   pipe(
     errorOrConfig,
-    E.getOrElse<t.Errors, IConfig>(errors => {
+    E.getOrElse<t.Errors, IConfig>((errors) => {
       throw new Error(`Invalid configuration: ${readableReport(errors)}`);
-    })
+    }),
   );
