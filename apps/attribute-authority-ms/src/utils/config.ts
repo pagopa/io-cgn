@@ -7,7 +7,7 @@
 
 import {
   IntegerFromString,
-  NonNegativeInteger
+  NonNegativeInteger,
 } from "@pagopa/ts-commons/lib/numbers";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
@@ -18,13 +18,12 @@ import * as t from "io-ts";
 // global app configuration
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
+  ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI: NonEmptyString,
+
+  SERVER_PORT: NonNegativeInteger,
+
   isPostgresSslEnabled: t.boolean,
   isProduction: t.boolean,
-
-  // eslint-disable-next-line sort-keys
-  ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI: NonEmptyString,
-  // eslint-disable-next-line sort-keys
-  SERVER_PORT: NonNegativeInteger
 });
 
 // No need to re-evaluate this object for each call
@@ -33,11 +32,11 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   SERVER_PORT: pipe(
     process.env.SERVER_PORT,
     IntegerFromString.decode,
-    E.getOrElse(() => -1)
+    E.getOrElse(() => -1),
   ),
   isPostgresSslEnabled:
     process.env.ATTRIBUTE_AUTHORITY_POSTGRES_DB_SSL_ENABLED === "true",
-  isProduction: process.env.NODE_ENV === "production"
+  isProduction: process.env.NODE_ENV === "production",
 });
 
 /**
@@ -46,7 +45,6 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
  *
  * @returns either the configuration values or a list of validation errors
  */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function getConfig(): t.Validation<IConfig> {
   return errorOrConfig;
 }
@@ -58,12 +56,11 @@ export function getConfig(): t.Validation<IConfig> {
  * @returns the configuration values
  * @throws validation errors found while parsing the application configuration
  */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function getConfigOrThrow(): IConfig {
   return pipe(
     errorOrConfig,
-    E.getOrElseW(errors => {
+    E.getOrElseW((errors) => {
       throw new Error(`Invalid configuration: ${readableReport(errors)}`);
-    })
+    }),
   );
 }
