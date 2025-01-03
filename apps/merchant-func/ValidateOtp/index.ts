@@ -1,13 +1,13 @@
-import * as express from "express";
 import { Context } from "@azure/functions";
-import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
-import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
-import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
-import { getRedisClientFactory } from "../utils/redis";
-import { getConfigOrThrow } from "../utils/config";
-import { ValidateOtp } from "./handler";
+import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
+import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import * as express from "express";
+
 import initTelemetryClient from "../utils/appinsights";
+import { getConfigOrThrow } from "../utils/config";
+import { getRedisClientFactory } from "../utils/redis";
+import { ValidateOtp } from "./handler";
 
 // load config and ensure it is correct
 const config = getConfigOrThrow();

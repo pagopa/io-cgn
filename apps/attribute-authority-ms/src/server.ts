@@ -1,47 +1,45 @@
-import { IncomingMessage, Server, ServerResponse } from "http";
-import { fastify, FastifyInstance, FastifyRequest } from "fastify";
-import * as TE from "fp-ts/lib/TaskEither";
-import { Sequelize } from "sequelize";
+import { FastifyInstance, FastifyRequest, fastify } from "fastify";
 import { ContentTypeParserDoneFunction } from "fastify/types/content-type-parser";
 import { RouteGenericInterface } from "fastify/types/route";
+import * as TE from "fp-ts/lib/TaskEither";
+import { IncomingMessage, Server, ServerResponse } from "http";
+import { Sequelize } from "sequelize";
+
 import { Companies } from "../generated/definitions/Companies";
 import { GetCompaniesBody } from "../generated/definitions/GetCompaniesBody";
-import { ReferentFiscalCode } from "../generated/definitions/ReferentFiscalCode";
 import { KeyOrganizationFiscalCode } from "../generated/definitions/KeyOrganizationFiscalCode";
-import { Organizations } from "../generated/definitions/Organizations";
 import { OrganizationWithReferentsPost } from "../generated/definitions/OrganizationWithReferentsPost";
+import { Organizations } from "../generated/definitions/Organizations";
+import { ReferentFiscalCode } from "../generated/definitions/ReferentFiscalCode";
 import { getCompaniesHandler } from "./handlers/company";
-import {
-  withDoubleRequestMiddlewares,
-  withRequestMiddlewares
-} from "./middlewares/request_middleware";
-import { requiredBodyMiddleware } from "./middlewares/required_body_payload";
-import { getConfigOrThrow } from "./utils/config";
-import {
-  IDeleteReferentPathParams,
-  IGetOrganizationsQueryString
-} from "./models/parameters";
 import * as organizationHandler from "./handlers/organization";
 import * as referentHandler from "./handlers/referent";
-import { queryParamsMiddleware } from "./middlewares/query_params";
 import { pathParamsMiddleware } from "./middlewares/path_params";
-import { sequelizePostgresOptions } from "./utils/sequelize-options";
+import { queryParamsMiddleware } from "./middlewares/query_params";
+import {
+  withDoubleRequestMiddlewares,
+  withRequestMiddlewares,
+} from "./middlewares/request_middleware";
+import { requiredBodyMiddleware } from "./middlewares/required_body_payload";
 import { initModels } from "./models/dbModels";
+import {
+  IDeleteReferentPathParams,
+  IGetOrganizationsQueryString,
+} from "./models/parameters";
+import { getConfigOrThrow } from "./utils/config";
+import { sequelizePostgresOptions } from "./utils/sequelize-options";
 
 const config = getConfigOrThrow();
 
 // Create a http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
 // If using http2 we'd pass <http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
-const server: FastifyInstance<
-  Server,
-  IncomingMessage,
-  ServerResponse
-> = fastify({});
+const server: FastifyInstance<Server, IncomingMessage, ServerResponse> =
+  fastify({});
 
 const attributeAuthorityPostgresDb = new Sequelize(
   config.ATTRIBUTE_AUTHORITY_POSTGRES_DB_URI,
-  sequelizePostgresOptions()
+  sequelizePostgresOptions(),
 );
 
 // Initialize models and sync them
@@ -61,7 +59,7 @@ server.addContentTypeParser(
       unknown
     >,
     body: string,
-    done: ContentTypeParserDoneFunction
+    done: ContentTypeParserDoneFunction,
   ) => {
     try {
       if (!body) {
@@ -72,7 +70,7 @@ server.addContentTypeParser(
     } catch (err) {
       done({ ...(err as SyntaxError) }, undefined);
     }
-  }
+  },
 );
 
 server.get<{
@@ -85,10 +83,10 @@ server.get<{
       withRequestMiddlewares(
         request,
         reply,
-        queryParamsMiddleware(IGetOrganizationsQueryString)
-      )
+        queryParamsMiddleware(IGetOrganizationsQueryString),
+      ),
   },
-  organizationHandler.getOrganizationsHandler()
+  organizationHandler.getOrganizationsHandler(),
 );
 
 server.post<{ readonly Body: OrganizationWithReferentsPost }>(
@@ -98,10 +96,10 @@ server.post<{ readonly Body: OrganizationWithReferentsPost }>(
       withRequestMiddlewares(
         request,
         reply,
-        requiredBodyMiddleware(OrganizationWithReferentsPost)
-      )
+        requiredBodyMiddleware(OrganizationWithReferentsPost),
+      ),
   },
-  organizationHandler.upsertOrganizationHandler()
+  organizationHandler.upsertOrganizationHandler(),
 );
 
 server.get(
@@ -111,38 +109,36 @@ server.get(
       withRequestMiddlewares(
         request,
         reply,
-        pathParamsMiddleware(KeyOrganizationFiscalCode)
-      )
+        pathParamsMiddleware(KeyOrganizationFiscalCode),
+      ),
   },
-  organizationHandler.getOrganizationHandler()
+  organizationHandler.getOrganizationHandler(),
 );
 
 server.delete(
   "/organization/:keyOrganizationFiscalCode",
   {
-    // eslint-disable-next-line sonarjs/no-identical-functions
     preHandler: async (request, reply) =>
       withRequestMiddlewares(
         request,
         reply,
-        pathParamsMiddleware(KeyOrganizationFiscalCode)
-      )
+        pathParamsMiddleware(KeyOrganizationFiscalCode),
+      ),
   },
-  organizationHandler.deleteOrganizationHandler()
+  organizationHandler.deleteOrganizationHandler(),
 );
 
 server.get(
   "/organization/:keyOrganizationFiscalCode/referents",
   {
-    // eslint-disable-next-line sonarjs/no-identical-functions
     preHandler: async (request, reply) =>
       withRequestMiddlewares(
         request,
         reply,
-        pathParamsMiddleware(KeyOrganizationFiscalCode)
-      )
+        pathParamsMiddleware(KeyOrganizationFiscalCode),
+      ),
   },
-  referentHandler.getReferentsHandler()
+  referentHandler.getReferentsHandler(),
 );
 
 server.post<{
@@ -156,10 +152,10 @@ server.post<{
         request,
         reply,
         pathParamsMiddleware(KeyOrganizationFiscalCode),
-        requiredBodyMiddleware(ReferentFiscalCode)
-      )
+        requiredBodyMiddleware(ReferentFiscalCode),
+      ),
   },
-  referentHandler.insertReferentHandler()
+  referentHandler.insertReferentHandler(),
 );
 
 server.delete(
@@ -169,10 +165,10 @@ server.delete(
       withRequestMiddlewares(
         request,
         reply,
-        pathParamsMiddleware(IDeleteReferentPathParams)
-      )
+        pathParamsMiddleware(IDeleteReferentPathParams),
+      ),
   },
-  referentHandler.deleteReferentHandler()
+  referentHandler.deleteReferentHandler(),
 );
 
 /**
@@ -185,10 +181,10 @@ server.post<{ readonly Body: GetCompaniesBody; readonly Response: Companies }>(
       withRequestMiddlewares(
         request,
         reply,
-        requiredBodyMiddleware(GetCompaniesBody)
-      )
+        requiredBodyMiddleware(GetCompaniesBody),
+      ),
   },
-  getCompaniesHandler()
+  getCompaniesHandler(),
 );
 
 server.get("/ping", {}, (_, reply) => TE.of(reply.code(200).send("OK"))());

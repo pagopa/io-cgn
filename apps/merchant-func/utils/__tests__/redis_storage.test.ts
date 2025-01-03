@@ -1,10 +1,11 @@
 // eslint-disable @typescript-eslint/no-explicit-any
 
-import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { existsKeyTask, getTask, deleteTask } from "../redis_storage";
+import { pipe } from "fp-ts/lib/function";
+
 import { RedisClient, RedisClientFactory } from "../redis";
+import { deleteTask, existsKeyTask, getTask } from "../redis_storage";
 
 const aRedisKey = "KEY";
 const aRedisValue = "VALUE";
@@ -13,14 +14,14 @@ const delMock = jest.fn().mockResolvedValue(1);
 const getMock = jest.fn().mockResolvedValue(aRedisValue);
 const existsMock = jest.fn().mockResolvedValue(1);
 
-const redisClientMock = ({
+const redisClientMock = {
   DEL: delMock,
   EXISTS: existsMock,
-  GET: getMock
-} as unknown) as RedisClient;
+  GET: getMock,
+} as unknown as RedisClient;
 
 const redisClientFactoryMock = {
-  getInstance: async () => redisClientMock
+  getInstance: async () => redisClientMock,
 } as RedisClientFactory;
 
 describe("getTask", () => {
@@ -31,33 +32,33 @@ describe("getTask", () => {
         () => fail(),
         O.fold(
           () => fail(),
-          value => expect(value).toEqual(aRedisValue)
-        )
-      )
+          (value) => expect(value).toEqual(aRedisValue),
+        ),
+      ),
     )();
   });
 
   it("should return none if no value was found for the provided key", async () => {
-    getMock.mockImplementationOnce(_ => Promise.resolve(undefined));
+    getMock.mockImplementationOnce((_) => Promise.resolve(undefined));
     await pipe(
       getTask(redisClientFactoryMock, aRedisKey),
       TE.bimap(
         () => fail(),
-        maybeResult => expect(O.isNone(maybeResult)).toBeTruthy()
-      )
+        (maybeResult) => expect(O.isNone(maybeResult)).toBeTruthy(),
+      ),
     )();
   });
 
   it("should return an error if redis get value fails", async () => {
-    getMock.mockImplementationOnce(_ =>
-      Promise.reject(new Error("Cannot get value"))
+    getMock.mockImplementationOnce((_) =>
+      Promise.reject(new Error("Cannot get value")),
     );
     await pipe(
       getTask(redisClientFactoryMock, aRedisKey),
       TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
+        (_) => expect(_).toBeDefined(),
+        () => fail(),
+      ),
     )();
   });
 });
@@ -68,32 +69,32 @@ describe("existsTask", () => {
       existsKeyTask(redisClientFactoryMock, aRedisKey),
       TE.bimap(
         () => fail(),
-        exists => expect(exists).toBeTruthy()
-      )
+        (exists) => expect(exists).toBeTruthy(),
+      ),
     )();
   });
 
   it("should return false if key does not exists in redis", async () => {
-    existsMock.mockImplementationOnce(_ => Promise.resolve(0));
+    existsMock.mockImplementationOnce((_) => Promise.resolve(0));
     await pipe(
       existsKeyTask(redisClientFactoryMock, aRedisKey),
       TE.bimap(
         () => fail(),
-        exists => expect(exists).toBeFalsy()
-      )
+        (exists) => expect(exists).toBeFalsy(),
+      ),
     )();
   });
 
   it("should return an error if redis exists fails", async () => {
-    existsMock.mockImplementationOnce(_ =>
-      Promise.reject(new Error("Cannot recognize exists on redis"))
+    existsMock.mockImplementationOnce((_) =>
+      Promise.reject(new Error("Cannot recognize exists on redis")),
     );
     await pipe(
       existsKeyTask(redisClientFactoryMock, aRedisKey),
       TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
+        (_) => expect(_).toBeDefined(),
+        () => fail(),
+      ),
     )();
   });
 });
@@ -104,32 +105,32 @@ describe("deleteTask", () => {
       deleteTask(redisClientMock as any, aRedisKey),
       TE.bimap(
         () => fail(),
-        del => expect(del).toBeTruthy()
-      )
+        (del) => expect(del).toBeTruthy(),
+      ),
     );
   });
 
   it("should return false if key does not exists in redis", () => {
-    delMock.mockImplementationOnce(_ => null);
+    delMock.mockImplementationOnce((_) => null);
     pipe(
       deleteTask(redisClientMock as any, aRedisKey),
       TE.bimap(
         () => fail(),
-        del => expect(del).toBeFalsy()
-      )
+        (del) => expect(del).toBeFalsy(),
+      ),
     );
   });
 
   it("should return an error if redis delete fails", () => {
     delMock.mockImplementationOnce(
-      _ => new Error("Cannot perform delete on redis")
+      (_) => new Error("Cannot perform delete on redis"),
     );
     pipe(
       deleteTask(redisClientMock as any, aRedisKey),
       TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
+        (_) => expect(_).toBeDefined(),
+        () => fail(),
+      ),
     );
   });
 });

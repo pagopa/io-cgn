@@ -1,6 +1,8 @@
 {
     "extends": ["//"],
     "pipeline": {
+        "lint": {},
+        "lint-api": {},
         "prebuild" : {},
         "build": {
             "dependsOn": ["prebuild"]

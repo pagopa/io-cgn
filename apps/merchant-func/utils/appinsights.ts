@@ -4,12 +4,13 @@ import * as ai from "applicationinsights";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import { Errors } from "io-ts";
+
 import { errorsToError } from "./conversions";
 
 const samplingPercentage = pipe(
   process.env["APPINSIGHTS_SAMPLING_PERCENTAGE"],
   IntegerFromString.decode,
-  E.getOrElse(_ => 5)
+  E.getOrElse(() => 5),
 );
 
 /** TelemetryClient singleton */
@@ -42,11 +43,11 @@ export const initTelemetryClient = () => {
  */
 export const trackEventToVoid = (
   name: string,
-  additionalProperties: Record<string, string> = {}
+  additionalProperties: Record<string, string> = {},
 ) => {
   telemetryClient.trackEvent({
     name: name,
-    properties: additionalProperties
+    properties: additionalProperties,
   });
 };
 
@@ -57,11 +58,11 @@ export const trackEventToVoid = (
  */
 export const trackErrorToVoid = (
   error: Error,
-  additionalProperties: Record<string, string> = {}
+  additionalProperties: Record<string, string> = {},
 ): void => {
   telemetryClient.trackException({
     exception: error,
-    properties: additionalProperties
+    properties: additionalProperties,
   });
 };
 
@@ -72,7 +73,7 @@ export const trackErrorToVoid = (
  */
 export const trackErrorToError = (
   error: Error,
-  additionalProperties: Record<string, string> = {}
+  additionalProperties: Record<string, string> = {},
 ) => {
   trackErrorToVoid(error, additionalProperties);
   return error;
@@ -85,7 +86,7 @@ export const trackErrorToError = (
  */
 export const trackErrorToResponseErrorInternal = (
   error: Error,
-  additionalProperties: Record<string, string> = {}
+  additionalProperties: Record<string, string> = {},
 ) => {
   trackErrorToVoid(error, additionalProperties);
   return ResponseErrorInternal(error.message);
@@ -98,7 +99,7 @@ export const trackErrorToResponseErrorInternal = (
  */
 export const trackErrorsToResponseErrorInternal = (
   errors: Errors,
-  additionalProperties: Record<string, string> = {}
+  additionalProperties: Record<string, string> = {},
 ) => {
   const error = errorsToError(errors);
   trackErrorToVoid(error, additionalProperties);

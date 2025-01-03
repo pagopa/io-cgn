@@ -5,18 +5,19 @@ import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as date_fns from "date-fns";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+
+import { telemetryClientMock } from "../../__mocks__/mocks";
 import { Otp } from "../../generated/definitions/Otp";
 import { OtpCode } from "../../generated/definitions/OtpCode";
 import { ValidateOtpPayload } from "../../generated/definitions/ValidateOtpPayload";
+import { setTelemetryClient } from "../../utils/appinsights";
 import * as redis_storage from "../../utils/redis_storage";
 import {
   CommonOtpPayload,
   OTP_FISCAL_CODE_PREFIX,
   OTP_PREFIX,
-  ValidateOtpHandler
+  ValidateOtpHandler,
 } from "../handler";
-import { setTelemetryClient } from "../../utils/appinsights";
-import { telemetryClientMock } from "../../__mocks__/mocks";
 
 setTelemetryClient(telemetryClientMock);
 
@@ -28,22 +29,22 @@ const anOtpTtl = 10 as NonNegativeInteger;
 const aFiscalCode = "DNLLSS99S20H501F" as FiscalCode;
 const aValidationPayload: ValidateOtpPayload = {
   invalidate_otp: false,
-  otp_code: anOtpCode
+  otp_code: anOtpCode,
 };
 
 const aValidationPayloadWithInvalidation: ValidateOtpPayload = {
   invalidate_otp: true,
-  otp_code: anOtpCode
+  otp_code: anOtpCode,
 };
 const anOtp: Otp = {
   code: anOtpCode,
   expires_at: date_fns.addHours(now, 1),
-  ttl: anOtpTtl
+  ttl: anOtpTtl,
 };
 
 const anOtpPayload: CommonOtpPayload = {
   expiresAt: anOtp.expires_at,
-  fiscalCode: aFiscalCode
+  fiscalCode: aFiscalCode,
 };
 
 const getTaskMock = jest
@@ -61,7 +62,7 @@ describe("ValidateOtpHandler", () => {
 
   it("should return an internal error if Redis retrieve fails", async () => {
     getTaskMock.mockImplementationOnce(() =>
-      TE.left(new Error("Cannot read from Redis"))
+      TE.left(new Error("Cannot read from Redis")),
     );
     const handler = ValidateOtpHandler({} as any);
     const response = await handler(contextMock, aValidationPayload);
@@ -76,12 +77,12 @@ describe("ValidateOtpHandler", () => {
 
   it("should return an internal error if Redis delete fails", async () => {
     deleteTaskMock.mockImplementationOnce(() =>
-      TE.left("Cannot delete from Redis")
+      TE.left("Cannot delete from Redis"),
     );
     const handler = ValidateOtpHandler({} as any);
     const response = await handler(
       contextMock,
-      aValidationPayloadWithInvalidation
+      aValidationPayloadWithInvalidation,
     );
     expect(deleteTaskMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");
@@ -92,7 +93,7 @@ describe("ValidateOtpHandler", () => {
     const handler = ValidateOtpHandler({} as any);
     const response = await handler(
       contextMock,
-      aValidationPayloadWithInvalidation
+      aValidationPayloadWithInvalidation,
     );
     expect(deleteTaskMock).toBeCalledTimes(1);
     expect(response.kind).toBe("IResponseErrorInternal");
@@ -104,7 +105,7 @@ describe("ValidateOtpHandler", () => {
     const handler = ValidateOtpHandler({} as any);
     const response = await handler(
       contextMock,
-      aValidationPayloadWithInvalidation
+      aValidationPayloadWithInvalidation,
     );
     expect(deleteTaskMock).toBeCalledTimes(2);
     expect(response.kind).toBe("IResponseErrorInternal");
@@ -123,7 +124,7 @@ describe("ValidateOtpHandler", () => {
     expect(response.kind).toBe("IResponseSuccessJson");
     if (response.kind === "IResponseSuccessJson") {
       expect(response.value).toEqual({
-        expires_at: anOtp.expires_at
+        expires_at: anOtp.expires_at,
       });
     }
   });
@@ -132,23 +133,23 @@ describe("ValidateOtpHandler", () => {
     const handler = ValidateOtpHandler({} as any);
     const response = await handler(
       contextMock,
-      aValidationPayloadWithInvalidation
+      aValidationPayloadWithInvalidation,
     );
     expect(deleteTaskMock).toBeCalledTimes(2);
     expect(deleteTaskMock).toHaveBeenNthCalledWith(
       1,
       expect.any(Object),
-      `${OTP_PREFIX}${aValidationPayloadWithInvalidation.otp_code}`
+      `${OTP_PREFIX}${aValidationPayloadWithInvalidation.otp_code}`,
     );
     expect(deleteTaskMock).toHaveBeenNthCalledWith(
       2,
       expect.any(Object),
-      `${OTP_FISCAL_CODE_PREFIX}${anOtpPayload.fiscalCode}`
+      `${OTP_FISCAL_CODE_PREFIX}${anOtpPayload.fiscalCode}`,
     );
     expect(response.kind).toBe("IResponseSuccessJson");
     if (response.kind === "IResponseSuccessJson") {
       expect(
-        date_fns.isBefore(response.value.expires_at, anOtp.expires_at)
+        date_fns.isBefore(response.value.expires_at, anOtp.expires_at),
       ).toBeTruthy();
     }
   });
