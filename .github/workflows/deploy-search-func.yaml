@@ -13,7 +13,7 @@ jobs:
 
   deploy:
     name: Deploy Search Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@gh-runner-labels-can-be-overridden
     secrets: inherit
     with:
       workspace_name: search-func
@@ -22,3 +22,5 @@ jobs:
       function_app_name: io-p-itn-cgn-search-func-01
       health_check_path: "/api/v1/cgn/operator-search/info"
       use_staging_slot: true
+      use_labels: true
+      override_labels: io-prod

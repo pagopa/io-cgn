@@ -1,6 +1,7 @@
 locals {
   prefix    = "io"
   env_short = "p"
+  env       = "prod"
   repo_name = "io-cgn"
 
   tags = {
