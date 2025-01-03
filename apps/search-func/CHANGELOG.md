@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.4.2
+
+### Patch Changes
+
+- ebb83ae: updated app-insights
+
 ## 3.4.1
 
 ### Patch Changes
