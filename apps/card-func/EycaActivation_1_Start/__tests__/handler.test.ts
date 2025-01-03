@@ -17,6 +17,10 @@ import {
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
 import { StartEycaActivationHandler } from "../handler";
 import { InstanceId } from "../../generated/definitions/InstanceId";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 describe("StartEycaActivation", () => {
   beforeEach(() => {

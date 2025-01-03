@@ -16,7 +16,6 @@ import {
   IResponseErrorInternal,
   IResponseErrorNotFound,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseErrorNotFound,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
@@ -31,6 +30,10 @@ import {
 } from "../utils/postgres_queries";
 import { RedisClientFactory } from "../utils/redis";
 import { popFromList, pushInList } from "../utils/redis_storage";
+import {
+  trackErrorsToResponseErrorInternal,
+  trackErrorToResponseErrorInternal
+} from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<DiscountBucketCode>
@@ -62,7 +65,7 @@ const getAndUpdateCodes = (
 > =>
   pipe(
     TE.tryCatch(() => cgnOperatorDb.transaction(), E.toError),
-    TE.mapLeft(err => ResponseErrorInternal(err.message)),
+    TE.mapLeft(trackErrorToResponseErrorInternal),
     TE.chain(t =>
       pipe(
         TE.tryCatch(
@@ -79,7 +82,7 @@ const getAndUpdateCodes = (
             }),
           E.toError
         ),
-        TE.mapLeft(err => ResponseErrorInternal(err.message)),
+        TE.mapLeft(trackErrorToResponseErrorInternal),
         TE.chainW(
           TE.fromPredicate(
             results => results.length > 0,
@@ -108,23 +111,20 @@ const getAndUpdateCodes = (
                 () => new Error("Cannot update retrieved bucket codes")
               )(numberOfUpdatedRecords)
             ),
-            TE.mapLeft(err => ResponseErrorInternal(err.message)),
+            TE.mapLeft(trackErrorToResponseErrorInternal),
             TE.map(() => codes)
           )
         ),
         TE.chainW(codesResult =>
           pipe(
             commitTransaction(t),
-            TE.bimap(
-              err => ResponseErrorInternal(err.message),
-              () => codesResult
-            )
+            TE.bimap(trackErrorToResponseErrorInternal, () => codesResult)
           )
         ),
         TE.orElseW(errorResponses =>
           pipe(
             rollbackTransaction(t),
-            TE.mapLeft(err => ResponseErrorInternal(err.message)),
+            TE.mapLeft(trackErrorToResponseErrorInternal),
             TE.chain(() => TE.left(errorResponses))
           )
         )
@@ -182,10 +182,7 @@ export const GetDiscountBucketCodeHandler = (
       flow(
         DiscountBucketCode.decode,
         TE.fromEither,
-        TE.bimap(
-          e => ResponseErrorInternal(errorsToError(e).message),
-          ResponseSuccessJson
-        )
+        TE.bimap(trackErrorsToResponseErrorInternal, ResponseSuccessJson)
       )
     ),
     TE.toUnion

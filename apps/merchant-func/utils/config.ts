@@ -28,6 +28,10 @@ export const RedisParams = t.intersection([
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.intersection([
   t.interface({
+    // ensure AI env vars are present
+    APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
+    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
+
     isProduction: t.boolean
   }),
   RedisParams

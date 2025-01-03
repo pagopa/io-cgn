@@ -7,15 +7,15 @@ import {
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import * as express from "express";
 import * as E from "fp-ts/lib/Either";
-import { flow, pipe } from "fp-ts/lib/function";
+import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import { QueryTypes, Sequelize } from "sequelize";
 import { CountResult } from "../generated/definitions/CountResult";
+import { trackErrorToResponseErrorInternal } from "../utils/appinsights";
 import { errorsToError } from "../utils/conversions";
 import { countMerchantsQuery } from "../utils/postgres_queries";
 
@@ -43,14 +43,13 @@ export const CountHandler = (cgnOperatorDb: Sequelize): ICountHandler => async (
         TE.mapLeft(errorsToError)
       )
     ),
-    TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
+    TE.mapLeft(trackErrorToResponseErrorInternal),
+    TE.map(ResponseSuccessJson),
     TE.toUnion
   )();
 
 export const Count = (cgnOperatorDb: Sequelize): express.RequestHandler => {
   const handler = CountHandler(cgnOperatorDb);
-
   const middlewaresWrap = withRequestMiddlewares(ContextMiddleware());
-
   return wrapRequestHandler(middlewaresWrap(handler));
 };

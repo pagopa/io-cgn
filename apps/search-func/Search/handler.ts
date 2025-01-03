@@ -15,7 +15,6 @@ import { QueryTypes, Sequelize } from "sequelize";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
-  ResponseErrorInternal,
   ResponseSuccessJson
 } from "@pagopa/ts-commons/lib/responses";
 import { flow, identity, pipe } from "fp-ts/lib/function";
@@ -27,6 +26,7 @@ import { SearchResult } from "../generated/definitions/SearchResult";
 import MerchantsModel from "../models/MerchantsModel";
 import { errorsToError } from "../utils/conversions";
 import { selectMerchantsQuery } from "../utils/postgres_queries";
+import { trackErrorToResponseErrorInternal } from "../utils/appinsights";
 
 type ResponseTypes =
   | IResponseSuccessJson<SearchResult>
@@ -82,7 +82,7 @@ export const SearchHandler = (
     TE.chain(
       flow(SearchResult.decode, TE.fromEither, TE.mapLeft(errorsToError))
     ),
-    TE.bimap(e => ResponseErrorInternal(e.message), ResponseSuccessJson),
+    TE.bimap(trackErrorToResponseErrorInternal, ResponseSuccessJson),
     TE.toUnion
   )();
 

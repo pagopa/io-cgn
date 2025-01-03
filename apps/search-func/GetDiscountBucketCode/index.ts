@@ -1,25 +1,19 @@
 import * as express from "express";
-import * as winston from "winston";
-
 import { Context } from "@azure/functions";
-import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
-import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
-import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
-
+import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
+import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import { cgnOperatorDb } from "../client/sequelize";
 import { getConfigOrThrow } from "../utils/config";
 import { getRedisClientFactory } from "../utils/redis";
-import { cgnOperatorDb } from "../client/sequelize";
 import { GetDiscountBucketCode } from "./handler";
+import initTelemetryClient from "../utils/appinsights";
 
+// load config and ensure it is correct
 const config = getConfigOrThrow();
 
-// eslint-disable-next-line functional/no-let
-let logger: Context["log"] | undefined;
-const contextTransport = new AzureContextTransport(() => logger, {
-  level: "debug"
-});
-winston.add(contextTransport);
+// init telemetry client
+initTelemetryClient();
 
 // Setup Express
 const app = express();
@@ -39,7 +33,6 @@ const azureFunctionHandler = createAzureFunctionHandler(app);
 
 // Binds the express app to an Azure Function handler
 const httpStart = (context: Context): void => {
-  logger = context.log;
   setAppContext(app, context);
   azureFunctionHandler(context);
 };

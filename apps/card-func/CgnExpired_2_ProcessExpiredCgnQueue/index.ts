@@ -1,13 +1,14 @@
 import { AzureFunction, Context } from "@azure/functions";
-import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
-import * as winston from "winston";
 import { USER_CGN_COLLECTION_NAME, UserCgnModel } from "../models/user_cgn";
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
 import { QueueStorage } from "../utils/queue";
 import { handler } from "./handler";
+import initTelemetryClient from "../utils/appinsights";
 
 const config = getConfigOrThrow();
+
+initTelemetryClient();
 
 const userCgnsContainer = cosmosdbClient
   .database(config.COSMOSDB_CGN_DATABASE_NAME)
@@ -16,13 +17,6 @@ const userCgnsContainer = cosmosdbClient
 const userCgnModel = new UserCgnModel(userCgnsContainer);
 
 const queueStorage: QueueStorage = new QueueStorage(config);
-
-// eslint-disable-next-line functional/no-let
-let logger: Context["log"] | undefined;
-const contextTransport = new AzureContextTransport(() => logger, {
-  level: "debug"
-});
-winston.add(contextTransport);
 
 export const index: AzureFunction = handler(userCgnModel, queueStorage);
 

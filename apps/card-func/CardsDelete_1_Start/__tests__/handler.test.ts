@@ -18,6 +18,10 @@ import {
 } from "../../__mocks__/mock";
 import { StartCardsDeleteHandler } from "../handler";
 import { InstanceId } from "../../generated/definitions/InstanceId";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 describe("StartCgnDelete", () => {
   beforeEach(() => {

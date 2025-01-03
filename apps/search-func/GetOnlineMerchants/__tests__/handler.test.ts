@@ -1,6 +1,5 @@
 /* tslint:disable: no-any */
 import {
-  DiscountCodeType,
   DiscountCodeTypeEnum
 } from "../../generated/definitions/DiscountCodeType";
 import { OnlineMerchantSearchRequest } from "../../generated/definitions/OnlineMerchantSearchRequest";
@@ -8,6 +7,10 @@ import { ProductCategoryEnum } from "../../generated/definitions/ProductCategory
 import { DiscountCodeTypeEnumModel } from "../../models/DiscountCodeTypes";
 import { ProductCategoryEnumModelType } from "../../models/ProductCategories";
 import { GetOnlineMerchantsHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
 
 const anEmptyArrayPromise = new Promise(resolve => {
   resolve([]);

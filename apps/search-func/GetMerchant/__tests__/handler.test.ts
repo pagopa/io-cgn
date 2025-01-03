@@ -9,6 +9,10 @@ import { ProductCategoryEnum } from "../../generated/definitions/ProductCategory
 import { DiscountCodeTypeEnumModel } from "../../models/DiscountCodeTypes";
 import { ProductCategoryEnumModelType } from "../../models/ProductCategories";
 import { GetMerchantHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mocks";
+
+setTelemetryClient(telemetryClientMock);
 
 const anAgreementId = "abc-123-def";
 const anExternalHeader = O.some("EXT_PORTAL" as NonEmptyString);

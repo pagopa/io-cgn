@@ -20,6 +20,10 @@ import {
 } from "../../__mocks__/mock";
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
 import { handler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 cgnFindLastVersionByModelIdMock.mockReturnValue(
   TE.right(O.some({ ...aUserCgn, card: aUserCardPending }))
@@ -198,7 +202,7 @@ describe("ProcessActivatedCgnQueue", () => {
         expiration_date: cardActivatedMessageMock.expiration_date,
         status: "ACTIVATED"
       },
-      fiscal_code: "RODFDS92S10H501T",
+      fiscal_code: anEYCAUneligibleFiscalCode,
       message_type: "CARD_ACTIVATED"
     });
   });

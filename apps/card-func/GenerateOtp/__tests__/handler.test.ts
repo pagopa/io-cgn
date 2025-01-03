@@ -21,6 +21,10 @@ import * as cgnCode from "../../utils/cgnCode";
 import { GetGenerateOtpHandler } from "../handler";
 import * as redis_util from "../redis";
 import { RedisClientFactory } from "../../utils/redis";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const aFiscalCode = "RODFDS82S10H501T" as FiscalCode;
 const aUserCgnId = "AN_ID" as NonEmptyString;

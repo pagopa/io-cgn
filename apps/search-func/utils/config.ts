@@ -41,6 +41,10 @@ export const IConfig = t.intersection([
     CGN_POSTGRES_DB_ADMIN_URI: NonEmptyString,
     isPostgresSslEnabled: t.boolean,
 
+    // ensure AI env vars are present
+    APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
+    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
+
     isProduction: t.boolean
   }),
   RedisParams

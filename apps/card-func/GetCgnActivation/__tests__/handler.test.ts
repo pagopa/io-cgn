@@ -15,6 +15,10 @@ import {
   StatusEnum
 } from "../../generated/definitions/CgnActivationDetail";
 import { GetCgnActivationHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const handler = GetCgnActivationHandler(userCgnModelMock);
 

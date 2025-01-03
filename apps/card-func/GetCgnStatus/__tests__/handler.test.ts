@@ -20,6 +20,10 @@ import {
 } from "../../generated/definitions/CardRevoked";
 import { UserCgn } from "../../models/user_cgn";
 import { GetCgnStatusHandler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const aFiscalCode = "RODFDS82S10H501T" as FiscalCode;
 const aUserCgnId = "AN_ID" as NonEmptyString;

@@ -1,6 +1,4 @@
-import { AzureFunction, Context } from "@azure/functions";
-import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
-import * as winston from "winston";
+import { AzureFunction } from "@azure/functions";
 import { EycaAPIClient } from "../clients/eyca";
 import {
   USER_EYCA_CARD_COLLECTION_NAME,
@@ -12,8 +10,11 @@ import { getRedisClientFactory } from "../utils/redis";
 import { handler } from "./handler";
 import { updateCard, UpdateCcdbEycaCard } from "../utils/eyca";
 import { QueueStorage } from "../utils/queue";
+import initTelemetryClient from "../utils/appinsights";
 
 const config = getConfigOrThrow();
+
+initTelemetryClient();
 
 const userEycaCardsContainer = cosmosdbClient
   .database(config.COSMOSDB_CGN_DATABASE_NAME)
@@ -33,13 +34,6 @@ const updateCcdbEycaCard: UpdateCcdbEycaCard = updateCard(
 );
 
 const queueStorage: QueueStorage = new QueueStorage(config);
-
-// eslint-disable-next-line functional/no-let
-let logger: Context["log"] | undefined;
-const contextTransport = new AzureContextTransport(() => logger, {
-  level: "debug"
-});
-winston.add(contextTransport);
 
 export const index: AzureFunction = handler(
          userEycaCardModel,

@@ -1,7 +1,5 @@
-import { AzureFunction, Context } from "@azure/functions";
-import { AzureContextTransport } from "@pagopa/io-functions-commons/dist/src/utils/logging";
+import { AzureFunction } from "@azure/functions";
 import { createTableService } from "azure-storage";
-import * as winston from "winston";
 import { EycaAPIClient } from "../clients/eyca";
 import {
   USER_EYCA_CARD_COLLECTION_NAME,
@@ -9,12 +7,15 @@ import {
 } from "../models/user_eyca_card";
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
-import { deleteCard, DeleteEycaCard, preIssueCard, PreIssueEycaCard } from "../utils/eyca";
+import { deleteCard, DeleteEycaCard } from "../utils/eyca";
 import { getRedisClientFactory } from "../utils/redis";
 import { deleteCardExpiration } from "../utils/table_storage";
 import { handler } from "./handler";
+import initTelemetryClient from "../utils/appinsights";
 
 const config = getConfigOrThrow();
+
+initTelemetryClient();
 
 const userEycaCardsContainer = cosmosdbClient
   .database(config.COSMOSDB_CGN_DATABASE_NAME)
@@ -39,13 +40,6 @@ const deleteEycaCard: DeleteEycaCard = deleteCard(
   config.EYCA_API_USERNAME,
   config.EYCA_API_PASSWORD
 );
-
-// eslint-disable-next-line functional/no-let
-let logger: Context["log"] | undefined;
-const contextTransport = new AzureContextTransport(() => logger, {
-  level: "debug"
-});
-winston.add(contextTransport);
 
 export const index: AzureFunction = handler(
   userEycaCardModel,

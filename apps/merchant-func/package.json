@@ -44,15 +44,14 @@
     "@pagopa/express-azure-functions": "^4.0.1",
     "@pagopa/io-functions-commons": "^28.0.0",
     "@pagopa/ts-commons": "^11.0.0",
-    "applicationinsights": "^1.8.10",
+    "applicationinsights": "^3.4.0",
     "azure-storage": "^2.10.3",
     "date-fns": "^2.16.1",
     "express": "^4.15.3",
     "fp-ts": "^2.11.1",
     "io-ts": "^2.2.16",
     "node-fetch": "^2.6.1",
-    "redis": "^4.6.15",
-    "winston": "^3.2.1"
+    "redis": "^4.6.15"
   },
   "resolutions": {
     "handlebars": "~4.5.3"

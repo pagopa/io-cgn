@@ -11,6 +11,7 @@ import { pipe } from "fp-ts/lib/function";
 import { getConfigOrThrow } from "../utils/config";
 import { getGetProfile, getSendMessage } from "../utils/notifications";
 import { handler } from "./handler";
+import initTelemetryClient from "../utils/appinsights";
 
 // HTTP external requests timeout in milliseconds
 const SERVICES_REQUEST_TIMEOUT_MS = pipe(
@@ -20,6 +21,9 @@ const SERVICES_REQUEST_TIMEOUT_MS = pipe(
 );
 
 const config = getConfigOrThrow();
+
+initTelemetryClient();
+
 // Needed to call notifications API
 const servicesApiUrl = config.SERVICES_API_URL;
 const servicesApiKey = config.SERVICES_API_KEY;

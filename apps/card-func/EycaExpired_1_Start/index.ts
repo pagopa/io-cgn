@@ -6,8 +6,11 @@ import { getConfigOrThrow } from "../utils/config";
 import { getUpdateExpiredEycaHandler } from "./handler";
 import { QueueStorage } from "../utils/queue";
 import { getExpiredCardUsers } from "../utils/card_expiration";
+import initTelemetryClient from "../utils/appinsights";
 
 const config = getConfigOrThrow();
+
+initTelemetryClient();
 
 const tableService = createTableService(config.CGN_STORAGE_CONNECTION_STRING);
 

@@ -13,6 +13,10 @@ import {
   userCgnModelMock
 } from "../../__mocks__/mock";
 import { handler } from "../handler";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 // mock return values for this test
 cgnFindLastVersionByModelIdMock.mockReturnValue(

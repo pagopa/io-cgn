@@ -1,12 +1,11 @@
-import { MessageContent } from "@pagopa/io-functions-commons/dist/generated/definitions/MessageContent";
-import { readableReport } from "@pagopa/ts-commons/lib/reporters";
-import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
 import { aFiscalCode, aUserCardActivated, context } from "../../__mocks__/mock";
 import { handler } from "../handler";
 import { MessageToSendMessage } from "../../types/queue-message";
 import { getMessage, MessageTypeEnum } from "../../utils/messages";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { telemetryClientMock } from "../../__mocks__/mock";
+
+setTelemetryClient(telemetryClientMock);
 
 const messageOkStatusCode = 201;
 const profileOkStatusCode = 200;
