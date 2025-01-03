@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.2
+
+### Patch Changes
+
+- ebb83ae: updated app-insights
+
 ## 4.0.1
 
 ### Patch Changes
