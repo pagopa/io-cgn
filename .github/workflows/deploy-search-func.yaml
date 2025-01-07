@@ -13,7 +13,7 @@ jobs:
 
   deploy:
     name: Deploy Search Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@gh-runner-labels-can-be-overridden
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
     secrets: inherit
     with:
       workspace_name: search-func

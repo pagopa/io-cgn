@@ -20,7 +20,7 @@ provider "azurerm" {
 }
 
 module "container_app_job_selfhosted_runner" {
-  source = "github.com/pagopa/dx//infra/modules/github_selfhosted_runner_on_container_app_jobs?ref=gh-runner-labels-can-be-overridden"
+  source = "github.com/pagopa/dx//infra/modules/github_selfhosted_runner_on_container_app_jobs?ref=main"
 
   resource_group_name = "${local.prefix}-${local.env_short}-itn-cgn-rg-01"
 
