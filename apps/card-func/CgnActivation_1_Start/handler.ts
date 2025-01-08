@@ -1,11 +1,9 @@
-import * as express from "express";
-
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
 import {
   withRequestMiddlewares,
-  wrapRequestHandler
+  wrapRequestHandler,
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
@@ -16,37 +14,35 @@ import {
   ResponseErrorConflict,
   ResponseErrorForbiddenNotAuthorized,
   ResponseErrorInternal,
-  ResponseSuccessRedirectToResource
+  ResponseSuccessRedirectToResource,
 } from "@pagopa/ts-commons/lib/responses";
-import {
-  FiscalCode,
-  NonEmptyString,
-  Ulid
-} from "@pagopa/ts-commons/lib/strings";
-import { pipe } from "fp-ts/lib/function";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import * as express from "express";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
 import { ulid } from "ulid";
+
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
+import { InstanceId } from "../generated/definitions/InstanceId";
 import { UserCgnModel } from "../models/user_cgn";
 import { CardPendingMessage } from "../types/queue-message";
 import {
   checkCgnRequirements,
   extractCgnExpirationDate,
-  isCardActivated
+  isCardActivated,
 } from "../utils/cgn_checks";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { InstanceId } from "../generated/definitions/InstanceId";
 
 type IStartCgnActivationHandler = (
   context: Context,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ) => Promise<
-  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
-  | IResponseErrorInternal
-  | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorConflict
+  | IResponseErrorForbiddenNotAuthorized
+  | IResponseErrorInternal
+  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
 >;
 
 /**
@@ -59,32 +55,32 @@ type IStartCgnActivationHandler = (
 const getCgnExpirationDataTask = (
   context: Context,
   fiscalCode: FiscalCode,
-  cgnUpperBoundAge: NonNegativeInteger
+  cgnUpperBoundAge: NonNegativeInteger,
 ): TE.TaskEither<
-  IResponseErrorInternal | IResponseErrorForbiddenNotAuthorized,
+  IResponseErrorForbiddenNotAuthorized | IResponseErrorInternal,
   Date
 > =>
   pipe(
     checkCgnRequirements(fiscalCode, cgnUpperBoundAge),
     TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
     TE.mapLeft(() =>
-      ResponseErrorInternal("Cannot perform CGN Eligibility Check")
+      ResponseErrorInternal("Cannot perform CGN Eligibility Check"),
     ),
     TE.chainW(
       TE.fromPredicate(
-        isEligible => isEligible === true,
-        () => ResponseErrorForbiddenNotAuthorized
-      )
+        (isEligible) => isEligible === true,
+        () => ResponseErrorForbiddenNotAuthorized,
+      ),
     ),
     TE.chainW(() =>
       pipe(
         extractCgnExpirationDate(fiscalCode, cgnUpperBoundAge),
         TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
         TE.mapLeft(() =>
-          ResponseErrorInternal("Cannot perform CGN Eligibility Check")
-        )
-      )
-    )
+          ResponseErrorInternal("Cannot perform CGN Eligibility Check"),
+        ),
+      ),
+    ),
   );
 
 /**
@@ -96,89 +92,87 @@ const getCgnExpirationDataTask = (
 const shouldActivateNewCGN = (
   context: Context,
   userCgnModel: UserCgnModel,
-  fiscalCode: FiscalCode
-): TE.TaskEither<IResponseErrorInternal | IResponseErrorConflict, boolean> =>
+  fiscalCode: FiscalCode,
+): TE.TaskEither<IResponseErrorConflict | IResponseErrorInternal, boolean> =>
   pipe(
     userCgnModel.findLastVersionByModelId([fiscalCode]),
-    TE.mapLeft(cosmosErrors => new Error(cosmosErrors.kind)),
+    TE.mapLeft((cosmosErrors) => new Error(cosmosErrors.kind)),
     TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
-    TE.mapLeft(_ => ResponseErrorInternal("Cannot query for existing CGN")),
+    TE.mapLeft(() => ResponseErrorInternal("Cannot query for existing CGN")),
     TE.chainW(
       O.fold(
         () => TE.of(true),
-        userCgn =>
+        (userCgn) =>
           isCardActivated(userCgn)
             ? pipe(
                 TE.left(new Error("CGN already activated")),
                 TE.mapLeft(trackError(context, "CgnActivation_1_Start")),
-                TE.mapLeft(e => ResponseErrorConflict(e.message))
+                TE.mapLeft((e) => ResponseErrorConflict(e.message)),
               )
             : // we always try to "re-activate", next flow will be idempotent
-              TE.of(true)
-      )
-    )
+              TE.of(true),
+      ),
+    ),
   );
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export const StartCgnActivationHandler = (
-  userCgnModel: UserCgnModel,
-  cgnUpperBoundAge: NonNegativeInteger,
-  queueStorage: QueueStorage
-): IStartCgnActivationHandler => async (
-  context: Context,
-  fiscalCode: FiscalCode
-) =>
-  pipe(
-    shouldActivateNewCGN(context, userCgnModel, fiscalCode),
-    TE.chainW(_ =>
-      getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge)
-    ),
-    TE.map(
-      expirationDate =>
-        ({
-          request_id: ulid(),
-          fiscal_code: fiscalCode,
-          activation_date: new Date(),
-          expiration_date: expirationDate,
-          status: PendingStatusEnum.PENDING
-        } as CardPendingMessage)
-    ),
-    TE.chainFirstW(pendingCardMessage =>
-      pipe(
-        queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
-        TE.mapLeft(trackError(context, "CGN1_StartActivation")),
-        TE.mapLeft(e => ResponseErrorInternal(e.message))
-      )
-    ),
-    TE.map(pendingCgnMessage =>
-      pipe(
-        {
-          id: pendingCgnMessage.request_id.valueOf() as NonEmptyString
-        },
-        instanceid =>
-          ResponseSuccessRedirectToResource(
-            instanceid,
-            `/api/v1/cgn/${fiscalCode}/delete`,
-            instanceid
-          )
-      )
-    ),
-    TE.toUnion
-  )();
+export const StartCgnActivationHandler =
+  (
+    userCgnModel: UserCgnModel,
+    cgnUpperBoundAge: NonNegativeInteger,
+    queueStorage: QueueStorage,
+  ): IStartCgnActivationHandler =>
+  async (context: Context, fiscalCode: FiscalCode) =>
+    pipe(
+      shouldActivateNewCGN(context, userCgnModel, fiscalCode),
+      TE.chainW(() =>
+        getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge),
+      ),
+      TE.map(
+        (expirationDate) =>
+          ({
+            activation_date: new Date(),
+            expiration_date: expirationDate,
+            fiscal_code: fiscalCode,
+            request_id: ulid(),
+            status: PendingStatusEnum.PENDING,
+          }) as CardPendingMessage,
+      ),
+      TE.chainFirstW((pendingCardMessage) =>
+        pipe(
+          queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
+          TE.mapLeft(trackError(context, "CGN1_StartActivation")),
+          TE.mapLeft((e) => ResponseErrorInternal(e.message)),
+        ),
+      ),
+      TE.map((pendingCgnMessage) =>
+        pipe(
+          {
+            id: pendingCgnMessage.request_id.valueOf() as NonEmptyString,
+          },
+          (instanceid) =>
+            ResponseSuccessRedirectToResource(
+              instanceid,
+              `/api/v1/cgn/${fiscalCode}/delete`,
+              instanceid,
+            ),
+        ),
+      ),
+      TE.toUnion,
+    )();
 
 export const StartCgnActivation = (
   userCgnModel: UserCgnModel,
   cgnUpperBoundAge: NonNegativeInteger,
-  queueStorage: QueueStorage
+  queueStorage: QueueStorage,
 ): express.RequestHandler => {
   const handler = StartCgnActivationHandler(
     userCgnModel,
     cgnUpperBoundAge,
-    queueStorage
+    queueStorage,
   );
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredParamMiddleware("fiscalcode", FiscalCode)
+    RequiredParamMiddleware("fiscalcode", FiscalCode),
   );
   return wrapRequestHandler(middlewaresWrap(handler));
 };

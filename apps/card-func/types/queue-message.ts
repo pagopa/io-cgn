@@ -1,12 +1,11 @@
 import {
   FiscalCode,
   NonEmptyString,
-  Ulid
+  Ulid,
 } from "@pagopa/ts-commons/lib/strings";
+
 import { Card } from "../generated/definitions/Card";
-import {
-  StatusEnum as ActivatedStatusEnum
-} from "../generated/definitions/CardActivated";
+import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardExpired";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { StatusEnum as PendingDeleteStatusEnum } from "../generated/definitions/CardPendingDelete";
@@ -14,39 +13,39 @@ import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { MessageTypeEnum } from "../utils/messages";
 
-type CardMessage = {
-  request_id: Ulid;
-  fiscal_code: FiscalCode;
+interface CardMessage {
   activation_date: Date;
   expiration_date: Date;
-};
+  fiscal_code: FiscalCode;
+  request_id: Ulid;
+}
 
-export type CardPendingMessage = CardMessage & {
+export type CardPendingMessage = {
   status: PendingStatusEnum.PENDING;
-};
+} & CardMessage;
 
-export type CardActivatedMessage = CardMessage & {
-  status: ActivatedStatusEnum.ACTIVATED;
+export type CardActivatedMessage = {
   card_id: CcdbNumber | NonEmptyString;
-};
+  status: ActivatedStatusEnum.ACTIVATED;
+} & CardMessage;
 
-export type CardPendingDeleteMessage = {
-  request_id: Ulid;
-  fiscal_code: FiscalCode;
+export interface CardPendingDeleteMessage {
   expiration_date: Date;
-  status: PendingDeleteStatusEnum.PENDING_DELETE;
-};
-
-export type CardExpiredMessage = {
-  request_id: Ulid;
   fiscal_code: FiscalCode;
+  request_id: Ulid;
+  status: PendingDeleteStatusEnum.PENDING_DELETE;
+}
+
+export interface CardExpiredMessage {
   activation_date: Date;
   expiration_date: Date;
+  fiscal_code: FiscalCode;
+  request_id: Ulid;
   status: ExpiredStatusEnum.EXPIRED;
-};
+}
 
-export type MessageToSendMessage = {
+export interface MessageToSendMessage {
+  card: Card | EycaCard;
   fiscal_code: FiscalCode;
   message_type: MessageTypeEnum;
-  card: Card | EycaCard;
-};
+}

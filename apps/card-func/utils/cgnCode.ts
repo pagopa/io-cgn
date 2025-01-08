@@ -1,8 +1,8 @@
+import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { randomBytes } from "crypto";
+import { isLeft } from "fp-ts/lib/Either";
 import { promisify } from "util";
 
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import { isLeft } from "fp-ts/lib/Either";
 import { OtpCode } from "../generated/definitions/OtpCode";
 
 // Note that we redeclare the alphabet and the length of the CGN here as a
@@ -27,15 +27,17 @@ const asyncRandomBytes = promisify(randomBytes);
  * Generates a new random Card code
  */
 export const genRandomCardCode = async (
-  getAsyncRandomBytes: typeof asyncRandomBytes = asyncRandomBytes
+  getAsyncRandomBytes: typeof asyncRandomBytes = asyncRandomBytes,
 ): Promise<NonEmptyString> => {
   const randomBuffer = await getAsyncRandomBytes(BONUSCODE_LENGTH);
-  const code = [...randomBuffer].map(b => ALPHABET[b % ALPHABET_LEN]).join("");
+  const code = [...randomBuffer]
+    .map((b) => ALPHABET[b % ALPHABET_LEN])
+    .join("");
   const cardCode = NonEmptyString.decode(code);
   if (isLeft(cardCode)) {
     // this should never happen
     throw Error(
-      `FATAL: genRandomCardCode generated invalid Youth Card code [${code}]`
+      `FATAL: genRandomCardCode generated invalid Youth Card code [${code}]`,
     );
   }
   return cardCode.right;
@@ -45,11 +47,11 @@ export const genRandomCardCode = async (
  * Generates a new random OTP code
  */
 export const generateOtpCode = async (
-  getAsyncRandomBytes: typeof asyncRandomBytes = asyncRandomBytes
+  getAsyncRandomBytes: typeof asyncRandomBytes = asyncRandomBytes,
 ): Promise<OtpCode> => {
   const randomBuffer = await getAsyncRandomBytes(OTPCODE_LENGTH);
   const code = [...randomBuffer]
-    .map(b => OTP_ALPHABET[b % OTP_ALPHABET_LEN])
+    .map((b) => OTP_ALPHABET[b % OTP_ALPHABET_LEN])
     .join("");
   const otpCode = OtpCode.decode(code);
   if (isLeft(otpCode)) {

@@ -3,6 +3,7 @@ import { RetrievedVersionedModel } from "@pagopa/io-functions-commons/dist/src/u
 import { wrapWithKind } from "@pagopa/io-functions-commons/dist/src/utils/types";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as t from "io-ts";
+
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { UserCardVersionedDeletable } from "./user_card_versionend_deletable";
 
@@ -13,20 +14,20 @@ const UserEycaCard = t.interface({
   // the EYCA card related to the user
   card: EycaCard,
   // The id of the user
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 });
 export type UserEycaCard = t.TypeOf<typeof UserEycaCard>;
 
 export const NewUserEycaCard = wrapWithKind(
   UserEycaCard,
-  "INewUserEycaCard" as const
+  "INewUserEycaCard" as const,
 );
 
 export type NewUserEycaCard = t.TypeOf<typeof NewUserEycaCard>;
 
 export const RetrievedUserEycaCard = wrapWithKind(
   t.intersection([UserEycaCard, RetrievedVersionedModel]),
-  "IRetrievedUserEycaCard" as const
+  "IRetrievedUserEycaCard" as const,
 );
 
 export type RetrievedUserEycaCard = t.TypeOf<typeof RetrievedUserEycaCard>;
@@ -48,7 +49,7 @@ export class UserEycaCardModel extends UserCardVersionedDeletable<
       container,
       NewUserEycaCard,
       RetrievedUserEycaCard,
-      USER_EYCA_CARD_MODEL_PK_FIELD
+      USER_EYCA_CARD_MODEL_PK_FIELD,
     );
   }
 

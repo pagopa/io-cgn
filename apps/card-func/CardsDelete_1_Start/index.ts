@@ -3,16 +3,17 @@ import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import * as express from "express";
-import { getConfigOrThrow } from "../utils/config";
-import { QueueStorage } from "../utils/queue";
-import { StartCardsDelete } from "./handler";
-import { cosmosdbClient } from "../utils/cosmosdb";
+
 import { USER_CGN_COLLECTION_NAME, UserCgnModel } from "../models/user_cgn";
 import {
   USER_EYCA_CARD_COLLECTION_NAME,
-  UserEycaCardModel
+  UserEycaCardModel,
 } from "../models/user_eyca_card";
 import initTelemetryClient from "../utils/appinsights";
+import { getConfigOrThrow } from "../utils/config";
+import { cosmosdbClient } from "../utils/cosmosdb";
+import { QueueStorage } from "../utils/queue";
+import { StartCardsDelete } from "./handler";
 
 const config = getConfigOrThrow();
 
@@ -39,13 +40,12 @@ secureExpressApp(app);
 // Add express route
 app.post(
   "/api/v1/cgn/:fiscalcode/delete",
-  StartCardsDelete(userCgnModel, userEycaCardModel, queueStorage)
+  StartCardsDelete(userCgnModel, userEycaCardModel, queueStorage),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);
 
 // Binds the express app to an Azure Function handler
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 function httpStart(context: Context): void {
   setAppContext(app, context);
   azureFunctionHandler(context);

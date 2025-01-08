@@ -14,7 +14,7 @@
       "inputs": ["src/**/*.ts"],
       "outputMode": "errors-only"
     },
-    "lint:check": {
+    "lint-api": {
       "inputs": ["src/**/*.ts"],
       "outputMode": "errors-only"
     },

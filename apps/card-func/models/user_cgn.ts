@@ -3,6 +3,7 @@ import { RetrievedVersionedModel } from "@pagopa/io-functions-commons/dist/src/u
 import { wrapWithKind } from "@pagopa/io-functions-commons/dist/src/utils/types";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as t from "io-ts";
+
 import { Card } from "../generated/definitions/Card";
 import { UserCardVersionedDeletable } from "./user_card_versionend_deletable";
 
@@ -15,7 +16,7 @@ const UserCgn = t.interface({
   // The id of the user
   fiscalCode: FiscalCode,
   // The CGN identifier
-  id: NonEmptyString
+  id: NonEmptyString,
 });
 export type UserCgn = t.TypeOf<typeof UserCgn>;
 
@@ -29,7 +30,7 @@ export type DeleteUserCgn = t.TypeOf<typeof DeleteUserCgn>;
 
 export const RetrievedUserCgn = wrapWithKind(
   t.intersection([UserCgn, RetrievedVersionedModel]),
-  "IRetrievedUserCgn" as const
+  "IRetrievedUserCgn" as const,
 );
 
 export type RetrievedUserCgn = t.TypeOf<typeof RetrievedUserCgn>;

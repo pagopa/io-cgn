@@ -1,14 +1,14 @@
 import { DiscountCodeTypeEnum } from "../generated/definitions/DiscountCodeType";
 
 export enum DiscountCodeTypeEnumModel {
-  static = "STATIC",
   api = "API",
+  bucket = "BUCKET",
   landingpage = "LANDINGPAGE",
-  bucket = "BUCKET"
+  static = "STATIC",
 }
 
 export const DiscountCodeTypeFromModel = (
-  discountCodeType: DiscountCodeTypeEnumModel
+  discountCodeType: DiscountCodeTypeEnumModel,
 ): DiscountCodeTypeEnum => {
   switch (discountCodeType) {
     case DiscountCodeTypeEnumModel.static:

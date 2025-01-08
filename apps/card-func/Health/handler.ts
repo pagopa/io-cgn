@@ -3,13 +3,14 @@ import {
   IResponseErrorInternal,
   IResponseSuccessJson,
   ResponseErrorInternal,
-  ResponseSuccessJson
+  ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import * as express from "express";
-import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
+
 import * as packageJson from "../package.json";
-import { checkApplicationHealth, HealthCheck } from "../utils/healthcheck";
+import { HealthCheck, checkApplicationHealth } from "../utils/healthcheck";
 
 interface IInfo {
   readonly name: string;
@@ -17,27 +18,24 @@ interface IInfo {
 }
 
 type InfoHandler = () => Promise<
-  IResponseSuccessJson<IInfo> | IResponseErrorInternal
+  IResponseErrorInternal | IResponseSuccessJson<IInfo>
 >;
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function InfoHandler(healthCheck: HealthCheck): InfoHandler {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   return () =>
     pipe(
       healthCheck,
-      TE.mapLeft(problems => ResponseErrorInternal(problems.join("\n\n"))),
-      TE.map(_ =>
+      TE.mapLeft((problems) => ResponseErrorInternal(problems.join("\n\n"))),
+      TE.map(() =>
         ResponseSuccessJson({
           name: packageJson.name,
-          version: packageJson.version
-        })
+          version: packageJson.version,
+        }),
       ),
-      TE.toUnion
+      TE.toUnion,
     )();
 }
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function Info(): express.RequestHandler {
   const handler = InfoHandler(checkApplicationHealth());
 

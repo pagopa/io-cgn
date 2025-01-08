@@ -2,6 +2,7 @@
  * Use a singleton CosmosDB client across functions.
  */
 import { CosmosClient } from "@azure/cosmos";
+
 import { getConfigOrThrow } from "./config";
 
 const config = getConfigOrThrow();
@@ -10,5 +11,5 @@ const masterKey = config.COSMOSDB_CGN_KEY;
 
 export const cosmosdbClient = new CosmosClient({
   endpoint: cosmosDbUri,
-  key: masterKey
+  key: masterKey,
 });

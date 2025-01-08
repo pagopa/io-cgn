@@ -1,12 +1,13 @@
-import * as express from "express";
 import { Context } from "@azure/functions";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import * as express from "express";
+
 import { cgnOperatorDb } from "../client/sequelize";
-import { GetPublishedProductCategories } from "./handler";
-import { getConfigOrThrow } from "../utils/config";
 import initTelemetryClient from "../utils/appinsights";
+import { getConfigOrThrow } from "../utils/config";
+import { GetPublishedProductCategories } from "./handler";
 
 // ensure config is correct
 getConfigOrThrow();
@@ -21,7 +22,7 @@ secureExpressApp(app);
 // Add express route
 app.get(
   "/api/v1/cgn/operator-search/published-product-categories",
-  GetPublishedProductCategories(cgnOperatorDb)
+  GetPublishedProductCategories(cgnOperatorDb),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);

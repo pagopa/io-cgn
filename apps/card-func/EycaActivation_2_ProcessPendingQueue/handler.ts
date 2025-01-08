@@ -1,8 +1,9 @@
 import { Context } from "@azure/functions";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
+
 import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
@@ -18,18 +19,18 @@ import { StoreCardExpirationFunction } from "../utils/table_storage";
  */
 const upsertEycaCard = (
   userEycaCardModel: UserEycaCardModel,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ) =>
   pipe(
     userEycaCardModel.upsert({
       card: { status: PendingStatusEnum.PENDING },
       fiscalCode,
-      kind: "INewUserEycaCard"
+      kind: "INewUserEycaCard",
     }),
     TE.mapLeft(
-      cosmosErrors =>
-        new Error(`${cosmosErrors.kind}|Cannot upsert cosmos EYCA`)
-    )
+      (cosmosErrors) =>
+        new Error(`${cosmosErrors.kind}|Cannot upsert cosmos EYCA`),
+    ),
   );
 
 /**
@@ -40,62 +41,65 @@ const upsertEycaCard = (
  */
 const createOrGetEycaCard = (
   userEycaCardModel: UserEycaCardModel,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ): TE.TaskEither<Error, UserEycaCard> =>
   pipe(
     userEycaCardModel.findLastVersionByModelId([fiscalCode]),
     TE.mapLeft(
-      cosmosErrors => new Error(`${cosmosErrors.kind}|Cannot query cosmos EYCA`)
+      (cosmosErrors) =>
+        new Error(`${cosmosErrors.kind}|Cannot query cosmos EYCA`),
     ),
     TE.chainW(
       O.fold(
         () => upsertEycaCard(userEycaCardModel, fiscalCode),
-        userEyca => TE.of(userEyca)
-      )
-    )
+        (userEyca) => TE.of(userEyca),
+      ),
+    ),
   );
 
-export const handler = (
-  userEycaCardModel: UserEycaCardModel,
-  storeEycaExpiration: StoreCardExpirationFunction,
-  preIssueEycaCard: PreIssueEycaCard,
-  queueStorage: QueueStorage
-) => (
-  context: Context,
-  pendingEycaMessage: CardPendingMessage
-): Promise<boolean> =>
-  pipe(
-    // create or get a pending card
-    createOrGetEycaCard(userEycaCardModel, pendingEycaMessage.fiscal_code),
-    TE.chain(_ =>
-      // store eyca expiration
-      storeEycaExpiration(
-        pendingEycaMessage.fiscal_code,
-        new Date(pendingEycaMessage.activation_date),
-        new Date(pendingEycaMessage.expiration_date)
-      )
-    ),
-    TE.chain(_ =>
-      // pre issue card from CCDB
-      preIssueEycaCard()
-    ),
-    TE.chain(userEycaId =>
-      // send activated message to queue
-      queueStorage.enqueueActivatedEYCAMessage({
-        request_id: pendingEycaMessage.request_id,
-        fiscal_code: pendingEycaMessage.fiscal_code,
-        activation_date: pendingEycaMessage.activation_date,
-        expiration_date: pendingEycaMessage.expiration_date,
-        status: ActivatedStatusEnum.ACTIVATED,
-        card_id: userEycaId
-      })
-    ),
-    TE.mapLeft(
-      trackError(
-        context,
-        `[${pendingEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`
-      )
-    ),
-    TE.mapLeft(throwError),
-    TE.toUnion
-  )();
+export const handler =
+  (
+    userEycaCardModel: UserEycaCardModel,
+    storeEycaExpiration: StoreCardExpirationFunction,
+    preIssueEycaCard: PreIssueEycaCard,
+    queueStorage: QueueStorage,
+  ) =>
+  (
+    context: Context,
+    pendingEycaMessage: CardPendingMessage,
+  ): Promise<boolean> =>
+    pipe(
+      // create or get a pending card
+      createOrGetEycaCard(userEycaCardModel, pendingEycaMessage.fiscal_code),
+      TE.chain(() =>
+        // store eyca expiration
+        storeEycaExpiration(
+          pendingEycaMessage.fiscal_code,
+          new Date(pendingEycaMessage.activation_date),
+          new Date(pendingEycaMessage.expiration_date),
+        ),
+      ),
+      TE.chain(() =>
+        // pre issue card from CCDB
+        preIssueEycaCard(),
+      ),
+      TE.chain((userEycaId) =>
+        // send activated message to queue
+        queueStorage.enqueueActivatedEYCAMessage({
+          activation_date: pendingEycaMessage.activation_date,
+          card_id: userEycaId,
+          expiration_date: pendingEycaMessage.expiration_date,
+          fiscal_code: pendingEycaMessage.fiscal_code,
+          request_id: pendingEycaMessage.request_id,
+          status: ActivatedStatusEnum.ACTIVATED,
+        }),
+      ),
+      TE.mapLeft(
+        trackError(
+          context,
+          `[${pendingEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`,
+        ),
+      ),
+      TE.mapLeft(throwError),
+      TE.toUnion,
+    )();

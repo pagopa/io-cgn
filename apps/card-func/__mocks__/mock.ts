@@ -4,34 +4,36 @@ import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
 import {
   FiscalCode,
   NonEmptyString,
-  Ulid
+  Ulid,
 } from "@pagopa/ts-commons/lib/strings";
+import { TelemetryClient } from "applicationinsights";
 import { ServiceResponse, TableService } from "azure-storage";
 import { addYears } from "date-fns";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { ulid } from "ulid";
+
 import { Card } from "../generated/definitions/Card";
 import {
   StatusEnum as ActivatedStatusEnum,
-  CardActivated
+  CardActivated,
 } from "../generated/definitions/CardActivated";
 import {
   CardExpired,
-  StatusEnum as ExpiredStatusEnum
+  StatusEnum as ExpiredStatusEnum,
 } from "../generated/definitions/CardExpired";
 import {
   CardPending,
-  StatusEnum as PendingStatusEnum
+  StatusEnum as PendingStatusEnum,
 } from "../generated/definitions/CardPending";
 import {
   CardPendingDelete,
-  StatusEnum as PendingDeleteStatusEnum
+  StatusEnum as PendingDeleteStatusEnum,
 } from "../generated/definitions/CardPendingDelete";
 import {
   CardRevoked,
-  StatusEnum as RevokedStatusEnum
+  StatusEnum as RevokedStatusEnum,
 } from "../generated/definitions/CardRevoked";
 import { CcdbNumber } from "../generated/definitions/CcdbNumber";
 import { EycaCard } from "../generated/definitions/EycaCard";
@@ -46,28 +48,29 @@ import {
   CardActivatedMessage,
   CardExpiredMessage,
   CardPendingDeleteMessage,
-  CardPendingMessage
+  CardPendingMessage,
 } from "../types/queue-message";
 import * as expirationUtils from "../utils/card_expiration";
 import { QueueStorage } from "../utils/queue";
-import { TelemetryClient } from "applicationinsights";
 
-export const telemetryClientMock: TelemetryClient = ({
+export const telemetryClientMock: TelemetryClient = {
   trackEvent: jest.fn().mockImplementation(({ name, properties }) => {
+    // eslint-disable-next-line
     console.info(`Event: ${name}, Props: ${JSON.stringify(properties)}`);
   }),
   trackException: jest.fn().mockImplementation(({ exception, properties }) => {
+    // eslint-disable-next-line
     console.error(
-      `Exception: ${exception}, Props: ${JSON.stringify(properties)}`
+      `Exception: ${exception}, Props: ${JSON.stringify(properties)}`,
     );
-  })
-} as unknown) as TelemetryClient;
+  }),
+} as unknown as TelemetryClient;
 
 export const now = new Date();
 
 export const cgnActivatedDates = {
   activation_date: now,
-  expiration_date: addYears(now, 2)
+  expiration_date: addYears(now, 2),
 };
 
 const DEFAULT_CGN_UPPER_BOUND_AGE = 36 as NonNegativeInteger;
@@ -94,93 +97,96 @@ const uneligibleEycaYear = (
   .substring(2, 4);
 
 export const aFiscalCode = `RODFDS${eligibleCgnEycaYear}S10H501T` as FiscalCode;
-export const aCGNUneligibleFiscalCode = `RODFDS${uneligibleCgnYear}S10H501T` as FiscalCode;
-export const anEYCAUneligibleFiscalCode = `RODFDS${uneligibleEycaYear}S10H501T` as FiscalCode;
+export const aCGNUneligibleFiscalCode =
+  `RODFDS${uneligibleCgnYear}S10H501T` as FiscalCode;
+export const anEYCAUneligibleFiscalCode =
+  `RODFDS${uneligibleEycaYear}S10H501T` as FiscalCode;
 
 export const cardPendingMessageMock: CardPendingMessage = {
-  request_id: ulid() as Ulid,
-  fiscal_code: aFiscalCode,
   activation_date: new Date(),
   expiration_date: new Date(),
-  status: PendingStatusEnum.PENDING
+  fiscal_code: aFiscalCode,
+  request_id: ulid() as Ulid,
+  status: PendingStatusEnum.PENDING,
 };
 
 export const ccdbNumberMock = "A111-B222-C333-D444" as CcdbNumber;
 
 export const cardActivatedMessageMock: CardActivatedMessage = {
-  card_id: (ccdbNumberMock as unknown) as NonEmptyString,
-  request_id: ulid() as Ulid,
-  fiscal_code: aFiscalCode,
   activation_date: new Date(),
+  card_id: ccdbNumberMock as unknown as NonEmptyString,
   expiration_date: new Date(),
-  status: ActivatedStatusEnum.ACTIVATED
+  fiscal_code: aFiscalCode,
+  request_id: ulid() as Ulid,
+  status: ActivatedStatusEnum.ACTIVATED,
 };
 
 export const cardPendingDeleteMessageMock: CardPendingDeleteMessage = {
-  request_id: ulid() as Ulid,
-  fiscal_code: aFiscalCode,
   expiration_date: new Date(),
-  status: PendingDeleteStatusEnum.PENDING_DELETE
+  fiscal_code: aFiscalCode,
+  request_id: ulid() as Ulid,
+  status: PendingDeleteStatusEnum.PENDING_DELETE,
 };
 
 export const cardExpiredMessageMock: CardExpiredMessage = {
-  request_id: ulid() as Ulid,
-  fiscal_code: aFiscalCode,
   activation_date: new Date(),
   expiration_date: new Date(),
-  status: ExpiredStatusEnum.EXPIRED
+  fiscal_code: aFiscalCode,
+  request_id: ulid() as Ulid,
+  status: ExpiredStatusEnum.EXPIRED,
 };
 
-export const context = ({
+export const context = {
   log: {
-    error: jest.fn().mockImplementation(e => {
+    error: jest.fn().mockImplementation((e) => {
+      // eslint-disable-next-line
       console.log(e);
-    })
-  }
-} as unknown) as Context;
+    }),
+  },
+} as unknown as Context;
 
 export const makeServiceResponse = (
   status: HttpStatusCodeEnum,
-  value: string
+  value: string,
 ) => ({
+  headers: [],
   status,
   value,
-  headers: []
 });
 
 // mock some cgn entities
 export const aUserCardPending: CardPending = {
-  status: PendingStatusEnum.PENDING
+  status: PendingStatusEnum.PENDING,
 };
 
 export const aUserCardActivated: CardActivated = {
   activation_date: new Date(),
   expiration_date: addYears(new Date(), 2),
-  status: ActivatedStatusEnum.ACTIVATED
+  status: ActivatedStatusEnum.ACTIVATED,
 };
 
 export const aUserCardPendingDelete: CardPendingDelete = {
   activation_date: new Date(),
   expiration_date: addYears(new Date(), 2),
-  status: PendingDeleteStatusEnum.PENDING_DELETE
+  status: PendingDeleteStatusEnum.PENDING_DELETE,
 };
 
 export const aUserCardRevoked: CardRevoked = {
   ...cgnActivatedDates,
   revocation_date: now,
   revocation_reason: "revocation_reason" as NonEmptyString,
-  status: RevokedStatusEnum.REVOKED
+  status: RevokedStatusEnum.REVOKED,
 };
 
 export const aUserCardExpired: CardExpired = {
   ...cgnActivatedDates,
-  status: ExpiredStatusEnum.EXPIRED
+  status: ExpiredStatusEnum.EXPIRED,
 };
 
 export const aUserCgn: UserCgn = {
+  card: {} as Card,
   fiscalCode: aFiscalCode,
   id: "A_USER_CGN_ID" as NonEmptyString,
-  card: {} as Card
 };
 
 // mock user cgn model
@@ -191,7 +197,7 @@ export const cgnFindLastVersionByModelIdMock = jest
 export const cgnFindAllCgnCardsModelMock = jest
   .fn()
   .mockImplementation(() =>
-    TE.right([{ ...aUserCgn, card: aUserCardActivated }])
+    TE.right([{ ...aUserCgn, card: aUserCardActivated }]),
   );
 
 export const cgnUpsertModelMock = jest
@@ -206,43 +212,43 @@ export const cgnDeleteVersionModelMock = jest
   .fn()
   .mockImplementation(() => TE.of("Delete success"));
 
-export const userCgnModelMock = ({
-  findLastVersionByModelId: cgnFindLastVersionByModelIdMock,
+export const userCgnModelMock = {
+  deleteVersion: cgnDeleteVersionModelMock,
   findAllCgnCards: cgnFindAllCgnCardsModelMock,
-  upsert: cgnUpsertModelMock,
+  findLastVersionByModelId: cgnFindLastVersionByModelIdMock,
   update: cgnUpdateModelMock,
-  deleteVersion: cgnDeleteVersionModelMock
-} as unknown) as UserCgnModel;
+  upsert: cgnUpsertModelMock,
+} as unknown as UserCgnModel;
 
 // mock some eyca card entities
 export const aUserEycaCardPending: CardPending = {
-  status: PendingStatusEnum.PENDING
+  status: PendingStatusEnum.PENDING,
 };
 
 export const aUserEycaCardActivated: EycaCardActivated = {
-  card_number: ccdbNumberMock,
   activation_date: new Date(),
+  card_number: ccdbNumberMock,
   expiration_date: addYears(new Date(), 2),
-  status: ActivatedStatusEnum.ACTIVATED
+  status: ActivatedStatusEnum.ACTIVATED,
 };
 
 export const aUserEycaCardPendingDelete: EycaCardPendingDelete = {
-  card_number: ccdbNumberMock,
   activation_date: new Date(),
+  card_number: ccdbNumberMock,
   expiration_date: addYears(new Date(), 2),
-  status: PendingDeleteStatusEnum.PENDING_DELETE
+  status: PendingDeleteStatusEnum.PENDING_DELETE,
 };
 
 export const aUserEycaCardExpired: EycaCardExpired = {
-  card_number: ccdbNumberMock,
   activation_date: new Date(),
+  card_number: ccdbNumberMock,
   expiration_date: addYears(new Date(), 2),
-  status: ExpiredStatusEnum.EXPIRED
+  status: ExpiredStatusEnum.EXPIRED,
 };
 
 export const aUserEycaCard: UserEycaCard = {
+  card: {} as EycaCard,
   fiscalCode: aFiscalCode,
-  card: {} as EycaCard
 };
 
 // mock user eyca card model
@@ -253,13 +259,13 @@ export const eycaFindLastVersionByModelIdMock = jest
 export const eycaFindAllEycaCardsModelMock = jest
   .fn()
   .mockImplementation(() =>
-    TE.right([{ ...aUserEycaCard, card: aUserEycaCardActivated }])
+    TE.right([{ ...aUserEycaCard, card: aUserEycaCardActivated }]),
   );
 
 export const eycaUpsertModelMock = jest
   .fn()
   .mockImplementation(() =>
-    TE.of({ ...aUserEycaCard, card: aUserEycaCardPending })
+    TE.of({ ...aUserEycaCard, card: aUserEycaCardPending }),
   );
 
 export const eycaUpdateModelMock = jest
@@ -270,13 +276,13 @@ export const eycaDeleteVersionModelMock = jest
   .fn()
   .mockImplementation(() => TE.of("Delete success"));
 
-export const userEycaCardModelMock = ({
-  findLastVersionByModelId: eycaFindLastVersionByModelIdMock,
+export const userEycaCardModelMock = {
+  deleteVersion: eycaDeleteVersionModelMock,
   findAllEycaCards: eycaFindAllEycaCardsModelMock,
-  upsert: eycaUpsertModelMock,
+  findLastVersionByModelId: eycaFindLastVersionByModelIdMock,
   update: eycaUpdateModelMock,
-  deleteVersion: eycaDeleteVersionModelMock
-} as unknown) as UserEycaCardModel;
+  upsert: eycaUpsertModelMock,
+} as unknown as UserEycaCardModel;
 
 // mock interaction with ccdb
 export const preIssueEycaCardMock = jest
@@ -297,35 +303,35 @@ export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
     makeServiceResponse(
       HttpStatusCodeEnum.HTTP_STATUS_200,
       JSON.stringify({
-        service_id: "qwertyuiop",
         fiscal_code: aFiscalCode,
+        service_id: "qwertyuiop",
         status: ActivationStatusEnum.PENDING,
-        version: 1
-      })
-    )
-  )
+        version: 1,
+      }),
+    ),
+  ),
 );
 
 export const fakeServicesAPIClient = createClient<"SubscriptionKey">({
   baseUrl: "",
   fetchApi: async () => new Response(),
-  withDefaults: op => params => op({ SubscriptionKey: "", ...params })
+  withDefaults: (op) => (params) => op({ SubscriptionKey: "", ...params }),
 });
 
 export const servicesClientMock = {
   ...fakeServicesAPIClient,
-  upsertServiceActivation: upsertServiceActivationMock
+  upsertServiceActivation: upsertServiceActivationMock,
 };
 
 // mock storage
 export const storeCardExpirationMock = jest
   .fn()
-  .mockImplementation(() => TE.right(({} as unknown) as ServiceResponse));
+  .mockImplementation(() => TE.right({} as unknown as ServiceResponse));
 
 export const deleteCardExpirationMock = jest
   .fn()
   .mockImplementation(() =>
-    TE.right(({} as unknown) as TableService.EntityMetadata)
+    TE.right({} as unknown as TableService.EntityMetadata),
   );
 
 // mock queue storage
@@ -333,35 +339,34 @@ export const enqueueMessageMock = jest
   .fn()
   .mockImplementation(() => TE.right(true));
 
-export const queueStorageMock = ({
-  enqueuePendingCGNMessage: enqueueMessageMock,
+export const queueStorageMock = {
   enqueueActivatedCGNMessage: enqueueMessageMock,
-  enqueuePendingEYCAMessage: enqueueMessageMock,
   enqueueActivatedEYCAMessage: enqueueMessageMock,
-  enqueuePendingDeleteCGNMessage: enqueueMessageMock,
-  enqueuePendingDeleteEYCAMessage: enqueueMessageMock,
   enqueueExpiredCGNMessage: enqueueMessageMock,
   enqueueExpiredEYCAMessage: enqueueMessageMock,
-  enqueueMessageToSendMessage: enqueueMessageMock
-} as unknown) as QueueStorage;
+  enqueueMessageToSendMessage: enqueueMessageMock,
+  enqueuePendingCGNMessage: enqueueMessageMock,
+  enqueuePendingDeleteCGNMessage: enqueueMessageMock,
+  enqueuePendingDeleteEYCAMessage: enqueueMessageMock,
+  enqueuePendingEYCAMessage: enqueueMessageMock,
+} as unknown as QueueStorage;
 
 // expirations
 
 export const activationAndExpirationDates = {
   activationDate: cgnActivatedDates.activation_date,
-  expirationDate: cgnActivatedDates.expiration_date
+  expirationDate: cgnActivatedDates.expiration_date,
 };
 
-// eslint-disable-next-line functional/prefer-readonly-type
 export const aSetOfExpiredRows: expirationUtils.ExpiredCardRowKey[] = [
   {
     fiscalCode: "RODFDS82S10H501T" as FiscalCode,
-    ...activationAndExpirationDates
+    ...activationAndExpirationDates,
   },
   {
     fiscalCode: "RODEDS80S10H501T" as FiscalCode,
-    ...activationAndExpirationDates
-  }
+    ...activationAndExpirationDates,
+  },
 ];
 
 export const expiredCgnTableName = "aTable" as NonEmptyString;

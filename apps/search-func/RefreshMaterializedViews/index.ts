@@ -9,8 +9,7 @@ getConfigOrThrow();
 // init telemetry client
 initTelemetryClient();
 
-const materializedViewRefreshHandler = getMaterializedViewRefreshHandler(
-  cgnOperatorDb
-);
+const materializedViewRefreshHandler =
+  getMaterializedViewRefreshHandler(cgnOperatorDb);
 
 export default materializedViewRefreshHandler;
