@@ -1,17 +1,18 @@
 import { AzureFunction } from "@azure/functions";
 import { createTableService } from "azure-storage";
+
 import { EycaAPIClient } from "../clients/eyca";
 import {
   USER_EYCA_CARD_COLLECTION_NAME,
-  UserEycaCardModel
+  UserEycaCardModel,
 } from "../models/user_eyca_card";
+import initTelemetryClient from "../utils/appinsights";
 import { getConfigOrThrow } from "../utils/config";
 import { cosmosdbClient } from "../utils/cosmosdb";
-import { deleteCard, DeleteEycaCard } from "../utils/eyca";
+import { DeleteEycaCard, deleteCard } from "../utils/eyca";
 import { getRedisClientFactory } from "../utils/redis";
 import { deleteCardExpiration } from "../utils/table_storage";
 import { handler } from "./handler";
-import initTelemetryClient from "../utils/appinsights";
 
 const config = getConfigOrThrow();
 
@@ -27,7 +28,7 @@ const tableService = createTableService(config.CGN_STORAGE_CONNECTION_STRING);
 
 const deleteEycaExpiration = deleteCardExpiration(
   tableService,
-  config.EYCA_EXPIRATION_TABLE_NAME
+  config.EYCA_EXPIRATION_TABLE_NAME,
 );
 
 const redisClientFactory = getRedisClientFactory(config);
@@ -38,13 +39,13 @@ const deleteEycaCard: DeleteEycaCard = deleteCard(
   redisClientFactory,
   eycaClient,
   config.EYCA_API_USERNAME,
-  config.EYCA_API_PASSWORD
+  config.EYCA_API_PASSWORD,
 );
 
 export const index: AzureFunction = handler(
   userEycaCardModel,
   deleteEycaExpiration,
-  deleteEycaCard
+  deleteEycaCard,
 );
 
 export default index;

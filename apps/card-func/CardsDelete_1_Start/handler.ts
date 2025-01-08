@@ -1,43 +1,41 @@
-import * as express from "express";
-
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
 import {
   withRequestMiddlewares,
-  wrapRequestHandler
+  wrapRequestHandler,
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorInternal,
-  IResponseSuccessAccepted,
   IResponseSuccessRedirectToResource,
   ResponseErrorInternal,
-  ResponseSuccessAccepted,
-  ResponseSuccessRedirectToResource
+  ResponseSuccessRedirectToResource,
 } from "@pagopa/ts-commons/lib/responses";
 import {
   FiscalCode,
   NonEmptyString,
-  Ulid
+  Ulid,
 } from "@pagopa/ts-commons/lib/strings";
+import * as express from "express";
 import * as E from "fp-ts/lib/Either";
-import { identity, pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+import { identity, pipe } from "fp-ts/lib/function";
 import { ulid } from "ulid";
+
 import { StatusEnum as PendingDeleteStatusEnum } from "../generated/definitions/CardPendingDelete";
 import { CommonCard } from "../generated/definitions/CommonCard";
+import { InstanceId } from "../generated/definitions/InstanceId";
 import { UserCgnModel } from "../models/user_cgn";
 import { UserEycaCardModel } from "../models/user_eyca_card";
 import { QueueStorage } from "../utils/queue";
-import { InstanceId } from "../generated/definitions/InstanceId";
 
 type IStartCgnActivationHandler = (
   context: Context,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ) => Promise<
-  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
   | IResponseErrorInternal
+  | IResponseSuccessRedirectToResource<InstanceId, InstanceId>
 >;
 
 /**
@@ -50,7 +48,7 @@ type IStartCgnActivationHandler = (
 const findLastCommonCards = (
   userCgnModel: UserCgnModel,
   userEycaCardModel: UserEycaCardModel,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ) =>
   pipe(
     TE.Do,
@@ -58,50 +56,50 @@ const findLastCommonCards = (
       pipe(
         userCgnModel.findLastVersionByModelId([fiscalCode]),
         TE.mapLeft(
-          cosmosErrors =>
-            new Error(`${cosmosErrors.kind}|Cannot query cosmos CGN`)
+          (cosmosErrors) =>
+            new Error(`${cosmosErrors.kind}|Cannot query cosmos CGN`),
         ),
         TE.chainW(
           O.foldW(
             () => TE.of(O.none),
-            userCgn =>
+            (userCgn) =>
               pipe(
                 userCgn.card,
                 CommonCard.decode,
                 E.mapLeft(
-                  _ => new Error("Cannot find user CGN card expiration")
+                  () => new Error("Cannot find user CGN card expiration"),
                 ),
                 TE.fromEither,
-                TE.map(O.some)
-              )
-          )
-        )
-      )
+                TE.map(O.some),
+              ),
+          ),
+        ),
+      ),
     ),
     TE.bind("maybeEycaCommonCard", () =>
       pipe(
         userEycaCardModel.findLastVersionByModelId([fiscalCode]),
         TE.mapLeft(
-          cosmosErrors =>
-            new Error(`${cosmosErrors.kind}|Cannot query cosmos EYCA`)
+          (cosmosErrors) =>
+            new Error(`${cosmosErrors.kind}|Cannot query cosmos EYCA`),
         ),
         TE.chainW(
           O.foldW(
             () => TE.of(O.none),
-            userEyca =>
+            (userEyca) =>
               pipe(
                 userEyca.card,
                 CommonCard.decode,
                 E.mapLeft(
-                  _ => new Error("Cannot find user EYCA card expiration")
+                  () => new Error("Cannot find user EYCA card expiration"),
                 ),
                 TE.fromEither,
-                TE.map(O.some)
-              )
-          )
-        )
-      )
-    )
+                TE.map(O.some),
+              ),
+          ),
+        ),
+      ),
+    ),
   );
 
 /**
@@ -115,23 +113,26 @@ const enqueuePendingDeleteCgn = (
   requestId: Ulid,
   queueStorage: QueueStorage,
   fiscalCode: FiscalCode,
-  maybeCgnCommonCard: O.Option<CommonCard>
+  maybeCgnCommonCard: O.Option<CommonCard>,
 ): TE.TaskEither<Error, boolean> =>
   pipe(
     maybeCgnCommonCard,
     O.fold(
       () => TE.of(true),
-      commonCard =>
+      (commonCard) =>
         queueStorage.enqueuePendingDeleteCGNMessage({
-          request_id: requestId,
-          fiscal_code: fiscalCode,
           expiration_date: commonCard.expiration_date,
-          status: PendingDeleteStatusEnum.PENDING_DELETE
-        })
+          fiscal_code: fiscalCode,
+          request_id: requestId,
+          status: PendingDeleteStatusEnum.PENDING_DELETE,
+        }),
     ),
     TE.chain(
-      TE.fromPredicate(identity, _ => new Error("Internal error queue service"))
-    )
+      TE.fromPredicate(
+        identity,
+        () => new Error("Internal error queue service"),
+      ),
+    ),
   );
 
 /**
@@ -145,89 +146,91 @@ const enqueuePendingDeleteEyca = (
   requestId: Ulid,
   queueStorage: QueueStorage,
   fiscalCode: FiscalCode,
-  maybeEycaCommonCard: O.Option<CommonCard>
+  maybeEycaCommonCard: O.Option<CommonCard>,
 ): TE.TaskEither<Error, boolean> =>
   pipe(
     maybeEycaCommonCard,
     O.fold(
       () => TE.of(true),
-      commonCard =>
+      (commonCard) =>
         queueStorage.enqueuePendingDeleteEYCAMessage({
-          request_id: requestId,
-          fiscal_code: fiscalCode,
           expiration_date: commonCard.expiration_date,
-          status: PendingDeleteStatusEnum.PENDING_DELETE
-        })
+          fiscal_code: fiscalCode,
+          request_id: requestId,
+          status: PendingDeleteStatusEnum.PENDING_DELETE,
+        }),
     ),
     TE.chain(
-      TE.fromPredicate(identity, _ => new Error("Internal error queue service"))
-    )
+      TE.fromPredicate(
+        identity,
+        () => new Error("Internal error queue service"),
+      ),
+    ),
   );
 
-export const StartCardsDeleteHandler = (
-         userCgnModel: UserCgnModel,
-         userEycaCardModel: UserEycaCardModel,
-         queueStorage: QueueStorage
-       ): IStartCgnActivationHandler => async (
-         context: Context,
-         fiscalCode: FiscalCode
-       ) =>
-         pipe(
-           findLastCommonCards(userCgnModel, userEycaCardModel, fiscalCode),
-           TE.bind("requestId", _ => TE.of(ulid() as Ulid)),
-           // we try to enqueue message for eyca first to ensure
-           // that eyca is always deleted first
-           TE.chainFirst(({ requestId, maybeEycaCommonCard }) =>
-             enqueuePendingDeleteEyca(
-               requestId,
-               queueStorage,
-               fiscalCode,
-               maybeEycaCommonCard
-             )
-           ),
-           // we then try to enqueue message for cgn so that if
-           // it fails we allow user to resend the request and if
-           // eyca was already deleted we procede to delete the cgn
-           TE.chainFirst(({ requestId, maybeCgnCommonCard }) =>
-             enqueuePendingDeleteCgn(
-               requestId,
-               queueStorage,
-               fiscalCode,
-               maybeCgnCommonCard
-             )
-           ),
-           TE.chain(({ requestId }) =>
-             TE.of(
-               pipe(
-                 {
-                   id: requestId.valueOf() as NonEmptyString
-                 },
-                 instanceid =>
-                   ResponseSuccessRedirectToResource(
-                     instanceid,
-                     `/api/v1/cgn/${fiscalCode}/delete`,
-                     instanceid
-                   )
-               )
-             )
-           ),
-           TE.mapLeft(e => ResponseErrorInternal(e.message)),
-           TE.toUnion
-         )();
+export const StartCardsDeleteHandler =
+  (
+    userCgnModel: UserCgnModel,
+    userEycaCardModel: UserEycaCardModel,
+    queueStorage: QueueStorage,
+  ): IStartCgnActivationHandler =>
+  async (context: Context, fiscalCode: FiscalCode) =>
+    pipe(
+      findLastCommonCards(userCgnModel, userEycaCardModel, fiscalCode),
+      TE.bind("requestId", () => TE.of(ulid() as Ulid)),
+      // we try to enqueue message for eyca first to ensure
+      // that eyca is always deleted first
+      TE.chainFirst(({ maybeEycaCommonCard, requestId }) =>
+        enqueuePendingDeleteEyca(
+          requestId,
+          queueStorage,
+          fiscalCode,
+          maybeEycaCommonCard,
+        ),
+      ),
+      // we then try to enqueue message for cgn so that if
+      // it fails we allow user to resend the request and if
+      // eyca was already deleted we procede to delete the cgn
+      TE.chainFirst(({ maybeCgnCommonCard, requestId }) =>
+        enqueuePendingDeleteCgn(
+          requestId,
+          queueStorage,
+          fiscalCode,
+          maybeCgnCommonCard,
+        ),
+      ),
+      TE.chain(({ requestId }) =>
+        TE.of(
+          pipe(
+            {
+              id: requestId.valueOf() as NonEmptyString,
+            },
+            (instanceid) =>
+              ResponseSuccessRedirectToResource(
+                instanceid,
+                `/api/v1/cgn/${fiscalCode}/delete`,
+                instanceid,
+              ),
+          ),
+        ),
+      ),
+      TE.mapLeft((e) => ResponseErrorInternal(e.message)),
+      TE.toUnion,
+    )();
 
 export const StartCardsDelete = (
   userCgnModel: UserCgnModel,
   userEycaCardModel: UserEycaCardModel,
-  queueStorage: QueueStorage
+  queueStorage: QueueStorage,
 ): express.RequestHandler => {
   const handler = StartCardsDeleteHandler(
     userCgnModel,
     userEycaCardModel,
-    queueStorage
+    queueStorage,
   );
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredParamMiddleware("fiscalcode", FiscalCode)
+    RequiredParamMiddleware("fiscalcode", FiscalCode),
   );
   return wrapRequestHandler(middlewaresWrap(handler));
 };

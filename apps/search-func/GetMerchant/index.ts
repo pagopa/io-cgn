@@ -1,12 +1,13 @@
-import * as express from "express";
 import { Context } from "@azure/functions";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import * as express from "express";
+
 import { cgnOperatorDb } from "../client/sequelize";
+import initTelemetryClient from "../utils/appinsights";
 import { getConfigOrThrow } from "../utils/config";
 import { GetMerchant } from "./handler";
-import initTelemetryClient from "../utils/appinsights";
 
 // load config and ensure it is correct
 const config = getConfigOrThrow();
@@ -24,8 +25,8 @@ app.get(
   GetMerchant(
     cgnOperatorDb,
     config.CDN_MERCHANT_IMAGES_BASE_URL,
-    config.CGN_EXTERNAL_SOURCE_HEADER_NAME
-  )
+    config.CGN_EXTERNAL_SOURCE_HEADER_NAME,
+  ),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);

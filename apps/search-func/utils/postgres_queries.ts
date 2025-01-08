@@ -1,54 +1,55 @@
 import * as O from "fp-ts/lib/Option";
 import { pipe } from "fp-ts/lib/function";
+
 import { BoundingBox } from "../generated/definitions/BoundingBox";
 import { Coordinates } from "../generated/definitions/Coordinates";
-import { ProductCategory } from "../generated/definitions/ProductCategory";
-import { ProductCategoryToQueryColumn } from "../models/ProductCategories";
 import { OrderingEnum } from "../generated/definitions/OfflineMerchantSearchRequest";
 import { OfflineMerchantSearchRequest } from "../generated/definitions/OfflineMerchantSearchRequest";
+import { ProductCategory } from "../generated/definitions/ProductCategory";
+import { ProductCategoryToQueryColumn } from "../models/ProductCategories";
 
 const tokenFilterQueryPart = (token: O.Option<string>): string =>
   pipe(
     token,
     O.map(
-      __ =>
-        " AND (searchable_name LIKE :token_filter OR searchable_description LIKE :token_filter) "
+      () =>
+        " AND (searchable_name LIKE :token_filter OR searchable_description LIKE :token_filter) ",
     ),
-    O.getOrElse(() => "")
+    O.getOrElse(() => ""),
   );
 
 const categoryFilter = (
-  productCategoriesFilter: O.Option<ReadonlyArray<ProductCategory>>
+  productCategoriesFilter: O.Option<readonly ProductCategory[]>,
 ): string =>
   pipe(
     productCategoriesFilter,
-    O.map(s => s.map(c => ProductCategoryToQueryColumn(c)).join(" OR ")),
-    O.map(s => `AND (${s})`),
-    O.getOrElse(() => "")
+    O.map((s) => s.map((c) => ProductCategoryToQueryColumn(c)).join(" OR ")),
+    O.map((s) => `AND (${s})`),
+    O.getOrElse(() => ""),
   );
 
 const nameFilterQueryPart = (nameFilter: O.Option<string>): string =>
   pipe(
     nameFilter,
-    O.map(__ => " AND searchable_name LIKE :name_filter "),
-    O.getOrElse(() => "")
+    O.map(() => " AND searchable_name LIKE :name_filter "),
+    O.getOrElse(() => ""),
   );
 
 const pageNumber = (maybePage: O.Option<number>): number =>
   pipe(
     maybePage,
-    O.getOrElse(() => 0)
+    O.getOrElse(() => 0),
   );
 
 const pageSize = (maybePageSize: O.Option<number>): number =>
   pipe(
     maybePageSize,
-    O.getOrElse(() => 200)
+    O.getOrElse(() => 200),
   );
 
 const offset = (
   page: O.Option<number>,
-  maybePageSize: O.Option<number>
+  maybePageSize: O.Option<number>,
 ): number => pageNumber(page) * pageSize(maybePageSize);
 
 const getBoundingBoxMinLatitude = (boundingBox: BoundingBox): number =>
@@ -76,14 +77,14 @@ const distanceParameter = (userCoordinates: Coordinates): string =>
 
 const orderingParameter = (
   ordering: OrderingEnum,
-  maybeUserCoordinates: O.Option<Coordinates>
+  maybeUserCoordinates: O.Option<Coordinates>,
 ): string =>
   ordering === OrderingEnum.alphabetic
     ? "searchable_name"
     : pipe(
         maybeUserCoordinates,
-        O.map(_ => "distance"),
-        O.getOrElse(() => "searchable_name")
+        O.map(() => "distance"),
+        O.getOrElse(() => "searchable_name"),
       );
 
 export const countMerchantsQuery = `SELECT COUNT(*)::integer AS count FROM merchant`;
@@ -91,7 +92,7 @@ export const countMerchantsQuery = `SELECT COUNT(*)::integer AS count FROM merch
 export const selectMerchantsQuery = (
   token: O.Option<string>,
   page: O.Option<number>,
-  maybePageSize: O.Option<number>
+  maybePageSize: O.Option<number>,
 ): string => `
 SELECT
   id,
@@ -107,9 +108,9 @@ OFFSET ${offset(page, maybePageSize)}`;
 
 export const selectOnlineMerchantsQuery = (
   nameFilter: O.Option<string>,
-  productCategoriesFilter: O.Option<ReadonlyArray<ProductCategory>>,
+  productCategoriesFilter: O.Option<readonly ProductCategory[]>,
   page: O.Option<number>,
-  maybePageSize: O.Option<number>
+  maybePageSize: O.Option<number>,
 ): string => `
 SELECT
   id,
@@ -129,7 +130,7 @@ LIMIT ${pageSize(maybePageSize)}
 OFFSET ${offset(page, maybePageSize)}`;
 
 export const selectOfflineMerchantsQuery = (
-  searchRequest: OfflineMerchantSearchRequest
+  searchRequest: OfflineMerchantSearchRequest,
 ): string => `
 SELECT
   id,
@@ -144,8 +145,8 @@ SELECT
     searchRequest.userCoordinates,
     O.fromNullable,
     O.map(distanceParameter),
-    O.map(distanceParam => `,${distanceParam}`),
-    O.getOrElse(() => "")
+    O.map((distanceParam) => `,${distanceParam}`),
+    O.getOrElse(() => ""),
   )}
 FROM offline_merchant
 WHERE 1 = 1
@@ -153,7 +154,7 @@ WHERE 1 = 1
     searchRequest.boundingBox,
     O.fromNullable,
     O.map(boundingBoxFilter),
-    O.getOrElse(() => "")
+    O.getOrElse(() => ""),
   )}
   ${nameFilterQueryPart(O.fromNullable(searchRequest.merchantName))}
   ${categoryFilter(O.fromNullable(searchRequest.productCategories))}
@@ -161,14 +162,14 @@ ORDER BY ${orderingParameter(
   pipe(
     searchRequest.ordering,
     O.fromNullable,
-    O.getOrElseW(() => OrderingEnum.distance)
+    O.getOrElseW(() => OrderingEnum.distance),
   ),
-  O.fromNullable(searchRequest.userCoordinates)
+  O.fromNullable(searchRequest.userCoordinates),
 )} ASC
 LIMIT ${pageSize(O.fromNullable(searchRequest.pageSize))}
 OFFSET ${offset(
   O.fromNullable(searchRequest.page),
-  O.fromNullable(searchRequest.pageSize)
+  O.fromNullable(searchRequest.pageSize),
 )}`;
 
 export const SelectMerchantProfileQuery = `

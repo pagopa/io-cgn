@@ -28,10 +28,12 @@ export const withDoubleRequestMiddlewares = (
   M1: (
     request: FastifyRequest,
     reply: FastifyReply,
+    // eslint-disable-next-line
   ) => TE.TaskEither<Response, any>,
   M2: (
     request: FastifyRequest,
     reply: FastifyReply,
+    // eslint-disable-next-line
   ) => TE.TaskEither<Response, any>,
 ) =>
   pipe(

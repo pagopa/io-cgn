@@ -8,26 +8,27 @@
 
 import {
   IntegerFromString,
-  NonNegativeInteger
+  NonNegativeInteger,
 } from "@pagopa/ts-commons/lib/numbers";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
+import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
+
 import { ServiceId } from "../generated/services-api/ServiceId";
 
 export const RedisParams = t.intersection([
   t.interface({
-    REDIS_URL: NonEmptyString
+    REDIS_URL: NonEmptyString,
   }),
   t.partial({
     REDIS_CLUSTER_ENABLED: t.boolean,
     REDIS_PASSWORD: NonEmptyString,
     REDIS_PORT: NonEmptyString,
-    REDIS_TLS_ENABLED: t.boolean
-  })
+    REDIS_TLS_ENABLED: t.boolean,
+  }),
 ]);
 export type RedisParams = t.TypeOf<typeof RedisParams>;
 
@@ -37,7 +38,7 @@ export const DEFAULT_EYCA_UPPER_BOUND_AGE = 31 as NonNegativeInteger;
 export const CgnServiceParams = t.interface({
   CGN_SERVICE_ID: ServiceId,
   SERVICES_API_KEY: NonEmptyString,
-  SERVICES_API_URL: NonEmptyString
+  SERVICES_API_URL: NonEmptyString,
 });
 export type CgnServiceParams = t.TypeOf<typeof CgnServiceParams>;
 
@@ -45,47 +46,47 @@ export type CgnServiceParams = t.TypeOf<typeof CgnServiceParams>;
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.intersection([
   t.interface({
-    CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
-    EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
+    ACTIVATED_CGN_QUEUE_NAME: NonEmptyString,
+    ACTIVATED_EYCA_QUEUE_NAME: NonEmptyString,
 
-    CGN_UPPER_BOUND_AGE: NonNegativeInteger,
-    EYCA_UPPER_BOUND_AGE: NonNegativeInteger,
-
-    COSMOSDB_CGN_DATABASE_NAME: NonEmptyString,
-    COSMOSDB_CGN_KEY: NonEmptyString,
-    COSMOSDB_CGN_URI: NonEmptyString,
-
-    CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
-
-    EYCA_API_BASE_URL: NonEmptyString,
-    EYCA_API_PASSWORD: NonEmptyString,
-    EYCA_API_USERNAME: NonEmptyString,
-
-    CGN_DATA_BACKUP_CONNECTION: NonEmptyString,
+    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
+    // ensure AI env vars are present
+    APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
 
     CGN_CARDS_DATA_BACKUP_CONTAINER_NAME: NonEmptyString,
     CGN_CARDS_DATA_BACKUP_FOLDER_NAME: NonEmptyString,
+    CGN_DATA_BACKUP_CONNECTION: NonEmptyString,
 
-    PENDING_CGN_QUEUE_NAME: NonEmptyString,
-    PENDING_EYCA_QUEUE_NAME: NonEmptyString,
-    ACTIVATED_CGN_QUEUE_NAME: NonEmptyString,
-    ACTIVATED_EYCA_QUEUE_NAME: NonEmptyString,
-    PENDING_DELETE_CGN_QUEUE_NAME: NonEmptyString,
-    PENDING_DELETE_EYCA_QUEUE_NAME: NonEmptyString,
+    CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
+
+    CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
+    CGN_UPPER_BOUND_AGE: NonNegativeInteger,
+    COSMOSDB_CGN_DATABASE_NAME: NonEmptyString,
+
+    COSMOSDB_CGN_KEY: NonEmptyString,
+
+    COSMOSDB_CGN_URI: NonEmptyString,
     EXPIRED_CGN_QUEUE_NAME: NonEmptyString,
+
     EXPIRED_EYCA_QUEUE_NAME: NonEmptyString,
+    EYCA_API_BASE_URL: NonEmptyString,
+    EYCA_API_PASSWORD: NonEmptyString,
+    EYCA_API_USERNAME: NonEmptyString,
+    EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
+    EYCA_UPPER_BOUND_AGE: NonNegativeInteger,
     MESSAGES_QUEUE_NAME: NonEmptyString,
-
     OTP_TTL_IN_SECONDS: NonNegativeInteger,
+    PENDING_CGN_QUEUE_NAME: NonEmptyString,
 
-    // ensure AI env vars are present
-    APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
-    APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
+    PENDING_DELETE_CGN_QUEUE_NAME: NonEmptyString,
 
-    isProduction: t.boolean
+    PENDING_DELETE_EYCA_QUEUE_NAME: NonEmptyString,
+    PENDING_EYCA_QUEUE_NAME: NonEmptyString,
+
+    isProduction: t.boolean,
   }),
   RedisParams,
-  CgnServiceParams
+  CgnServiceParams,
 ]);
 
 // No need to re-evaluate this object for each call
@@ -94,32 +95,32 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   CGN_UPPER_BOUND_AGE: pipe(
     process.env.CGN_UPPER_BOUND_AGE,
     IntegerFromString.decode,
-    E.map(_ => _ as NonNegativeInteger),
-    E.getOrElse(() => DEFAULT_CGN_UPPER_BOUND_AGE)
+    E.map((_) => _ as NonNegativeInteger),
+    E.getOrElse(() => DEFAULT_CGN_UPPER_BOUND_AGE),
   ),
   EYCA_UPPER_BOUND_AGE: pipe(
     process.env.EYCA_UPPER_BOUND_AGE,
     IntegerFromString.decode,
-    E.map(_ => _ as NonNegativeInteger),
-    E.getOrElse(() => DEFAULT_EYCA_UPPER_BOUND_AGE)
+    E.map((_) => _ as NonNegativeInteger),
+    E.getOrElse(() => DEFAULT_EYCA_UPPER_BOUND_AGE),
   ),
   OTP_TTL_IN_SECONDS: pipe(
     process.env.OTP_TTL_IN_SECONDS,
     IntegerFromString.decode,
-    E.map(_ => _ as NonNegativeInteger),
-    E.getOrElse(() => 600 as NonNegativeInteger)
+    E.map((_) => _ as NonNegativeInteger),
+    E.getOrElse(() => 600 as NonNegativeInteger),
   ),
   REDIS_CLUSTER_ENABLED: pipe(
     O.fromNullable(process.env.REDIS_CLUSTER_ENABLED),
-    O.map(_ => _.toLowerCase() === "true"),
-    O.toUndefined
+    O.map((_) => _.toLowerCase() === "true"),
+    O.toUndefined,
   ),
   REDIS_TLS_ENABLED: pipe(
     O.fromNullable(process.env.REDIS_TLS_ENABLED),
-    O.map(_ => _.toLowerCase() === "true"),
-    O.toUndefined
+    O.map((_) => _.toLowerCase() === "true"),
+    O.toUndefined,
   ),
-  isProduction: process.env.NODE_ENV === "production"
+  isProduction: process.env.NODE_ENV === "production",
 });
 
 /**
@@ -140,7 +141,7 @@ export const getConfig = (): t.Validation<IConfig> => errorOrConfig;
 export const getConfigOrThrow = (): IConfig =>
   pipe(
     errorOrConfig,
-    E.getOrElseW(errors => {
+    E.getOrElseW((errors) => {
       throw new Error(`Invalid configuration: ${readableReport(errors)}`);
-    })
+    }),
   );

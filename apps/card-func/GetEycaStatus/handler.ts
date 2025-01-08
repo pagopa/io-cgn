@@ -1,11 +1,9 @@
-import * as express from "express";
-
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
 import {
   withRequestMiddlewares,
-  wrapRequestHandler
+  wrapRequestHandler,
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
@@ -18,41 +16,43 @@ import {
   ResponseErrorForbiddenNotAuthorized,
   ResponseErrorInternal,
   ResponseErrorNotFound,
-  ResponseSuccessJson
+  ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import { flow, pipe } from "fp-ts/lib/function";
+import * as express from "express";
 import * as TE from "fp-ts/lib/TaskEither";
+import { flow, pipe } from "fp-ts/lib/function";
+
+import { CardActivated } from "../generated/definitions/CardActivated";
 import {
   CardPending,
-  StatusEnum as PendingStatusEnum
+  StatusEnum as PendingStatusEnum,
 } from "../generated/definitions/CardPending";
 import { EycaCard } from "../generated/definitions/EycaCard";
 import { UserCgnModel } from "../models/user_cgn";
 import { UserEycaCardModel } from "../models/user_eyca_card";
 import { isEycaEligible } from "../utils/cgn_checks";
-import { CardActivated } from "../generated/definitions/CardActivated";
 
 type ErrorTypes =
-  | IResponseErrorNotFound
-  | IResponseErrorInternal
   | IResponseErrorConflict
-  | IResponseErrorForbiddenNotAuthorized;
-type ResponseTypes = IResponseSuccessJson<EycaCard> | ErrorTypes;
+  | IResponseErrorForbiddenNotAuthorized
+  | IResponseErrorInternal
+  | IResponseErrorNotFound;
+type ResponseTypes = ErrorTypes | IResponseSuccessJson<EycaCard>;
 
 type IGetEycaStatusHandler = (
   context: Context,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ) => Promise<ResponseTypes>;
 
 const pendingEycaTE = TE.of({
-  card: { status: PendingStatusEnum.PENDING }
+  card: { status: PendingStatusEnum.PENDING },
 });
 
 const conflictEycaTE = TE.left(
   ResponseErrorConflict(
-    "EYCA Card is missing while citizen is eligible to obtain it"
-  )
+    "EYCA Card is missing while citizen is eligible to obtain it",
+  ),
 );
 
 const timeToWaitInMilliseconds = 60000; // 60 seconds
@@ -60,58 +60,59 @@ const timeToWaitInMilliseconds = 60000; // 60 seconds
 const tooEarlyToDetermineEycaFailure = (activationDate: Date) =>
   new Date().getTime() - activationDate.getTime() <= timeToWaitInMilliseconds;
 
-export const GetEycaStatusHandler = (
-  userEycaCardModel: UserEycaCardModel,
-  userCgnModel: UserCgnModel,
-  eycaUpperBoundAge: NonNegativeInteger
-): IGetEycaStatusHandler => {
+export const GetEycaStatusHandler =
+  (
+    userEycaCardModel: UserEycaCardModel,
+    userCgnModel: UserCgnModel,
+    eycaUpperBoundAge: NonNegativeInteger,
+  ): IGetEycaStatusHandler =>
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  return async (_, fiscalCode) =>
+  async (_, fiscalCode) =>
     pipe(
       isEycaEligible(fiscalCode, eycaUpperBoundAge),
       TE.fromEither,
       TE.mapLeft(() =>
-        ResponseErrorInternal("Cannot perform user's EYCA eligibility check")
+        ResponseErrorInternal("Cannot perform user's EYCA eligibility check"),
       ),
       TE.chainW(
         TE.fromPredicate(
-          isEligible => isEligible,
-          () => ResponseErrorForbiddenNotAuthorized
-        )
+          (isEligible) => isEligible,
+          () => ResponseErrorForbiddenNotAuthorized,
+        ),
       ),
       TE.chainW(() =>
         pipe(
           userEycaCardModel.findLastVersionByModelId([fiscalCode]),
           TE.mapLeft(() =>
             ResponseErrorInternal(
-              "Error trying to retrieve user's EYCA Card status"
-            )
-          )
-        )
+              "Error trying to retrieve user's EYCA Card status",
+            ),
+          ),
+        ),
       ),
       TE.chainW(
         flow(
           TE.fromOption(() =>
             ResponseErrorNotFound(
               "Not Found",
-              "User's EYCA Card status not found"
-            )
+              "User's EYCA Card status not found",
+            ),
           ),
-          TE.orElseW(notFoundError =>
+          TE.orElseW((notFoundError) =>
             pipe(
               userCgnModel.findLastVersionByModelId([fiscalCode]),
               TE.mapLeft(() =>
                 ResponseErrorInternal(
-                  "Error trying to retrieve user's CGN Card status"
-                )
+                  "Error trying to retrieve user's CGN Card status",
+                ),
               ),
-              TE.chainW(maybeUserCgn =>
+              TE.chainW((maybeUserCgn) =>
                 pipe(
                   maybeUserCgn,
-                  TE.fromOption(() => notFoundError)
-                )
+                  TE.fromOption(() => notFoundError),
+                ),
               ),
-              TE.chainW(userCgn => {
+              TE.chainW((userCgn) => {
                 const cgnCard = userCgn.card;
                 const isCgnPending = CardPending.is(cgnCard);
                 const isCgnActivated = CardActivated.is(cgnCard);
@@ -126,30 +127,29 @@ export const GetEycaStatusHandler = (
                     tooEarlyToDetermineEycaFailure(cgnCard.activation_date))
                   ? pendingEycaTE
                   : conflictEycaTE;
-              })
-            )
-          )
-        )
+              }),
+            ),
+          ),
+        ),
       ),
-      TE.map(userEycaCard => ResponseSuccessJson(userEycaCard.card)),
-      TE.toUnion
+      TE.map((userEycaCard) => ResponseSuccessJson(userEycaCard.card)),
+      TE.toUnion,
     )();
-};
 
 export const GetEycaStatus = (
   userEycaCardModel: UserEycaCardModel,
   userCgnModel: UserCgnModel,
-  eycaUpperBoundAge: NonNegativeInteger
+  eycaUpperBoundAge: NonNegativeInteger,
 ): express.RequestHandler => {
   const handler = GetEycaStatusHandler(
     userEycaCardModel,
     userCgnModel,
-    eycaUpperBoundAge
+    eycaUpperBoundAge,
   );
 
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredParamMiddleware("fiscalcode", FiscalCode)
+    RequiredParamMiddleware("fiscalcode", FiscalCode),
   );
 
   return wrapRequestHandler(middlewaresWrap(handler));

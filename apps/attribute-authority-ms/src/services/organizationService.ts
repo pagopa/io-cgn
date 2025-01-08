@@ -117,7 +117,7 @@ export const getOrganizations = (
           items,
         }),
         Organizations.decode,
-        E.bimap((_) => E.toError("Cannot decode response"), identity),
+        E.bimap(() => E.toError("Cannot decode response"), identity),
         E.toUnion,
       ),
     ),
@@ -132,6 +132,7 @@ export const upsertOrganization = (
         organizationWithReferents.keyOrganizationFiscalCode !==
         organizationWithReferents.organizationFiscalCode
       ) {
+        // eslint-disable-next-line
         await OrganizationModel.sequelize!.query(UpdateOrganizationPrimaryKey, {
           raw: true,
           replacements: {
@@ -154,6 +155,7 @@ export const upsertOrganization = (
         E.toError,
       ),
     ),
+    // eslint-disable-next-line
     TE.chain(([organization, _]) =>
       pipe(
         TE.tryCatch(() => organization.getReferents(), E.toError),

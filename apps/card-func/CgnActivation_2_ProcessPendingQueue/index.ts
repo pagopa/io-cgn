@@ -1,13 +1,14 @@
-import { handler } from "./handler";
 import { AzureFunction } from "@azure/functions";
-import { USER_CGN_COLLECTION_NAME, UserCgnModel } from "../models/user_cgn";
-import { cosmosdbClient } from "../utils/cosmosdb";
-import { getConfigOrThrow } from "../utils/config";
-import { ServicesAPIClient } from "../clients/services";
 import { createTableService } from "azure-storage";
-import { insertCardExpiration } from "../utils/table_storage";
-import { QueueStorage } from "../utils/queue";
+
+import { ServicesAPIClient } from "../clients/services";
+import { USER_CGN_COLLECTION_NAME, UserCgnModel } from "../models/user_cgn";
 import initTelemetryClient from "../utils/appinsights";
+import { getConfigOrThrow } from "../utils/config";
+import { cosmosdbClient } from "../utils/cosmosdb";
+import { QueueStorage } from "../utils/queue";
+import { insertCardExpiration } from "../utils/table_storage";
+import { handler } from "./handler";
 
 const config = getConfigOrThrow();
 
@@ -21,10 +22,18 @@ const userCgnModel = new UserCgnModel(userCgnsContainer);
 
 const tableService = createTableService(config.CGN_STORAGE_CONNECTION_STRING);
 
-const storeCgnExpiration = insertCardExpiration(tableService, config.CGN_EXPIRATION_TABLE_NAME);
+const storeCgnExpiration = insertCardExpiration(
+  tableService,
+  config.CGN_EXPIRATION_TABLE_NAME,
+);
 
 const queueStorage: QueueStorage = new QueueStorage(config);
 
-export const index: AzureFunction = handler(userCgnModel, ServicesAPIClient, storeCgnExpiration, queueStorage);
+export const index: AzureFunction = handler(
+  userCgnModel,
+  ServicesAPIClient,
+  storeCgnExpiration,
+  queueStorage,
+);
 
 export default index;

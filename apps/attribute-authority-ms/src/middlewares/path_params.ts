@@ -9,6 +9,7 @@ export const pathParamsMiddleware =
   <S, A>(type: t.Type<A, S>) =>
   (
     request: FastifyRequest,
+    // eslint-disable-next-line
     _: FastifyReply,
   ): TE.TaskEither<BadRequestResponse, A> =>
     pipe(

@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { RouteGenericInterface, RouteHandlerMethod } from "fastify/types/route";
+import { RouteGenericInterface } from "fastify/types/route";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { IncomingMessage, Server, ServerResponse } from "http";

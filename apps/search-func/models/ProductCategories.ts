@@ -10,11 +10,11 @@ export enum ProductCategoryEnumModelType {
   sports = "SPORTS",
   sustainableMobility = "SUSTAINABLE_MOBILITY",
   telephonyAndInternet = "TELEPHONY_AND_INTERNET",
-  travelling = "TRAVELLING"
+  travelling = "TRAVELLING",
 }
 
 export const ProductCategoryFromModel = (
-  productCategory: ProductCategoryEnumModelType
+  productCategory: ProductCategoryEnumModelType,
 ): ProductCategoryEnum => {
   switch (productCategory) {
     case ProductCategoryEnumModelType.bankingServices:
@@ -43,7 +43,7 @@ export const ProductCategoryFromModel = (
 };
 
 export const ProductCategoryToQueryColumn = (
-  productCategory: ProductCategoryEnum
+  productCategory: ProductCategoryEnum,
 ): string => {
   switch (productCategory) {
     case ProductCategoryEnum.bankingServices:

@@ -2,10 +2,11 @@ import { agent } from "@pagopa/ts-commons";
 import {
   AbortableFetch,
   setFetchTimeout,
-  toFetch
+  toFetch,
 } from "@pagopa/ts-commons/lib/fetch";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import nodeFetch from "node-fetch";
+
 import { createClient } from "../generated/services-api/client";
 import { getConfigOrThrow } from "../utils/config";
 
@@ -21,17 +22,17 @@ const DEFAULT_REQUEST_TIMEOUT_MS = 10000;
 const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
 
 const fetchWithTimeout = toFetch(
-  setFetchTimeout(DEFAULT_REQUEST_TIMEOUT_MS as Millisecond, abortableFetch)
+  setFetchTimeout(DEFAULT_REQUEST_TIMEOUT_MS as Millisecond, abortableFetch),
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchApi: typeof fetchWithTimeout = (nodeFetch as any) as typeof fetchWithTimeout;
+const fetchApi: typeof fetchWithTimeout =
+  // eslint-disable-next-line
+  nodeFetch as any as typeof fetchWithTimeout;
 
 export const ServicesAPIClient = createClient<"SubscriptionKey">({
   baseUrl: servicesBaseUrl,
   fetchApi,
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  withDefaults: op => params =>
-    op({ SubscriptionKey: cgnSubscriptionKey, ...params })
+  withDefaults: (op) => (params) =>
+    op({ SubscriptionKey: cgnSubscriptionKey, ...params }),
 });
 export type ServicesAPIClient = typeof ServicesAPIClient;

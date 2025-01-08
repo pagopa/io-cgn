@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest, RouteHandlerMethod } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { IncomingMessage, Server } from "http";

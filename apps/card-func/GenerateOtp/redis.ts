@@ -1,21 +1,22 @@
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
-import { RedisClientFactory } from "../utils/redis";
+
 import { Otp } from "../generated/definitions/Otp";
 import { OtpCode } from "../generated/definitions/OtpCode";
 import { Timestamp } from "../generated/definitions/Timestamp";
 import { errorsToError } from "../utils/conversions";
+import { RedisClientFactory } from "../utils/redis";
 import { getTask, setWithExpirationTask } from "../utils/redis_storage";
 
 export const OtpPayload = t.interface({
   expiresAt: Timestamp,
   fiscalCode: FiscalCode,
-  ttl: NonNegativeInteger
+  ttl: NonNegativeInteger,
 });
 
 export type OtpPayload = t.TypeOf<typeof OtpPayload>;
@@ -27,60 +28,60 @@ export const storeOtpAndRelatedFiscalCode = (
   redisClientFactory: RedisClientFactory,
   otpCode: OtpCode,
   payload: OtpPayload,
-  otpTtl: NonNegativeInteger
+  otpTtl: NonNegativeInteger,
 ): TE.TaskEither<Error, true> =>
   pipe(
     setWithExpirationTask(
       redisClientFactory,
       `${OTP_PREFIX}${otpCode}`,
       JSON.stringify(payload),
-      otpTtl
+      otpTtl,
     ),
     TE.chain(() =>
       setWithExpirationTask(
         redisClientFactory,
         `${OTP_FISCAL_CODE_PREFIX}${payload.fiscalCode}`,
         otpCode,
-        otpTtl
-      )
-    )
+        otpTtl,
+      ),
+    ),
   );
 
 export const retrieveOtpByFiscalCode = (
   redisClientFactory: RedisClientFactory,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ): TE.TaskEither<Error, O.Option<Otp>> =>
   pipe(
     getTask(redisClientFactory, `${OTP_FISCAL_CODE_PREFIX}${fiscalCode}`),
     TE.chain(
       O.fold(
         () => TE.of(O.none),
-        otpCode =>
+        (otpCode) =>
           pipe(
             getTask(redisClientFactory, `${OTP_PREFIX}${otpCode}`),
             TE.chain(
               O.fold(
                 () => TE.of(O.none),
-                otpPayloadString =>
+                (otpPayloadString) =>
                   pipe(
                     TE.fromEither(
-                      E.tryCatch(() => JSON.parse(otpPayloadString), E.toError)
+                      E.tryCatch(() => JSON.parse(otpPayloadString), E.toError),
                     ),
-                    TE.chain(otpPayload =>
+                    TE.chain((otpPayload) =>
                       pipe(
                         Otp.decode({
                           code: otpCode,
                           expires_at: otpPayload.expiresAt,
-                          ttl: otpPayload.ttl
+                          ttl: otpPayload.ttl,
                         }),
                         TE.fromEither,
-                        TE.bimap(errorsToError, O.some)
-                      )
-                    )
-                  )
-              )
-            )
-          )
-      )
-    )
+                        TE.bimap(errorsToError, O.some),
+                      ),
+                    ),
+                  ),
+              ),
+            ),
+          ),
+      ),
+    ),
   );

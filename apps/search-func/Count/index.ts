@@ -3,10 +3,11 @@ import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import * as express from "express";
+
 import { cgnOperatorDb } from "../client/sequelize";
 import initTelemetryClient from "../utils/appinsights";
-import { Count } from "./handler";
 import { getConfigOrThrow } from "../utils/config";
+import { Count } from "./handler";
 
 // ensure config is correct
 getConfigOrThrow();

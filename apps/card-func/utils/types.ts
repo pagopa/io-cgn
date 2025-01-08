@@ -7,7 +7,7 @@
  */
 // eslint-disable-next-line
 export const keys = <T extends Object>(o: T): ReadonlyArray<keyof T> =>
-  (Object.keys(o) as unknown) as ReadonlyArray<keyof T>;
+  Object.keys(o) as unknown as readonly (keyof T)[];
 
 /**
  * Utility to perform exhaustive checks. It behaves as an identity function
@@ -25,6 +25,6 @@ export const unhandledValue = (input: never, retValue = input): never =>
  *
  * @param input the value to be checked
  */
-export const assertNever = (_: never): never => {
+export const assertNever = (): never => {
   throw new Error(`Unhandled value`);
 };

@@ -1,12 +1,13 @@
-import * as express from "express";
 import { Context } from "@azure/functions";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import * as express from "express";
+
 import { cgnOperatorDb } from "../client/sequelize";
-import { GetOfflineMerchants } from "./handler";
 import initTelemetryClient from "../utils/appinsights";
 import { getConfigOrThrow } from "../utils/config";
+import { GetOfflineMerchants } from "./handler";
 
 // ensure config is correct
 getConfigOrThrow();
@@ -21,7 +22,7 @@ secureExpressApp(app);
 // Add express route
 app.post(
   "/api/v1/cgn/operator-search/offline-merchants",
-  GetOfflineMerchants(cgnOperatorDb)
+  GetOfflineMerchants(cgnOperatorDb),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);

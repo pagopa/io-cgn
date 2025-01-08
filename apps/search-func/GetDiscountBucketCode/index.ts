@@ -1,13 +1,14 @@
-import * as express from "express";
 import { Context } from "@azure/functions";
 import createAzureFunctionHandler from "@pagopa/express-azure-functions/dist/src/createAzureFunctionsHandler";
 import { secureExpressApp } from "@pagopa/io-functions-commons/dist/src/utils/express";
 import { setAppContext } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import * as express from "express";
+
 import { cgnOperatorDb } from "../client/sequelize";
+import initTelemetryClient from "../utils/appinsights";
 import { getConfigOrThrow } from "../utils/config";
 import { getRedisClientFactory } from "../utils/redis";
 import { GetDiscountBucketCode } from "./handler";
-import initTelemetryClient from "../utils/appinsights";
 
 // load config and ensure it is correct
 const config = getConfigOrThrow();
@@ -25,8 +26,8 @@ app.get(
   GetDiscountBucketCode(
     cgnOperatorDb,
     getRedisClientFactory(config),
-    config.CGN_BUCKET_CODE_LOCK_LIMIT
-  )
+    config.CGN_BUCKET_CODE_LOCK_LIMIT,
+  ),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);
