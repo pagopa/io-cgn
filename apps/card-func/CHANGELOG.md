@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.8
+
+### Patch Changes
+
+- ed5632c: updated cosmos, tech debt reduction
+
 ## 4.0.7
 
 ### Patch Changes
