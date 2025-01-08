@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.4.3
+
+### Patch Changes
+
+- c91ddfe: tech debt reduction, updated deps, linted
+
 ## 3.4.2
 
 ### Patch Changes

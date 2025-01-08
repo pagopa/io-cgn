@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.7
+
+### Patch Changes
+
+- c91ddfe: tech debt reduction, updated deps, linted
+
 ## 4.0.6
 
 ### Patch Changes
