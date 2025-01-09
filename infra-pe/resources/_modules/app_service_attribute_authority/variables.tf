@@ -81,5 +81,5 @@ variable "attribute_authority_tier" {
 variable "attribute_authority_postgres_db_admin_connection_string" {
   type        = string
   description = "The connection string to postgres db"
-  sensitive = true
+  sensitive   = true
 }

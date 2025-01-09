@@ -25,9 +25,9 @@ module "container_app_job_selfhosted_runner" {
   resource_group_name = "${local.prefix}-${local.env_short}-itn-cgn-rg-01"
 
   environment = {
-    prefix    = local.prefix
-    env_short = local.env_short
-    location  = "italynorth"
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = "italynorth"
     instance_number = "01"
   }
 
@@ -36,10 +36,10 @@ module "container_app_job_selfhosted_runner" {
   }
 
   container_app_environment = {
-    id                  = data.azurerm_container_app_environment.cae.id
-    location            = data.azurerm_container_app_environment.cae.location
-    use_labels          = true
-    override_labels     = ["${local.prefix}-${local.env}"]
+    id              = data.azurerm_container_app_environment.cae.id
+    location        = data.azurerm_container_app_environment.cae.location
+    use_labels      = true
+    override_labels = ["${local.prefix}-${local.env}"]
   }
 
   key_vault = {
