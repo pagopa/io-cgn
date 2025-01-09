@@ -19,6 +19,13 @@ provider "azurerm" {
   }
 }
 
+provider "azurerm" {
+  features {}
+  alias           = "peprod"
+  subscription_id = "74da48a3-b0e7-489d-8172-da79801086ed"
+}
+
+
 module "federated_identities" {
   source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
 
@@ -55,4 +62,18 @@ module "app_federated_identities" {
   tags         = local.tags
 
   continuos_integration = { enable = false }
+}
+
+resource "azurerm_role_assignment" "ci_cgn" {
+  provider             = azurerm.peprod
+  scope                = data.azurerm_subscription.cgn.id
+  principal_id         = module.federated_identities.federated_ci_identity.id
+  role_definition_name = "Reader"
+}
+
+resource "azurerm_role_assignment" "cd_cgn" {
+  provider             = azurerm.peprod
+  scope                = data.azurerm_subscription.cgn.id
+  principal_id         = module.federated_identities.federated_cd_identity.id
+  role_definition_name = "Reader"
 }
