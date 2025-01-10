@@ -31,6 +31,7 @@ module "networking" {
   location       = local.location
   location_short = local.location_short
   domain         = local.domain
+  env_short      = local.env_short
 
   resource_group_name = azurerm_resource_group.itn_cgn_pe.name
 
