@@ -37,7 +37,5 @@ module "functions_cgn_search" {
 
   cgn_cdn_endpoint_base_url = data.azurerm_key_vault_secret.cgn_cdn_endpoint_base_url.value
 
-  postgresql_db_pe_itn_prod_resource_id = data.azurerm_postgresql_flexible_server.postgresql_db_pe_itn_prod.id
-
   tags = local.tags
 }

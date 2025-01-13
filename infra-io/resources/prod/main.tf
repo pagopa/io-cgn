@@ -20,12 +20,6 @@ provider "azurerm" {
   storage_use_azuread = true
 }
 
-provider "azurerm" {
-  features {}
-  alias           = "peprod"
-  subscription_id = "74da48a3-b0e7-489d-8172-da79801086ed"
-}
-
 # RESOURCE GROUP
 resource "azurerm_resource_group" "itn_cgn" {
   name     = "${local.project}-${local.domain}-rg-01"

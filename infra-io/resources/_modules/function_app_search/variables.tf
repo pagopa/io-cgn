@@ -98,8 +98,3 @@ variable "cgn_cdn_endpoint_base_url" {
   type        = string
   description = "CDN endpoint base url"
 }
-
-variable "postgresql_db_pe_itn_prod_resource_id" {
-  type        = string
-  description = "ITN PE PROD postgresql db resource id"
-}

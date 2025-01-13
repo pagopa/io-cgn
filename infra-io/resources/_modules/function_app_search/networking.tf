@@ -6,7 +6,7 @@ resource "azurerm_private_endpoint" "postgresql_db_pe_itn" {
 
   private_service_connection {
     name                           = "${var.project}-${var.domain}-psql-pep-01"
-    private_connection_resource_id = var.postgresql_db_pe_itn_prod_resource_id
+    private_connection_resource_id = "/subscriptions/74da48a3-b0e7-489d-8172-da79801086ed/resourceGroups/io-p-itn-cgn-pe-rg-01/providers/Microsoft.DBforPostgreSQL/flexibleServers/io-p-itn-cgn-pe-postgresql-psql-01"
     is_manual_connection           = false
     subresource_names              = ["postgresqlServer"]
   }

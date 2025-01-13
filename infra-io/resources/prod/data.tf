@@ -54,9 +54,3 @@ data "azurerm_storage_account" "storage_cgn" {
   name                = replace("${local.project_legacy}stcgn", "-", "")
   resource_group_name = format("%s-rg-cgn", local.project_legacy)
 }
-
-data "azurerm_postgresql_flexible_server" "postgresql_db_pe_itn_prod" {
-  provider            = azurerm.peprod
-  name                = "io-p-itn-cgn-pe-postgresql-psql-01"
-  resource_group_name = "io-p-itn-cgn-pe-rg-01"
-}
