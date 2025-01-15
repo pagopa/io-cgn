@@ -77,6 +77,24 @@ module "dns" {
   tags = local.tags
 }
 
+module "dns_weu" {
+  source = "../_modules/dns"
+
+  resource_group_name = data.azurerm_virtual_network.weu.resource_group_name
+
+  virtual_network = {
+    id   = data.azurerm_virtual_network.weu.id
+    name = data.azurerm_virtual_network.weu.name
+  }
+
+  override_link_names = {
+    azure_api_net = data.azurerm_virtual_network.weu.resource_group_name
+    psql = "cgnonboardingportal-${local.env_short}-private-dns-zone-link"
+  }
+
+  tags = local.tags
+}
+
 # KEY VAULTS
 module "key_vaults" {
   source = "../_modules/key_vaults"
