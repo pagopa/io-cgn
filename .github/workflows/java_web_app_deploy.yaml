@@ -51,12 +51,6 @@ jobs:
         with: 
           submodules: 'true'
 
-      - name: Pull last submodule
-        id: submodule-update
-        run: |
-          git submodule foreach git pull origin master --no-rebase
-        working-directory: .
-
       - name: Set up Maven Central Repository
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
