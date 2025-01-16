@@ -54,9 +54,7 @@ jobs:
       - name: Pull last submodule
         id: submodule-update
         run: |
-          git config pull.rebase false
-          git config pull.ff only 
-          git submodule foreach git pull origin master
+          git submodule foreach git pull origin master --no-rebase
         working-directory: .
 
       - name: Set up Maven Central Repository
