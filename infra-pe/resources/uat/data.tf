@@ -10,3 +10,8 @@ data "azurerm_application_insights" "ai_cgn_pe" {
   name                = "cgnonboardingportal-${local.env_short}-app-insights"
   resource_group_name = data.azurerm_resource_group.weu_pe_monitor_rg.name
 }
+
+data "azurerm_virtual_network" "weu" {
+  name                = "cgnonboardingportal-${local.env_short}-vnet"
+  resource_group_name = "cgnonboardingportal-${local.env_short}-vnet-rg"
+}

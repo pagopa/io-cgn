@@ -36,3 +36,9 @@ variable "private_dns_zones" {
     "scm_azure_api_net"        = "scm.azure-api.net"
   }
 }
+
+variable "override_link_names" {
+  type        = map(string)
+  description = "Override link names"
+  default     = {}
+}
