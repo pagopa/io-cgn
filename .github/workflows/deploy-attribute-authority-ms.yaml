@@ -13,7 +13,7 @@ jobs:
 
   deploy_uat:
     name: Deploy Attribute Authority UAT
-    uses: pagopa/dx/.github/workflows/web_app_deploy.yaml@add-web-app-deploy-workflow
+    uses: ./.github/workflows/node_web_app_deploy.yaml
     secrets: inherit
     with:
       workspace_name: attribute-authority-ms
@@ -27,7 +27,7 @@ jobs:
   deploy_prod:
     needs: deploy_uat
     name: Deploy Attribute Authority PROD
-    uses: pagopa/dx/.github/workflows/web_app_deploy.yaml@add-web-app-deploy-workflow
+    uses: ./.github/workflows/node_web_app_deploy.yaml
     secrets: inherit
     with:
       workspace_name: attribute-authority-ms
