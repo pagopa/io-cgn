@@ -1,5 +1,11 @@
 # attribute-authority-ms
 
+## 2.2.9
+
+### Patch Changes
+
+- ffaf799: fixed query
+
 ## 2.2.8
 
 ### Patch Changes
