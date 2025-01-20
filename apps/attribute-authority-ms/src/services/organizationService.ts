@@ -4,7 +4,7 @@ import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { identity, pipe } from "fp-ts/lib/function";
-import { literal, Op, QueryTypes } from "sequelize";
+import { Op, QueryTypes, literal } from "sequelize";
 
 import { OrganizationWithReferents } from "../../generated/definitions/OrganizationWithReferents";
 import { Organizations } from "../../generated/definitions/Organizations";
@@ -86,8 +86,8 @@ export const getOrganizations = (
       TE.tryCatch(
         () =>
           OrganizationModel.count({
-            include: [OrganizationModel.associations.referents],
             distinct: true,
+            include: [OrganizationModel.associations.referents],
             ...filterByNameOrFiscalCode(searchQuery),
             ...paging(page, pageSize),
             ...ordering(sortBy, sortDirection),
