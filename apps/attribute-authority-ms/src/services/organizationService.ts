@@ -26,7 +26,6 @@ const filterByNameOrFiscalCode = (searchQuery?: string) =>
         [Op.or]: [
           { fiscal_code: { [Op.iLike]: `%${searchQuery}%` } },
           { name: { [Op.iLike]: `%${searchQuery}%` } },
-          literal(`"referents"."fiscal_code" ilike '%${searchQuery}%'`),
         ],
       },
     })),
@@ -61,6 +60,11 @@ const ordering = (
     O.getOrElse(() => ({})),
   );
 
+const isFiscalCode = (aString: string = "") =>
+  new RegExp(
+    /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/,
+  ).test(aString);
+
 export const getOrganizations = (
   page?: NumberFromString,
   pageSize?: NumberFromString,
@@ -74,8 +78,22 @@ export const getOrganizations = (
       TE.tryCatch(
         () =>
           OrganizationModel.findAll({
-            include: [OrganizationModel.associations.referents],
-            ...filterByNameOrFiscalCode(searchQuery),
+            include: [
+              {
+                model: Referent,
+                as: "referents",
+                required: true,
+                // temp fix to allow query to be done with one param
+                where: isFiscalCode(searchQuery)
+                  ? {
+                      fiscal_code: searchQuery,
+                    }
+                  : {},
+              },
+            ],
+            ...filterByNameOrFiscalCode(
+              isFiscalCode(searchQuery) ? undefined : searchQuery,
+            ),
             ...paging(page, pageSize),
             ...ordering(sortBy, sortDirection),
           }),
@@ -87,8 +105,22 @@ export const getOrganizations = (
         () =>
           OrganizationModel.count({
             distinct: true,
-            include: [OrganizationModel.associations.referents],
-            ...filterByNameOrFiscalCode(searchQuery),
+            include: [
+              {
+                model: Referent,
+                as: "referents",
+                required: true,
+                // temp fix to allow query to be done with one param
+                where: isFiscalCode(searchQuery)
+                  ? {
+                      fiscal_code: searchQuery,
+                    }
+                  : {},
+              },
+            ],
+            ...filterByNameOrFiscalCode(
+              isFiscalCode(searchQuery) ? undefined : searchQuery,
+            ),
             ...paging(page, pageSize),
             ...ordering(sortBy, sortDirection),
           }),
