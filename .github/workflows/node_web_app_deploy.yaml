@@ -51,9 +51,6 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         name: Checkout
 
-      - name: Prune
-        run: npx turbo@2 prune --scope ${{ env.WORKSPACE }}
-
       - name: Enable Corepack
         run: corepack enable
 
@@ -67,6 +64,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
         working-directory: ./out
+
+      - name: Prune
+        run: npx turbo@2 prune --scope ${{ env.WORKSPACE }}
 
       - name: Build
         run: yarn build
