@@ -17,11 +17,12 @@ jobs:
     secrets: inherit
     with:
       workspace_name: attribute-authority-ms
-      environment: pe-app-uat
+      environment: uat
       resource_group_name: io-u-itn-cgn-pe-rg-01
       web_app_name: io-u-itn-cgn-pe-attribute-authority-app-01
       use_staging_slot: false
       use_private_agent: true
+      use_labels: true
 
   deploy_prod:
     needs: deploy_uat
@@ -30,8 +31,9 @@ jobs:
     secrets: inherit
     with:
       workspace_name: attribute-authority-ms
-      environment: pe-app-prod
+      environment: prod
       resource_group_name: io-p-itn-cgn-pe-rg-01
       web_app_name: io-p-itn-cgn-pe-attribute-authority-app-01
       use_staging_slot: true
       use_private_agent: true
+      use_labels: true
