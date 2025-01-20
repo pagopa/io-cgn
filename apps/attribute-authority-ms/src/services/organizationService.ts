@@ -4,7 +4,7 @@ import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { identity, pipe } from "fp-ts/lib/function";
-import { Op, QueryTypes } from "sequelize";
+import { Op, QueryTypes, literal } from "sequelize";
 
 import { OrganizationWithReferents } from "../../generated/definitions/OrganizationWithReferents";
 import { Organizations } from "../../generated/definitions/Organizations";
@@ -21,19 +21,12 @@ import { UpdateOrganizationPrimaryKey } from "../utils/postgres_queries";
 const filterByNameOrFiscalCode = (searchQuery?: string) =>
   pipe(
     O.fromNullable(searchQuery),
-
     O.map((searchQuery) => ({
       where: {
         [Op.or]: [
           { fiscal_code: { [Op.iLike]: `%${searchQuery}%` } },
           { name: { [Op.iLike]: `%${searchQuery}%` } },
-          {
-            referents: {
-              some: {
-                fiscal_code: { [Op.iLike]: `%${searchQuery}%` },
-              },
-            },
-          },
+          literal(`"referents"."fiscal_code" ilike '%${searchQuery}%'`),
         ],
       },
     })),
@@ -93,6 +86,7 @@ export const getOrganizations = (
       TE.tryCatch(
         () =>
           OrganizationModel.count({
+            distinct: true,
             include: [OrganizationModel.associations.referents],
             ...filterByNameOrFiscalCode(searchQuery),
             ...paging(page, pageSize),
