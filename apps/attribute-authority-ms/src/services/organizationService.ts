@@ -4,7 +4,7 @@ import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { identity, pipe } from "fp-ts/lib/function";
-import { Op, QueryTypes, literal } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 
 import { OrganizationWithReferents } from "../../generated/definitions/OrganizationWithReferents";
 import { Organizations } from "../../generated/definitions/Organizations";
@@ -60,7 +60,7 @@ const ordering = (
     O.getOrElse(() => ({})),
   );
 
-const isFiscalCode = (aString: string = "") =>
+const isFiscalCode = (aString = "") =>
   new RegExp(
     /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/,
   ).test(aString);
@@ -80,8 +80,8 @@ export const getOrganizations = (
           OrganizationModel.findAll({
             include: [
               {
-                model: Referent,
                 as: "referents",
+                model: Referent,
                 required: true,
                 // temp fix to allow query to be done with one param
                 where: isFiscalCode(searchQuery)
@@ -107,8 +107,8 @@ export const getOrganizations = (
             distinct: true,
             include: [
               {
-                model: Referent,
                 as: "referents",
+                model: Referent,
                 required: true,
                 // temp fix to allow query to be done with one param
                 where: isFiscalCode(searchQuery)
