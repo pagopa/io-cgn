@@ -205,8 +205,6 @@ export const GetMerchantHandler =
           id: merchant.agreement_fk,
           imageUrl: `${cdnBaseUrl}/${merchant.image_url}`,
           name: merchant.name,
-          supportType: "EMAILADDRESS", // dummy value for retro compatibility
-          supportValue: "-", // dummy value for retro compatibility
           websiteUrl: pipe(O.fromNullable(merchant.website_url), O.toUndefined),
         }),
       ),
