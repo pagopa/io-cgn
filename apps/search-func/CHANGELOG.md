@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.4.5
+
+### Patch Changes
+
+- 11c7129: support fields are optional
+
 ## 3.4.4
 
 ### Patch Changes
