@@ -149,8 +149,6 @@ definitions:
       - id
       - name
       - discounts
-      - supportType
-      - supportValue
       - allNationalAddresses
     properties:
       id:
@@ -170,6 +168,7 @@ definitions:
       supportValue:
         type: string
         minLength: 1
+        default: "-"
       discountCodeType:
         $ref: "#/definitions/DiscountCodeType"
       imageUrl:
@@ -187,6 +186,7 @@ definitions:
         type: boolean
   SupportType:
     type: string
+    default: EMAILADDRESS
     enum:
     - WEBSITE
     - PHONENUMBER
