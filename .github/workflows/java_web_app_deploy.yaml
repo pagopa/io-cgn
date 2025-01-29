@@ -68,7 +68,7 @@ jobs:
         run: |
           git remote update
           git fetch
-          git checkout origin/$REVISION
+          git checkout $REVISION
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
