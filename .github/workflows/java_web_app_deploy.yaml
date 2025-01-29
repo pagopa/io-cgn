@@ -66,7 +66,7 @@ jobs:
       - name: Build the artifact
         id: make-artifact
         run: |
-          git fetch
+          git pull
           git checkout $REVISION
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
