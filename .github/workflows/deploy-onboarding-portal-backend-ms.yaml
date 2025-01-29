@@ -28,6 +28,7 @@ jobs:
       use_staging_slot: true
       use_private_agent: true
       use_labels: true
+      revision: ${{inputs.revision}}
 
   deploy_prod:
     needs: deploy_uat
