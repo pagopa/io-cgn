@@ -32,12 +32,18 @@ on:
         type: boolean
         required: false
         default: false
+      revision:
+        description: Use revision to deploy a specific revision
+        type: string
+        required: false
+        default: "master"
 
 concurrency:
   group: ${{ github.workflow }}-cd
   cancel-in-progress: true
 
 env:
+  REVISION: ${{inputs.revision}}
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
@@ -54,12 +60,14 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Build the artifact
         id: make-artifact
         run: |
+          git fetch
+          git checkout $REVISION
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
