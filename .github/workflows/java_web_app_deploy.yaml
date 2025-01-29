@@ -54,20 +54,22 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         name: Checkout
-        with: 
-          submodules: 'true'
 
       - name: Set up Maven Central Repository
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
           java-version: '21'
           distribution: 'temurin'
+      
+      - name: Init submodules
+        id: init-submodule
+        run: |
+          git submodule update --init --recursive
+        working-directory: .
 
       - name: Build the artifact
         id: make-artifact
         run: |
-          git remote update
-          git fetch
           git checkout $REVISION
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
