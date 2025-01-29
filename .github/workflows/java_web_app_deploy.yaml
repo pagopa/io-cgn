@@ -66,8 +66,9 @@ jobs:
       - name: Build the artifact
         id: make-artifact
         run: |
-          git pull
-          git checkout $REVISION
+          git remote update
+          git fetch
+          git checkout origin/$REVISION
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
