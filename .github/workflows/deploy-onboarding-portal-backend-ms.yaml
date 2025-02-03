@@ -4,7 +4,7 @@ on:
   workflow_dispatch: 
     inputs:
       revision:
-        description: Use revision to deploy a specific revision tou can specify any commit id or branch
+        description: You can specify a revision to deploy as any commit hash or branch name
         type: string
         required: false
         default: "master"

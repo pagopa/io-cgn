@@ -33,7 +33,7 @@ on:
         required: false
         default: false
       revision:
-        description: Use revision to deploy a specific revision
+        description: The revision to deploy
         type: string
         required: false
         default: "master"
