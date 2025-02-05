@@ -14,7 +14,7 @@ resource "azurerm_subnet" "cgn_common_subnet_01" {
   address_prefixes     = ["10.20.28.0/26"]
 
   service_endpoints = concat(
-    ["Microsoft.CosmosDB"],
+    ["Microsoft.AzureCosmosDB"],
     ["Microsoft.Web"],
     ["Microsoft.Storage"],
   )
@@ -35,7 +35,7 @@ resource "azurerm_subnet" "cgn_func_search_subnet_01" {
   address_prefixes     = ["10.20.28.64/26"]
 
   service_endpoints = concat(
-    ["Microsoft.CosmosDB"],
+    ["Microsoft.AzureCosmosDB"],
     ["Microsoft.Web"],
     ["Microsoft.Storage"],
   )
