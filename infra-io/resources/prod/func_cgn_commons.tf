@@ -13,12 +13,6 @@ resource "azurerm_subnet" "cgn_common_subnet_01" {
   resource_group_name  = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
   address_prefixes     = ["10.20.28.0/26"]
 
-  service_endpoints = concat(
-    ["Microsoft.AzureCosmosDB"],
-    ["Microsoft.Web"],
-    ["Microsoft.Storage"],
-  )
-
   delegation {
     name = "default"
     service_delegation {
@@ -33,12 +27,6 @@ resource "azurerm_subnet" "cgn_func_search_subnet_01" {
   virtual_network_name = data.azurerm_virtual_network.vnet_common_itn.name
   resource_group_name  = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
   address_prefixes     = ["10.20.28.64/26"]
-
-  service_endpoints = concat(
-    ["Microsoft.AzureCosmosDB"],
-    ["Microsoft.Web"],
-    ["Microsoft.Storage"],
-  )
 
   delegation {
     name = "default"
