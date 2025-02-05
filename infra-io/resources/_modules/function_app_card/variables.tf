@@ -23,6 +23,17 @@ variable "domain" {
   description = "Domain"
 }
 
+variable "instance_number" {
+  type        = string
+  description = "The istance number to create"
+}
+
+variable "app_service_plan_id" {
+  type        = string
+  description = "The app service plan where you want to host the functions"
+  default     = null
+}
+
 variable "tags" {
   type        = map(any)
   description = "Resource tags"
@@ -33,9 +44,16 @@ variable "resource_group_name" {
   description = "Name of the resource group where resources will be created"
 }
 
+variable "subnet_id" {
+  type        = string
+  description = "A predefined subnet id"
+  default     = null
+}
+
 variable "cidr_subnet_cgn_card_func" {
   type        = string
   description = "CIDR block for cgn card function app subnet"
+  default     = null
 }
 
 variable "private_endpoint_subnet_id" {

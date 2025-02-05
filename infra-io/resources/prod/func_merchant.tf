@@ -1,11 +1,13 @@
 module "functions_cgn_merchant" {
   source = "../_modules/function_app_merchant"
 
-  prefix              = local.prefix
-  env_short           = local.env_short
-  location            = local.location
-  project             = local.project
-  domain              = local.domain
+  prefix          = local.prefix
+  env_short       = local.env_short
+  location        = local.location
+  project         = local.project
+  domain          = local.domain
+  instance_number = "01"
+
   resource_group_name = azurerm_resource_group.itn_cgn.name
 
   ai_instrumentation_key = data.azurerm_application_insights.common.instrumentation_key

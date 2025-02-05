@@ -7,13 +7,16 @@ module "function_app_cgn_search" {
     location        = var.location
     domain          = var.domain
     app_name        = "search"
-    instance_number = "01"
+    instance_number = var.instance_number
   }
+
+  app_service_plan_id = var.app_service_plan_id
 
   resource_group_name = var.resource_group_name
   health_check_path   = "/api/v1/cgn/operator-search/info"
   node_version        = 20
 
+  subnet_id                            = var.subnet_id
   subnet_cidr                          = var.cidr_subnet_cgn_search_func
   subnet_pep_id                        = var.private_endpoint_subnet_id
   private_dns_zone_resource_group_name = var.private_dns_zone_resource_group_name
