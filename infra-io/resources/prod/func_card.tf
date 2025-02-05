@@ -51,11 +51,13 @@ data "azurerm_key_vault_secret" "cgn_legal_backup_storage_connection" {
 module "functions_cgn_card" {
   source = "../_modules/function_app_card"
 
-  prefix              = local.prefix
-  env_short           = local.env_short
-  location            = local.location
-  project             = local.project
-  domain              = local.domain
+  prefix          = local.prefix
+  env_short       = local.env_short
+  location        = local.location
+  project         = local.project
+  domain          = local.domain
+  instance_number = "01"
+
   resource_group_name = azurerm_resource_group.itn_cgn.name
 
   cidr_subnet_cgn_card_func            = "10.20.16.0/26"
