@@ -52,6 +52,7 @@ variable "subnet_id" {
 variable "cidr_subnet_cgn_merchant_func" {
   type        = string
   description = "CIDR block for merchant merchant function app subnet"
+  default     = null
 }
 
 variable "private_endpoint_subnet_id" {
