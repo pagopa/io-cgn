@@ -116,6 +116,14 @@ module "functions_cgn_card" {
   tags = local.tags
 }
 
+module "function_cgn_card_autoscaler" {
+  source = "../_modules/function_app_autoscaler"
+
+  function_app_name   = module.functions_cgn_card.function_app_cgn_card.name
+  resource_group_name = azurerm_resource_group.itn_cgn.name
+  tags                = local.tags
+}
+
 module "functions_cgn_card_02" {
   source = "../_modules/function_app_card"
 
