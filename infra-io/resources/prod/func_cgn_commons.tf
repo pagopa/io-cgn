@@ -7,6 +7,16 @@ resource "azurerm_service_plan" "cgn_func_asp_01" {
   zone_balancing_enabled = true
 }
 
+module "cgn_func_asp_01_autoscaler" {
+  source = "../_modules/function_app_autoscaler"
+
+  autoscale_name      = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-func-as-01"
+  resource_group_name = azurerm_resource_group.itn_cgn.name
+  function_app_name   = module.functions_cgn_card_02.function_app_cgn_card.name # we can point any function in the asp
+
+  tags = local.tags
+}
+
 resource "azurerm_subnet" "cgn_common_subnet_01" {
   name                 = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-common-snet-01"
   virtual_network_name = data.azurerm_virtual_network.vnet_common_itn.name
