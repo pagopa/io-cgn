@@ -22,6 +22,7 @@ locals {
     Environment    = "Prod"
     Owner          = "IO"
     ManagementTeam = "IO CGN"
+    BusinessUnit   = "CGN"
     Source         = "https://github.com/pagopa/io-cgn/blob/main/infra/resources/prod"
   }
 }
