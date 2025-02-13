@@ -10,7 +10,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.13.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.11.0 |
 | <a name="provider_github"></a> [github](#provider\_github) | 6.4.0 |
 
 ## Modules

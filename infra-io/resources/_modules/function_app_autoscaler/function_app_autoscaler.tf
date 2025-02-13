@@ -1,6 +1,6 @@
 module "function_app_autoscaler" {
-  source              = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
-  
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
+
   autoscale_name      = var.autoscale_name
   resource_group_name = var.resource_group_name
 

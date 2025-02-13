@@ -75,5 +75,5 @@ resource "azurerm_role_assignment" "cd_cgn" {
   provider             = azurerm.peprod
   scope                = data.azurerm_subscription.cgn.id
   principal_id         = module.federated_identities.federated_cd_identity.id
-  role_definition_name = "Reader"
+  role_definition_name = "Contributor"
 }
