@@ -6,7 +6,7 @@ variable "tags" {
 variable "autoscale_name" {
   type        = string
   description = "Name of the autoscale settings"
-  default = null
+  default     = null
 }
 
 variable "resource_group_name" {

@@ -89,7 +89,7 @@ module "dns_weu" {
 
   override_link_names = {
     azure_api_net = data.azurerm_virtual_network.weu.resource_group_name
-    psql = "cgnonboardingportal-${local.env_short}-private-dns-zone-link"
+    psql          = "cgnonboardingportal-${local.env_short}-private-dns-zone-link"
   }
 
   tags = local.tags

@@ -17,6 +17,6 @@ resource "azurerm_virtual_network_peering" "itn_weu" {
   virtual_network_name      = module.vnet_common.name
   remote_virtual_network_id = data.azurerm_virtual_network.weu.id
 
-  allow_gateway_transit        = false
-  use_remote_gateways          = false
+  allow_gateway_transit = false
+  use_remote_gateways   = false
 }
