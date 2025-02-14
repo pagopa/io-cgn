@@ -25,7 +25,8 @@ locals {
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-pe-rg-01 = [
-        "Key Vault Administrator"
+        "Key Vault Administrator",
+        "Owner"
       ]
     }
   }
