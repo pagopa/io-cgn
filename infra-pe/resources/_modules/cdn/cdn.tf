@@ -8,7 +8,7 @@ resource "azurerm_cdn_profile" "this" {
 }
 
 resource "azurerm_cdn_endpoint" "cgn_pe_fe_endpoint" {
-  name                = "${var.project}-${var.domain}-cdne-01"
+  name                = "${var.project}-${var.domain}-fe-cdne-01"
   resource_group_name = var.resource_group_name
   location            = azurerm_cdn_profile.this.location
 
@@ -29,7 +29,7 @@ resource "azurerm_cdn_endpoint" "cgn_pe_fe_endpoint" {
 }
 
 resource "azurerm_cdn_endpoint" "cgn_pe_fe_assets" {
-  name                = "${var.project}-${var.domain}-cdne-01"
+  name                = "${var.project}-${var.domain}-assets-cdne-01"
   resource_group_name = var.resource_group_name
   location            = azurerm_cdn_profile.this.location
 
