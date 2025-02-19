@@ -267,7 +267,7 @@ SKIP LOCKED`;
 
 export const UpdateDiscountBucketCodeSetUsed = `
 UPDATE discount_bucket_code
-SET used = true 
+SET used = true, usage_datetime = CURRENT_TIMESTAMP 
 WHERE bucket_code_k in (:bucket_code_k_list)`;
 
 export const SelectPublishedProductCategories = `
