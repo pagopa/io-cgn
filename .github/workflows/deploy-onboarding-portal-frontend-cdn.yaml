@@ -1,0 +1,36 @@
+name: Deploy App Service (onboarding-portal-backend-ms)
+
+on:
+  workflow_dispatch: 
+    inputs:
+      revision:
+        description: You can specify a revision to deploy as any commit hash or branch name
+        type: string
+        required: false
+        default: "master"
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/deploy-onboarding-portal-frontend-cdn.yaml"
+
+jobs:
+
+  deploy_uat:
+    name: Deploy Onboarding Portal Frontend UAT
+    uses: ./.github/workflows/cdn_deploy.yaml
+    secrets: inherit
+    with:
+      app_folder: cgn-onboarding-portal-frontend
+      environment: uat
+      resource_group_name: io-u-itn-cgn-pe-rg-01
+      legacy_weu_resource_group_name: cgnonboardingportal-u-public-rg
+      storage_account_name: iouitncgnpefest01
+      blob_container_name: $web
+      cdn_profile_name: cgnonboardingportal-u-cdn-common
+      cdn_endpoint_name: cgnonboardingportal-u-cdnendpoint-frontend
+      use_private_agent: true
+      use_labels: true
+      revision: ${{inputs.revision}}
+
+  
