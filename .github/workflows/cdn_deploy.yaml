@@ -58,10 +58,12 @@ env:
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
-  cdn_deploy:
+  setup_repo:
     name: Build Artifact
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
-
+    defaults:
+      run:
+        working-directory: .
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         name: Checkout
@@ -70,8 +72,15 @@ jobs:
         id: init-submodule
         run: |
           git submodule update --init --recursive
-        working-directory: .
-      
+
+  cdn_deploy:
+    name: Build Artifact
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
+    defaults:
+      run:
+        working-directory: ./${{ inputs.app_folder }}
+
+    steps:
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
         with:
@@ -86,7 +95,6 @@ jobs:
           yarn install
           yarn generate
           yarn build:${{ inputs.environment }}
-        working-directory: ./${{ inputs.app_folder }}
 
       - name: Azure Login
         uses: azure/login@a65d910e8af852a8061c627c456678983e180302 # v2
@@ -101,10 +109,8 @@ jobs:
         id: deploy-artifact
         run: |
           call az storage blob sync --container ${{ inputs.blob_container_name }} --account-name ${{ inputs.storage_account_name}} -s "dist"
-        working-directory: ./${{ inputs.app_folder }}
 
       - name: Purge CDN
         id: purge-cdn
         run: |
           call az cdn endpoint purge -g ${{ inputs.legacy_weu_resource_group_name }} -n ${{ inputs.cdn_endpoint_name }} --profile-name ${{ inputs.cdn_profile_name }} --content-paths "/*"
-        working-directory: ./${{ inputs.app_folder }}
