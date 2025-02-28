@@ -78,7 +78,6 @@ jobs:
         with:
           node-version-file: "./${{ inputs.app_folder }}/.node-version"
           cache: "yarn"
-          cache-dependency-path: "./out/yarn.lock"
 
   cdn_deploy:
     name: Build Artifact
