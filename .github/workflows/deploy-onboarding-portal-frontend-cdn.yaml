@@ -1,4 +1,4 @@
-name: Deploy App Service (onboarding-portal-backend-ms)
+name: Deploy CDN (onboarding-portal-frontend-cdn)
 
 on:
   workflow_dispatch: 
