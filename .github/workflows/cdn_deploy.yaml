@@ -1,0 +1,110 @@
+on:
+  workflow_call:
+    inputs:
+      app_folder:
+        description: The folder of the java app.
+        type: string
+        required: true
+      environment:
+        description: Environment where the artifact will be deployed.
+        type: string
+        required: true
+      resource_group_name:
+        description: Resource group name.
+        type: string
+        required: true
+      legacy_weu_resource_group_name:
+        description: Weu resource group name.
+        type: string
+        required: true
+      storage_account_name:
+        description: Storage account name.
+        type: string
+        required: true
+      blob_container_name:
+        description: Blob container name.
+        type: string
+        required: true
+      cdn_profile_name:
+        description: CDN profile name.
+        type: string
+        required: true
+      cdn_endpoint_name:
+        description: CDN endpoint name.
+        type: string
+        required: true
+      use_private_agent:
+        description: Use a private agent to deploy the built artifact.
+        type: boolean
+        required: false
+        default: true
+      use_labels:
+        description: Use labels to start the right environment's GitHub runner. If use_labels is true, also use_private_agent must be set to true
+        type: boolean
+        required: false
+        default: false
+      revision:
+        description: The revision to deploy
+        type: string
+        required: false
+        default: "master"
+
+concurrency:
+  group: ${{ github.workflow }}-cd
+  cancel-in-progress: true
+
+env:
+  REVISION: ${{inputs.revision}}
+  BUNDLE_NAME: bundle-${{inputs.environment}}
+
+jobs:
+  cdn_deploy:
+    name: Build Artifact
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        name: Checkout
+      
+      - name: Init submodules
+        id: init-submodule
+        run: |
+          git submodule update --init --recursive
+        working-directory: .
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
+        with:
+          node-version-file: ".node-version"
+          cache: "yarn"
+          cache-dependency-path: "./out/yarn.lock"
+
+      - name: Build the artifact
+        id: make-artifact
+        run: |
+          git checkout $REVISION
+          yarn install
+          yarn generate
+          yarn build:${{ inputs.environment }}
+        working-directory: ./${{ inputs.app_folder }}
+
+      - name: Azure Login
+        uses: azure/login@a65d910e8af852a8061c627c456678983e180302 # v2
+        env:
+          ARM_USE_OIDC: true
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        id: deploy-artifact
+        run: |
+          call az storage blob sync --container ${{ inputs.blob_container_name }} --account-name ${{ inputs.storage_account_name}} -s "dist"
+        working-directory: ./${{ inputs.app_folder }}
+
+      - name: Purge CDN
+        id: purge-cdn
+        run: |
+          call az cdn endpoint purge -g ${{ inputs.legacy_weu_resource_group_name }} -n ${{ inputs.cdn_endpoint_name }} --profile-name ${{ inputs.cdn_profile_name }} --content-paths "/*"
+        working-directory: ./${{ inputs.app_folder }}

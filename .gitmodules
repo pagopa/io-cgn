@@ -2,3 +2,8 @@
 	path = cgn-onboarding-portal-backend
 	url = https://github.com/pagopa/cgn-onboarding-portal-backend
 	branch = master
+
+[submodule "cgn-onboarding-portal-frontend"]
+	path = cgn-onboarding-portal-frontend
+	url = https://github.com/pagopa/cgn-onboarding-portal-frontend
+	branch = master
