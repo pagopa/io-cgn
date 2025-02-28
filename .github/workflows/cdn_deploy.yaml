@@ -75,6 +75,7 @@ jobs:
 
   cdn_deploy:
     name: Build Artifact
+    needs: [setup_repo]
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
     defaults:
       run:
