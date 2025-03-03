@@ -80,6 +80,7 @@ jobs:
       - name: Build the artifact
         id: make-artifact
         run: |
+          export YARN_IGNORE_NODE=1
           yarn set version 1.22.22
           git checkout $REVISION
           yarn install
