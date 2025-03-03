@@ -82,7 +82,7 @@ jobs:
         run: |
           git checkout $REVISION
           export YARN_IGNORE_NODE=1
-          apt install python3-pip
+          sudo apt install python3-pip
           pip install setuptools
           yarn set version 1.22.22
           yarn install
