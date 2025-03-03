@@ -82,10 +82,7 @@ jobs:
         run: |
           git checkout $REVISION
           export YARN_IGNORE_NODE=1
-          python3 -m pip install setuptools
           yarn set version 1.22.22
-          yarn install
-          yarn generate
           yarn build:${{ inputs.environment }}
         working-directory: ./${{ inputs.app_folder }}
 
