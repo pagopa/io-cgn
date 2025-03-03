@@ -80,9 +80,9 @@ jobs:
       - name: Build the artifact
         id: make-artifact
         run: |
+          git checkout $REVISION
           export YARN_IGNORE_NODE=1
           yarn set version 1.22.22
-          git checkout $REVISION
           yarn install
           yarn generate
           yarn build:${{ inputs.environment }}
