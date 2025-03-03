@@ -59,7 +59,7 @@ env:
 
 jobs:
   setup_repo:
-    name: Build Artifact
+    name: Setup Repository
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
     defaults:
       run:
@@ -73,12 +73,6 @@ jobs:
         run: |
           git submodule update --init --recursive
 
-      - name: Setup Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
-        with:
-          node-version-file: "./${{ inputs.app_folder }}/.node-version"
-          cache: "yarn"
-
   cdn_deploy:
     name: Build Artifact
     needs: [setup_repo]
@@ -88,6 +82,11 @@ jobs:
         working-directory: ./${{ inputs.app_folder }}
 
     steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
+        with:
+          node-version-file: "./${{ inputs.app_folder }}/.node-version"
+
       - name: Build the artifact
         id: make-artifact
         run: |
