@@ -202,6 +202,7 @@ export const GetMerchantHandler =
             O.toUndefined,
           ),
           discounts,
+          fullName: merchant.full_name,
           id: merchant.agreement_fk,
           imageUrl: `${cdnBaseUrl}/${merchant.image_url}`,
           name: merchant.name,
