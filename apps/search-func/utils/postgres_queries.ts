@@ -177,6 +177,7 @@ SELECT
     p.agreement_fk,
     p.profile_k,
     COALESCE( NULLIF(p.name, ''), p.full_name) AS name,
+    p.full_name,
     p.description,
     p.website_url,
     p.discount_code_type,
