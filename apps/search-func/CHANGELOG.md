@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.5.0
+
+### Minor Changes
+
+- 49f62ca: added new response property
+
 ## 3.4.5
 
 ### Patch Changes
