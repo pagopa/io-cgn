@@ -130,11 +130,11 @@ jobs:
         id: deploy-artifact
         run: |
           unzip ${{ env.BUNDLE_NAME }}.zip
-          az storage blob sync --container ${{ inputs.blob_container_name }} --account-name ${{ inputs.storage_account_name}} -s "dist"
+          az storage blob sync --container "${{ inputs.blob_container_name }}" --account-name "${{ inputs.storage_account_name}}" --source "dist"
         working-directory: .
 
       - name: Purge CDN
         id: purge-cdn
         run: |
-          az cdn endpoint purge -g ${{ inputs.legacy_weu_resource_group_name }} -n ${{ inputs.cdn_endpoint_name }} --profile-name ${{ inputs.cdn_profile_name }} --content-paths "/*"
+          az cdn endpoint purge -g "${{ inputs.legacy_weu_resource_group_name }}" -n "${{ inputs.cdn_endpoint_name }}" --profile-name "${{ inputs.cdn_profile_name }}" --content-paths "/*"
         working-directory: .
