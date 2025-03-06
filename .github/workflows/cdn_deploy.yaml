@@ -58,7 +58,7 @@ env:
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
-  cdn_deploy:
+  build:
     name: Build Artifact
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
 
@@ -90,7 +90,29 @@ jobs:
           yarn set version 1.22.22
           yarn install --frozen-lockfile
           yarn build:${{ inputs.environment }}
+          zip -r ${{ env.BUNDLE_NAME }}.zip dist/*
+          echo "artifact-path=$(realpath ${{ env.BUNDLE_NAME }}.zip)" >> "$GITHUB_OUTPUT"
         working-directory: ./${{ inputs.app_folder }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+        with:
+          name: ${{ env.BUNDLE_NAME }}
+          path: ${{ steps.make-artifact.outputs.artifact-path }}
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: Deploy
+    if: ${{ !github.event.act }}
+    needs: [build]
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        with:
+          name: ${{ env.BUNDLE_NAME }}
 
       - name: Azure Login
         uses: azure/login@a65d910e8af852a8061c627c456678983e180302 # v2
