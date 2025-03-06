@@ -107,6 +107,10 @@ jobs:
     if: ${{ !github.event.act }}
     needs: [build]
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
+    environment: pe-app-${{ inputs.environment }}-cd
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Download Artifact
@@ -126,6 +130,7 @@ jobs:
       - name: Deploy
         id: deploy-artifact
         run: |
+          unzip ${{ env.BUNDLE_NAME }}.zip
           call az storage blob sync --container ${{ inputs.blob_container_name }} --account-name ${{ inputs.storage_account_name}} -s "dist"
         working-directory: ./${{ inputs.app_folder }}
 
