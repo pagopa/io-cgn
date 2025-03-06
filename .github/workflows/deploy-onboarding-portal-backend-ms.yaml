@@ -8,6 +8,13 @@ on:
         type: string
         required: false
         default: "master"
+      release_type:
+        type: choice
+        description: The type of release to build
+        options: 
+          - patch
+          - minor
+          - major
   push:
     branches:
       - master
@@ -43,3 +50,5 @@ jobs:
       use_staging_slot: true
       use_private_agent: true
       use_labels: true
+      revision: ${{inputs.revision}}
+      release_type: ${{inputs.release_type}}

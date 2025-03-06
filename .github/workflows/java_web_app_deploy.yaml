@@ -37,6 +37,11 @@ on:
         type: string
         required: false
         default: "master"
+      release_type:
+        type: string
+        description: The type of release to build
+        required: false
+        default: patch
 
 concurrency:
   group: ${{ github.workflow }}-cd
@@ -44,6 +49,7 @@ concurrency:
 
 env:
   REVISION: ${{inputs.revision}}
+  RELEASE_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || '' }}
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
@@ -58,9 +64,9 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
-      
+          java-version: "21"
+          distribution: "temurin"
+
       - name: Init submodules
         id: init-submodule
         run: |
@@ -71,6 +77,7 @@ jobs:
         id: make-artifact
         run: |
           git checkout $REVISION
+          $RELEASE_COMMAND
           mvn package -DskipTests
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
@@ -88,7 +95,7 @@ jobs:
     name: Deploy
     if: ${{ !github.event.act }}
     needs: [build]
-    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
       id-token: write

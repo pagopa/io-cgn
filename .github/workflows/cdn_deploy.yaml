@@ -130,7 +130,7 @@ jobs:
         id: deploy-artifact
         run: |
           unzip ${{ env.BUNDLE_NAME }}.zip
-          az storage blob sync --container "${{ inputs.blob_container_name }}" --account-name "${{ inputs.storage_account_name}}" --source "dist"
+          az storage blob sync --auth-mode login --container "${{ inputs.blob_container_name }}" --account-name "${{ inputs.storage_account_name}}" --source "dist"
         working-directory: .
 
       - name: Purge CDN
