@@ -131,10 +131,10 @@ jobs:
         run: |
           unzip ${{ env.BUNDLE_NAME }}.zip
           call az storage blob sync --container ${{ inputs.blob_container_name }} --account-name ${{ inputs.storage_account_name}} -s "dist"
-        working-directory: ./${{ inputs.app_folder }}
+        working-directory: .
 
       - name: Purge CDN
         id: purge-cdn
         run: |
           call az cdn endpoint purge -g ${{ inputs.legacy_weu_resource_group_name }} -n ${{ inputs.cdn_endpoint_name }} --profile-name ${{ inputs.cdn_profile_name }} --content-paths "/*"
-        working-directory: ./${{ inputs.app_folder }}
+        working-directory: .
