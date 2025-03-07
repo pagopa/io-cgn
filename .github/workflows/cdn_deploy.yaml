@@ -130,6 +130,7 @@ jobs:
         id: deploy-artifact
         run: |
           unzip ${{ env.BUNDLE_NAME }}.zip
+          az upgrade --yes
           az storage blob sync --container "${{ inputs.blob_container_name }}" --account-name "${{ inputs.storage_account_name}}" --source "dist"
         working-directory: .
 
