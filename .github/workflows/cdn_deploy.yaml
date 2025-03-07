@@ -129,8 +129,13 @@ jobs:
       - name: Deploy
         id: deploy-artifact
         run: |
+          echo => Downloading and extracting AZ Copy...
+          curl -L  https://aka.ms/downloadazcopy-v10-linux > azcopy.tar.gz
+          tar -xzf azcopy.tar.gz
+          cp azcopy/azcopy /home/runner/.azure/bin/azcopy
+          echo => Unzipping bundle into dist folder...
           unzip ${{ env.BUNDLE_NAME }}.zip
-          az upgrade --yes
+          echo => Copying dist folder to storage...
           az storage blob sync --container "${{ inputs.blob_container_name }}" --account-name "${{ inputs.storage_account_name}}" --source "dist"
         working-directory: .
 
