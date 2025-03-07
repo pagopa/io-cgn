@@ -49,7 +49,7 @@ concurrency:
 
 env:
   REVISION: ${{inputs.revision}}
-  RELEASE_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || '' }}
+  RELEASE_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || 'echo Not making a release' }}
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
@@ -79,6 +79,7 @@ jobs:
           git checkout $REVISION
           $RELEASE_COMMAND
           mvn package -DskipTests
+          git status
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
         working-directory: ./${{ inputs.app_folder }}
