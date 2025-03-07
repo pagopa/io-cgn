@@ -1,11 +1,15 @@
 module "function_app_autoscaler" {
   source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=main"
 
+  location            = var.location
   autoscale_name      = var.autoscale_name
   resource_group_name = var.resource_group_name
+  app_service_plan_id = var.app_service_plan_id
 
   target_service = {
-    function_app_name = var.function_app_name
+    function_app = {
+      name = var.function_app_name
+    }
   }
 
   scheduler = {

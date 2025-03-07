@@ -18,3 +18,13 @@ variable "function_app_name" {
   type        = string
   description = "Name of the function app to autoscale"
 }
+
+variable "app_service_plan_id" {
+  type        = string
+  description = "The id of the app service plan containing the service to autoscale."
+}
+
+variable "location" {
+  type        = string
+  description = "The location of the app service plan"
+}
