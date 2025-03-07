@@ -64,8 +64,8 @@ module "container_app_job" {
   }
 
   container = {
-    cpu    = 1
-    memory = "2Gi"
+    cpu    = 2
+    memory = "4Gi"
     image  = "ghcr.io/pagopa/github-self-hosted-runner-azure:latest"
   }
 
