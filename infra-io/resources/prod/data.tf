@@ -54,3 +54,8 @@ data "azurerm_storage_account" "storage_cgn" {
   name                = replace("${local.project_legacy}stcgn", "-", "")
   resource_group_name = format("%s-rg-cgn", local.project_legacy)
 }
+
+data "azurerm_application_gateway" "io_app_gateway" {
+  name                = "io-p-appgateway"
+  resource_group_name = "io-p-rg-external"
+}
