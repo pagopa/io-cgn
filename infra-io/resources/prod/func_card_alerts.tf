@@ -478,7 +478,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "messages_failure_aler
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired_cgn_failure" {
   enabled             = true
-  name                = "[CGN | Scheduled Jobs] Scheduled CgnExpired_1_Start failed."
+  name                = "[CGN | Scheduled Jobs] Scheduled CgnExpired_1_Start failed"
   resource_group_name = azurerm_resource_group.itn_cgn.name
   location            = local.location
 
@@ -512,7 +512,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired_eyca_failure" {
   enabled             = true
-  name                = "[CGN | Scheduled Jobs] Scheduled EycaExpired_1_Start failed."
+  name                = "[CGN | Scheduled Jobs] Scheduled EycaExpired_1_Start failed"
   resource_group_name = azurerm_resource_group.itn_cgn.name
   location            = local.location
 
