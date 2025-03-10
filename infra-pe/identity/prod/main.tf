@@ -53,4 +53,8 @@ module "app_federated_identities" {
   tags         = local.tags
 
   continuos_integration = { enable = false }
+  continuos_delivery = {
+    enable = true,
+    roles  = local.environment_app_cd_roles
+  }
 }
