@@ -1,3 +1,7 @@
+#########################
+# APP IO FAILURE ALERTS #
+#########################
+
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_published_product_categories_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get published categories"
