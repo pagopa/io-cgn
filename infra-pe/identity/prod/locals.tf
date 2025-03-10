@@ -45,4 +45,13 @@ locals {
       ]
     }
   }
+
+  environment_app_cd_roles = {
+    subscription = ["Contributor"]
+    resource_groups = {
+      io-p-itn-cgn-pe-rg-01 = [
+        "Storage Blob Data Contributor"
+      ]
+    }
+  }
 }
