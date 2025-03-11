@@ -37,6 +37,7 @@ jobs:
     name: Deploy Onboarding Portal Frontend PROD
     uses: ./.github/workflows/cdn_deploy.yaml
     secrets: inherit
+    needs: [deploy_uat]
     with:
       app_folder: cgn-onboarding-portal-frontend
       environment: prod
