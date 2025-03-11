@@ -1,18 +1,3 @@
-data "azurerm_key_vault_secret" "cosmosdb_cgn_uri" {
-  name         = "COSMOSDB-CGN-URI"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "cosmosdb_cgn_key" {
-  name         = "COSMOSDB-CGN-KEY"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "storage_cgn_connection_string" {
-  name         = "STORAGE-CGN-CONNECTION-STRING"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
 data "azurerm_key_vault_secret" "eyca_api_base_url" {
   name         = "EYCA-API-BASE-URL"
   key_vault_id = module.key_vaults.key_vault_cgn.id
