@@ -6,7 +6,6 @@
  */
 /* eslint-disable sort-keys */
 
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
@@ -19,8 +18,8 @@ export const IConfig = t.interface({
   APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,
   APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
 
-  EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
   CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
+  EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
 
   CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
 
