@@ -13,7 +13,7 @@ module "function_app_cgn_support" {
   app_service_plan_id = var.app_service_plan_id
 
   resource_group_name = var.resource_group_name
-  health_check_path   = "/api/v1/cgn/health"
+  health_check_path   = "/api/v1/cgn-support/health"
   node_version        = 20
 
   subnet_id                            = var.subnet_id
