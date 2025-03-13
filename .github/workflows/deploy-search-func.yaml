@@ -12,7 +12,7 @@ on:
 jobs:
   deploy:
     name: Deploy Search Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@97bbfc7461fc312123f78158fe2c47563d8c7571
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@edaa2a22738b738092e71dd9bdf6494aca593980
     secrets: inherit
     with:
       workspace_name: search-func
