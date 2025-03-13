@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/GetCgnStatus/index.js"
+  "scriptFile": "../dist/GetUserInfo/index.js"
 }
