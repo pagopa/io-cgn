@@ -19,13 +19,13 @@ export const IConfig = t.interface({
   APPLICATIONINSIGHTS_CONNECTION_STRING: NonEmptyString,
 
   CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
-  
+
   CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
-  
+
   COSMOSDB_CGN_DATABASE_NAME: NonEmptyString,
   COSMOSDB_CGN_KEY: NonEmptyString,
   COSMOSDB_CGN_URI: NonEmptyString,
-  
+
   EYCA_EXPIRATION_TABLE_NAME: NonEmptyString,
 
   isProduction: t.boolean,
