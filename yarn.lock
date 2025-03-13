@@ -13750,7 +13750,6 @@ __metadata:
     jest-mock-express: "npm:^0.1.1"
     modclean: "npm:^3.0.0-beta.1"
     node-fetch: "npm:^2.6.1"
-    oval: "npm:^1.0.0"
     prettier: "npm:^3.4.2"
     shx: "npm:^0.3.2"
     ts-jest: "npm:^29.1.4"
