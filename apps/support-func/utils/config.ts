@@ -23,7 +23,6 @@ export const IConfig = t.interface({
   CGN_EXPIRATION_TABLE_NAME: NonEmptyString,
 
   CGN_STORAGE_CONNECTION_STRING: NonEmptyString,
-  CGN_UPPER_BOUND_AGE: NonNegativeInteger,
 
   COSMOSDB_CGN_DATABASE_NAME: NonEmptyString,
   COSMOSDB_CGN_KEY: NonEmptyString,
