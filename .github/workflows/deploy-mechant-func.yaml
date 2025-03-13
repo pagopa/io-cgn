@@ -13,7 +13,7 @@ jobs:
 
   deploy:
     name: Deploy Merchant Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@main
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@802c7c19c579c6d562496a0d6e7710978603d413
     secrets: inherit
     with:
       workspace_name: merchant-func
