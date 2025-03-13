@@ -10,10 +10,9 @@ on:
       - ".github/workflows/deploy-merchant-func.yaml"
 
 jobs:
-
   deploy:
     name: Deploy Merchant Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@802c7c19c579c6d562496a0d6e7710978603d413
+    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@97bbfc7461fc312123f78158fe2c47563d8c7571
     secrets: inherit
     with:
       workspace_name: merchant-func
