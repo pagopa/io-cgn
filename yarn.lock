@@ -3018,6 +3018,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-fetch@npm:^2.6.12":
+  version: 2.6.12
+  resolution: "@types/node-fetch@npm:2.6.12"
+  dependencies:
+    "@types/node": "npm:*"
+    form-data: "npm:^4.0.0"
+  checksum: 10c0/7693acad5499b7df2d1727d46cff092a63896dc04645f36b973dd6dd754a59a7faba76fcb777bdaa35d80625c6a9dd7257cca9c401a4bab03b04480cda7fd1af
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 22.5.4
   resolution: "@types/node@npm:22.5.4"
@@ -13711,6 +13721,41 @@ __metadata:
   checksum: 10c0/af956af1524dda3878df6f694d62bddb63daa747c2a429984b7304e4a5d355b81caaeb5d2049cdbeba207abba06b0d215008755a4f1b4d2c823e0eeaf6a4fad4
   languageName: node
   linkType: hard
+
+"support-func@workspace:apps/support-func":
+  version: 0.0.0-use.local
+  resolution: "support-func@workspace:apps/support-func"
+  dependencies:
+    "@azure/cosmos": "npm:^4.2.0"
+    "@azure/functions": "npm:^3.2.0"
+    "@pagopa/eslint-config": "npm:^4.0.1"
+    "@pagopa/express-azure-functions": "npm:^4.0.1"
+    "@pagopa/io-functions-commons": "npm:^29.1.1"
+    "@pagopa/openapi-codegen-ts": "npm:^12.0.3"
+    "@pagopa/ts-commons": "npm:^13.1.2"
+    "@types/express": "npm:^4.17.9"
+    "@types/jest": "npm:^29.5.12"
+    "@types/node-fetch": "npm:^2.6.12"
+    applicationinsights: "npm:^3.4.0"
+    auto-changelog: "npm:2.2.1"
+    azure-storage: "npm:^2.10.3"
+    date-fns: "npm:^2.16.1"
+    dependency-check: "npm:^4.1.0"
+    dotenv-cli: "npm:^3.1.0"
+    eslint: "npm:8.57.0"
+    express: "npm:^4.15.3"
+    fp-ts: "npm:^2.11.1"
+    io-ts: "npm:^2.2.16"
+    jest: "npm:^29.7.0"
+    jest-mock-express: "npm:^0.1.1"
+    modclean: "npm:^3.0.0-beta.1"
+    node-fetch: "npm:^2.6.1"
+    prettier: "npm:^3.4.2"
+    shx: "npm:^0.3.2"
+    ts-jest: "npm:^29.1.4"
+    typescript: "npm:^4.3.5"
+  languageName: unknown
+  linkType: soft
 
 "supports-color@npm:^2.0.0":
   version: 2.0.0

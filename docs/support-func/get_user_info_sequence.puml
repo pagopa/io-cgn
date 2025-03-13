@@ -1,0 +1,24 @@
+@startuml Sequence conta operatori CGN
+actor "CIT" as cit
+participant "Zendesk" as zd
+actor "OP" as op
+participant "CGN Support Functions" as sf
+database "CosmosDB" as db
+
+cit -> zd: Open support ticket
+activate zd
+zd -> op: Alerts OP for assistance
+op -> zd: Asks for CGN user info
+zd -> sf: GET /user-info
+activate sf
+sf -> db: GET user-cgns and user-eyca-cards of CIT
+db -> sf: Returns cards of CIT
+sf -> sf: Builds user info
+sf -> zd: Returns user info
+deactivate sf
+zd -> op: Shows user's info to OP
+op -> zd: Gives further assistance
+zd -> cit: Alerts CIT about assistance response 
+deactivate zd
+
+@enduml
