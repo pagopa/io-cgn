@@ -1,0 +1,14 @@
+{
+    "extends": ["//"],
+    "pipeline": {
+        "lint": {},
+        "lint-api": {},
+        "prebuild" : {},
+        "build": {
+            "dependsOn": ["prebuild"]
+        },
+        "test:coverage": {
+            "dependsOn": ["build"]
+        }
+    }
+}
