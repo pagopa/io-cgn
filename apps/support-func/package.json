@@ -2,7 +2,7 @@
   "name": "support-func",
   "description": "Functions exposed to user support",
   "author": "IO CGN",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "prebuild": "shx rm -rf dist && yarn generate:definitions",
