@@ -5,7 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "api/v1/cgn/health",
+      "route": "api/v1/cgn-support/health",
       "methods": [
         "get"
       ]

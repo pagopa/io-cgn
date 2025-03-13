@@ -11,7 +11,7 @@ const app = express();
 secureExpressApp(app);
 
 // Add express route
-app.get("/api/v1/cgn/health", Info());
+app.get("/api/v1/cgn-support/health", Info());
 
 const azureFunctionHandler = createAzureFunctionHandler(app);
 
