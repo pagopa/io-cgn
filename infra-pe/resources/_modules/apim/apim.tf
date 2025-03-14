@@ -1,4 +1,4 @@
-module "cgn_pe_apim" {
+module "apim" {
   source = "./infra/modules/azure_api_management"
 
   tags = var.tags
