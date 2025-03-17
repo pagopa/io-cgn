@@ -14,7 +14,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_act
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT15M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -24,7 +24,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_act
       | where httpStatus_d >= 500
       QUERY
     operator                = "GreaterThan"
-    threshold               = 0
+    threshold               = 1
     time_aggregation_method = "Count"
   }
 
@@ -49,7 +49,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_eyca_ac
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT15M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -59,7 +59,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_eyca_ac
       | where httpStatus_d >= 500
       QUERY
     operator                = "GreaterThan"
-    threshold               = 0
+    threshold               = 1
     time_aggregation_method = "Count"
   }
 
@@ -84,7 +84,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_del
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT15M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -94,7 +94,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_del
       | where httpStatus_d >= 500
       QUERY
     operator                = "GreaterThan"
-    threshold               = 0
+    threshold               = 1
     time_aggregation_method = "Count"
   }
 
@@ -119,7 +119,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_get_otp
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT15M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -129,7 +129,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_get_otp
       | where httpStatus_d >= 500
       QUERY
     operator                = "GreaterThan"
-    threshold               = 0
+    threshold               = 1
     time_aggregation_method = "Count"
   }
 
