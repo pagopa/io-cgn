@@ -103,7 +103,7 @@ jobs:
 
   deploy:
     name: Deploy
-    if: ${{ inputs.environment == 'prod' && !github.event.act || false }}
+    if: ${{ inputs.environment == 'prod' && !github.event.act || github.event.act }}
     needs: [build]
     runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
     environment: pe-app-${{ inputs.environment }}-cd
