@@ -14,7 +14,7 @@ on:
 
 jobs:
   infra_review:
-    uses: pagopa/dx/.github/workflows/infra_plan.yaml@8582e8c95a445f7a977698d5996f23cc4a541572
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@db1f984df813e12cab4dc82845eb245ea588970f
     name: Infra review IO PROD
     secrets: inherit
     with:
