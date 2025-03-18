@@ -50,3 +50,11 @@ resource "azurerm_storage_container" "cgn_pe_fe_profile_images" {
   # tfsec:ignore:azure-storage-no-public-access
   container_access_type = "container"
 }
+
+resource "azurerm_storage_container" "cgn_pe_fe_user_documents" {
+  name                 = "userdocuments"
+  storage_account_id = azurerm_storage_account.cgn_pe_assets_storage.id
+
+  # tfsec:ignore:azure-storage-no-public-access
+  container_access_type = "container"
+}
