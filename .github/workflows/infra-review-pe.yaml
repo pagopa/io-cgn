@@ -14,7 +14,7 @@ on:
 
 jobs:
   infra_review_uat:
-    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@97bbfc7461fc312123f78158fe2c47563d8c7571
     name: Infra review PE UAT
     secrets: inherit
     with:
@@ -25,7 +25,7 @@ jobs:
       use_labels: true
 
   infra_review_prod:
-    uses: pagopa/dx/.github/workflows/infra_plan.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_plan.yaml@97bbfc7461fc312123f78158fe2c47563d8c7571
     name: Infra review PE PROD
     secrets: inherit
     with:
