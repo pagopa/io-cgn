@@ -8,7 +8,7 @@ resource "azurerm_storage_account" "cgn_pe_fe_storage" {
   https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = true
   public_network_access_enabled   = true
-  shared_access_key_enabled       = false
+  shared_access_key_enabled       = true
   min_tls_version                 = "TLS1_2"
 
   blob_properties {
@@ -28,7 +28,7 @@ resource "azurerm_storage_account" "cgn_pe_assets_storage" {
   https_traffic_only_enabled      = true
   allow_nested_items_to_be_public = true
   public_network_access_enabled   = true
-  shared_access_key_enabled       = false
+  shared_access_key_enabled       = true
   min_tls_version                 = "TLS1_2"
 
   blob_properties {
