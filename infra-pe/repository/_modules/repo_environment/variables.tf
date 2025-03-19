@@ -23,3 +23,9 @@ variable "repository" {
   type        = string
   description = "Name of the repository"
 }
+
+variable "app_cd_reviewers_teams" {
+  type        = list(string)
+  description = "List of teams that should review the job execution"
+  default     = ["io-cgn-contributors", "engineering-team-cloud-eng"]
+}
