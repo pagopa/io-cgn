@@ -31,6 +31,6 @@ locals {
       "ARM_TENANT_ID"       = data.azurerm_client_config.current.tenant_id
     }
 
-    reviewers_teams = ["io-cgn-contributors", "engineering-team-cloud-eng"]
+    reviewers_teams = var.app_cd_reviewers_teams
   }
 }

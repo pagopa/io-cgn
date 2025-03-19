@@ -34,7 +34,7 @@ resource "github_repository_environment" "github_repository_environment_app_cd" 
     teams = matchkeys(
       data.github_organization_teams.all.teams[*].id,
       data.github_organization_teams.all.teams[*].slug,
-      local.cd.reviewers_teams
+      local.app_cd.reviewers_teams
     )
   }
 

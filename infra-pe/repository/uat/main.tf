@@ -34,6 +34,7 @@ module "repo_environment" {
   env       = local.env
   env_short = local.env_short
   domain    = local.domain
+  app_cd_reviewers_teams = []
 
   repository = local.repository
 }
