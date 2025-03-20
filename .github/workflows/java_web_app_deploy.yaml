@@ -49,7 +49,7 @@ concurrency:
 
 env:
   REVISION: ${{inputs.revision}}
-  RELEASE_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || 'echo Not making a release' }}
+  BUMP_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || 'echo Not making a release' }}
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
@@ -77,12 +77,28 @@ jobs:
         id: make-artifact
         run: |
           git checkout $REVISION
-          $RELEASE_COMMAND
+          $BUMP_COMMAND
           mvn package -DskipTests
           git status
           cp $(find ./target -maxdepth 1 -name "*.jar") ./$BUNDLE_NAME.jar
           echo "artifact-path=$(realpath $BUNDLE_NAME.jar)" >> "$GITHUB_OUTPUT"
+          echo "package-version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"  >> "$GITHUB_OUTPUT"
         working-directory: ./${{ inputs.app_folder }}
+
+      - name: Make release
+        id: make-release
+        if: ${{inputs.environment == 'prod' && inputs.revision == 'master' }}
+        env:
+          VERSION: ${{ steps.make-artifact.outputs.package-version }}
+        run : |
+          echo "Making release on parent repo"
+          git checkout -b release-$VERSION
+          git add .
+          git commit -m "Bumped Version"
+          git tag -a v$VERSION -m "Version $VERSION"
+          git push --set-upstream origin release-$VERSION
+        working-directory: ./${{ inputs.app_folder }}
+
 
       - name: Upload Artifact
         uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
