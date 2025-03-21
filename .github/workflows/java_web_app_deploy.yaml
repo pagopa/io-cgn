@@ -90,6 +90,7 @@ jobs:
         if: ${{inputs.environment == 'prod' && inputs.revision == 'master' }}
         env:
           VERSION: ${{ steps.make-artifact.outputs.package-version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run : |
           echo "Making release on parent repo"
           git config --global user.name "pagopa-github-bot"
