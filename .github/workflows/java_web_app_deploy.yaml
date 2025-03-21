@@ -92,6 +92,8 @@ jobs:
           VERSION: ${{ steps.make-artifact.outputs.package-version }}
         run : |
           echo "Making release on parent repo"
+          git config --global user.name "pagopa-github-bot"
+          git config --global user.email "github-bot@pagopa.it"
           git checkout -b release-$VERSION
           git add .
           git commit -m "Bumped Version"
