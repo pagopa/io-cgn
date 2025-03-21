@@ -96,11 +96,11 @@ jobs:
           echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "pagopa-github-bot"
           git config --global user.email "github-bot@pagopa.it"
-          echo "branching..." && git checkout -b release-$VERSION && echo "done."
-          echo "tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
-          echo "adding..." && git add . && echo "done."
-          echo "committing..." && git commit -m "Bumped Version" && echo "done."
-          echo "pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
+          echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
+          echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
+          echo "-> Adding..." && git add . && echo "done."
+          echo "-> Committing..." && git commit -m "Bumped Version" && echo "done."
+          echo "-> Pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
         working-directory: ./${{ inputs.app_folder }}
 
 
