@@ -93,6 +93,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run : |
           echo "Making release on parent repo"
+          git config --global url."https://api:$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/"
+          git config --unset http."https://github.com/".extraheader
           git config --global user.name "pagopa-github-bot"
           git config --global user.email "github-bot@pagopa.it"
           git checkout -b release-$VERSION
