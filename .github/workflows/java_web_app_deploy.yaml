@@ -93,6 +93,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run : |
           echo "Making release on parent repo"
+          echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "pagopa-github-bot"
           git config --global user.email "github-bot@pagopa.it"
           echo "branching..." && git checkout -b release-$VERSION && echo "done."
