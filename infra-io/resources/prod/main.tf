@@ -24,6 +24,8 @@ provider "azurerm" {
 resource "azurerm_resource_group" "itn_cgn" {
   name     = "${local.project}-${local.domain}-rg-01"
   location = local.location
+
+  tags = local.tags
 }
 
 # KEY VAULTS
