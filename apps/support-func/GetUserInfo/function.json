@@ -5,9 +5,9 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "api/v1/cgn-support/user-info/{fiscalcode}",
+      "route": "api/v1/cgn-support/user-info",
       "methods": [
-        "get"
+        "post"
       ]
     },
     {
