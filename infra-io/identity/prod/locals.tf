@@ -2,39 +2,51 @@ locals {
   prefix    = "io"
   env_short = "p"
   env       = "prod"
-  location  = "westeurope"
+  location  = "italynorth"
   project   = "${local.prefix}-${local.env_short}"
   domain    = "cgn"
 
   repo_name = "io-cgn"
 
   tags = {
-    CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
-    CreatedBy   = "Terraform"
-    Environment = "Prod"
-    Owner       = "IO CGN"
-    Source      = "https://github.com/pagopa/io-cgn/blob/main/infra/identity/prod"
+    CostCenter   = "TS000 - Tecnologia e Servizi"
+    CreatedBy    = "Terraform"
+    Environment  = "Prod"
+    BusinessUnit = "CGN"
+    Source       = "https://github.com/pagopa/io-cgn/blob/main/infra/github-runner/prod"
   }
 
   environment_cd_roles = {
     subscription = [
-      "Contributor"
+      "Reader",
+      "Reader and Data Access",
+      "PagoPA IaC Reader",
+      "Role Based Access Control Administrator",
     ]
     resource_groups = {
       terraform-state-rg = [
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-rg-01 = [
-        "Key Vault Reader",
-        "Key Vault Crypto User",
-        "Key Vault Secrets User",
-        "Role Based Access Control Administrator",
+        "Contributor",
+        "User Access Administrator",
+        "Key Vault Secrets Officer",
+        "Key Vault Certificates Officer",
+        "Key Vault Crypto Officer",
+        "Storage Blob Data Contributor",
+        "Storage Queue Data Contributor",
+        "Storage Table Data Contributor",
       ],
-      io-p-rg-operations = [
-        "Role Based Access Control Administrator"
+      io-p-itn-common-rg-01 = [
+        "Network Contributor",
+        "API Management Service Contributor",
       ]
+      io-p-rg-common = [
+        "Private DNS Zone Contributor"
+      ],
     }
   }
+
   environment_ci_roles = {
     subscription = [
       "Reader",
@@ -47,13 +59,16 @@ locals {
         "Storage Blob Data Contributor"
       ],
       io-p-itn-cgn-rg-01 = [
-        "Key Vault Reader",
         "Key Vault Secrets User",
-        "Role Based Access Control Administrator",
+        "Key Vault Certificate User",
+        "Key Vault Crypto User",
+        "Storage Blob Data Reader",
+        "Storage Queue Data Reader",
+        "Storage Table Data Reader",
       ],
-      io-p-rg-operations = [
-        "Role Based Access Control Administrator"
-      ]
     }
   }
+
+  issuer   = "https://token.actions.githubusercontent.com"
+  audience = ["api://AzureADTokenExchange"]
 }

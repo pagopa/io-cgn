@@ -2,15 +2,16 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.116.0"
+      version = "~> 4.0"
     }
   }
 
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfappprodio"
+    storage_account_name = "iopitntfst001"
     container_name       = "terraform-state"
     key                  = "io-cgn.identity.prod.tfstate"
+    use_azuread_auth     = true
   }
 }
 
@@ -25,17 +26,25 @@ provider "azurerm" {
   subscription_id = "74da48a3-b0e7-489d-8172-da79801086ed"
 }
 
-
 module "federated_identities" {
-  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+  source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
+  version = "~> 1.0"
 
-  prefix    = local.prefix
-  env_short = local.env_short
-  env       = "io-${local.env}"
-  domain    = local.domain
-  location  = local.location
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location
+    domain          = local.domain
+    instance_number = "01"
+  }
 
-  repositories = [local.repo_name]
+  repository = {
+    name = local.repo_name
+  }
+
+  resource_group_name = azurerm_resource_group.cgn_itn_01.name
+
+  subscription_id = data.azurerm_subscription.current.id
 
   continuos_delivery = {
     enable = true,
@@ -51,17 +60,30 @@ module "federated_identities" {
 }
 
 module "app_federated_identities" {
-  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+  source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
+  version = "~> 1.0"
 
-  prefix       = local.prefix
-  env_short    = local.env_short
-  env          = "io-app-${local.env}"
-  domain       = "${local.domain}-app"
-  repositories = [local.repo_name]
-  location     = local.location
-  tags         = local.tags
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location
+    domain          = local.domain
+    instance_number = "01"
+  }
+
+  repository = {
+    name = local.repo_name
+  }
+
+  resource_group_name = azurerm_resource_group.cgn_itn_01.name
+
+  subscription_id = data.azurerm_subscription.current.id
+
+  identity_type = "app"
 
   continuos_integration = { enable = false }
+
+  tags = local.tags
 }
 
 resource "azurerm_role_assignment" "ci_cgn" {
