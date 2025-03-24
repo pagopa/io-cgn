@@ -9,7 +9,7 @@ data "azurerm_key_vault_secret" "alert_error_notification_slack" {
 }
 
 resource "azurerm_monitor_action_group" "io_p_itn_cgn_error_action_group" {
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   name                = "${local.project}-${local.domain}-error-ag-01"
   short_name          = "iopitnceag01"
 

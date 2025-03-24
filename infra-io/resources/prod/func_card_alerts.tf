@@ -5,7 +5,7 @@
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_activation_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot activate CGN"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -40,7 +40,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_act
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_eyca_activation_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot activate EYCA"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -75,7 +75,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_eyca_ac
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_delete_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot delete CGN"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -110,7 +110,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_cgn_del
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_card_func_get_otp_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot retrieve OTP"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -169,7 +169,7 @@ resource "azurerm_monitor_diagnostic_setting" "queue_diagnostic_setting" {
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pending_cgn_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on pendingcgn-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -203,7 +203,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pending_cgn_failure_a
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pending_eyca_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on pendingeyca-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -237,7 +237,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pending_eyca_failure_
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "activated_cgn_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on activatedcgn-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -271,7 +271,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "activated_cgn_failure
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "activated_eyca_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on activatedeyca-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -305,7 +305,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "activated_eyca_failur
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pendingdelete_cgn_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on pendingdeletecgn-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -339,7 +339,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pendingdelete_cgn_fai
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pendingdelete_eyca_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on pendingdeleteeyca-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -373,7 +373,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "pendingdelete_eyca_fa
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "expired_cgn_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on expiredcgn-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -407,7 +407,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "expired_cgn_failure_a
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "expired_eyca_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on expiredeyca-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -441,7 +441,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "expired_eyca_failure_
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "messages_failure_alert_rule" {
   enabled             = true
   name                = "[CGN | iopstcgn] Failures on messages-poison"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_storage_account.storage_cgn.id]
@@ -479,7 +479,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "messages_failure_aler
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired_cgn_failure" {
   enabled             = true
   name                = "[CGN | Scheduled Jobs] Scheduled CgnExpired_1_Start failed"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_insights.common.id]
@@ -513,7 +513,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_scheduled_expired_eyca_failure" {
   enabled             = true
   name                = "[CGN | Scheduled Jobs] Scheduled EycaExpired_1_Start failed"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_insights.common.id]

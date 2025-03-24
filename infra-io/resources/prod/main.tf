@@ -21,11 +21,14 @@ provider "azurerm" {
 }
 
 # RESOURCE GROUP
-resource "azurerm_resource_group" "itn_cgn" {
-  name     = "${local.project}-${local.domain}-rg-01"
-  location = local.location
-
-  tags = local.tags
+removed {
+  from = azurerm_resource_group.itn_cgn
+  lifecycle {
+    destroy = false
+  }
+}
+data "azurerm_resource_group" "itn_cgn" {
+  name = "${local.project}-${local.domain}-rg-01"
 }
 
 # KEY VAULTS
@@ -34,7 +37,7 @@ module "key_vaults" {
 
   project             = local.project
   location            = local.location
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
 
   tenant_id = data.azurerm_client_config.current.tenant_id
 
@@ -46,8 +49,8 @@ module "redis_cgn" {
   source = "github.com/pagopa/terraform-azurerm-v3//redis_cache?ref=v8.21.0"
 
   name                = "${local.project}-${local.domain}-redis-01"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
-  location            = azurerm_resource_group.itn_cgn.location
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
+  location            = data.azurerm_resource_group.itn_cgn.location
 
   capacity              = 1
   family                = "P"
