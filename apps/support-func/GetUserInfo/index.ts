@@ -39,8 +39,8 @@ const app = express();
 secureExpressApp(app);
 
 // Add express route
-app.get(
-  "/api/v1/cgn-support/user-info/:fiscalcode",
+app.post(
+  "/api/v1/cgn-support/user-info",
   GetUserInfo(userCgnModel, userEycaModel),
 );
 

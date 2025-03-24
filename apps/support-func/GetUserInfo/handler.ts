@@ -1,7 +1,7 @@
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
-import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
 import {
+  IRequestMiddleware,
   withRequestMiddlewares,
   wrapRequestHandler,
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
@@ -9,16 +9,19 @@ import {
   IResponseErrorInternal,
   IResponseErrorNotFound,
   IResponseSuccessJson,
+  ResponseErrorFromValidationErrors,
   ResponseErrorInternal,
   ResponseErrorNotFound,
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as express from "express";
+import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
+import { FiscalCodePayload } from "../generated/definitions/FiscalCodePayload";
 import { UserInfo } from "../generated/definitions/UserInfo";
 import { UserCgnModel } from "../models/user_cgn";
 import { UserEycaCardModel } from "../models/user_eyca_card";
@@ -33,6 +36,19 @@ type IGetUserInfoHandler = (
   context: Context,
   fiscalCode: FiscalCode,
 ) => Promise<ResponseTypes>;
+
+export const FiscalCodePayloadMiddleware: IRequestMiddleware<
+  "IResponseErrorValidation",
+  FiscalCode
+> = (request) =>
+  Promise.resolve(
+    pipe(
+      request.body,
+      FiscalCodePayload.decode,
+      E.map((fiscalCodePayload) => fiscalCodePayload.fiscal_code),
+      E.mapLeft(ResponseErrorFromValidationErrors(FiscalCodePayload)),
+    ),
+  );
 
 export function GetUserInfoHandler(
   userCgnModel: UserCgnModel,
@@ -96,7 +112,7 @@ export function GetUserInfo(
 
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredParamMiddleware("fiscalcode", FiscalCode),
+    FiscalCodePayloadMiddleware,
   );
 
   return wrapRequestHandler(middlewaresWrap(handler));

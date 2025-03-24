@@ -15,20 +15,17 @@ security:
   - ApiKey: []
 paths:
   /user-info/{fiscalcode}:
-    get:
+    post:
       summary: Get user informations about CGN
       description: "Retrieves useful informations about the user with regards to CGN"
       operationId: getCgnUserInfo
-      parameters:
-        - name: fiscalcode
-          in: path
-          description: "The fiscal code of the user, all upper case."
-          required: true
-          schema:
-            maxLength: 16
-            minLength: 16
-            pattern: "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]"
-            type: string
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FiscalCodePayload"
       responses:
         "200":
           description: CGN details.
@@ -36,6 +33,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: Bad Request, maybe body payload is not valid.
+          content: {}
         "401":
           description: Wrong or missing function key.
           content: {}
@@ -50,6 +50,23 @@ paths:
                 $ref: "#/components/schemas/ProblemJson"             
 components:
   schemas:
+    FiscalCodePayload:
+      type: object
+      properties:
+        fiscal_code:
+          $ref: '#/components/schemas/FiscalCode'
+      required:
+        - fiscal_code
+      example: | 
+        {
+          "fiscal_code": "AAABBB00C00D000E"
+        }
+    FiscalCode:
+      type: string
+      description: User's fiscal code.
+      format: FiscalCode
+      x-import: '@pagopa/ts-commons/lib/strings'
+      example: AAABBB00C00D000E
     Timestamp:
       type: string
       description: A date-time field in ISO-8601 format and UTC timezone.
@@ -242,18 +259,6 @@ components:
         of the problem.
       format: int32
       example: 200
-  parameters:
-    FiscalCode:
-      name: fiscalcode
-      in: path
-      description: "The fiscal code of the user, all upper case."
-      required: true
-      schema:
-        maxLength: 16
-        minLength: 16
-        pattern: "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]"
-        type: string
-      example: SPNDNL80R13C555X
   securitySchemes:
     ApiKey:
       type: apiKey
