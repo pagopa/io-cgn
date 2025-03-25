@@ -149,7 +149,7 @@ jobs:
   make_release:
     name: Make Release
     if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
-    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
       id-token: write
