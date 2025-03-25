@@ -96,7 +96,7 @@ jobs:
           echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "cgn-pagopa-bot"
           git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
-          git remote set-url origin https://cgn-pagopa-bot:$CGN_GH_BOT_PAT@github.com/${{inputs.app_folder}}
+          git remote set-url origin https://cgn-pagopa-bot:$CGN_GH_BOT_PAT@github.com/pagopa/${{inputs.app_folder}}
           echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
           echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
           echo "-> Adding..." && git add . && echo "done."
