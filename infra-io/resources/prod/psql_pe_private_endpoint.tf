@@ -5,7 +5,7 @@ module "psql_pe_private_endpoint" {
   project  = local.project
   domain   = local.domain
 
-  resource_group_name        = azurerm_resource_group.itn_cgn.name
+  resource_group_name        = data.azurerm_resource_group.itn_cgn.name
   private_endpoint_subnet_id = data.azurerm_subnet.pep.id
 
   tags = local.tags

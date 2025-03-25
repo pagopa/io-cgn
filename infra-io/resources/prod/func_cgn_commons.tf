@@ -1,7 +1,7 @@
 resource "azurerm_service_plan" "cgn_func_asp_01" {
   name                   = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-func-asp-01"
   location               = local.location
-  resource_group_name    = azurerm_resource_group.itn_cgn.name
+  resource_group_name    = data.azurerm_resource_group.itn_cgn.name
   os_type                = "Linux"
   sku_name               = "P1v3"
   zone_balancing_enabled = true
@@ -10,9 +10,9 @@ resource "azurerm_service_plan" "cgn_func_asp_01" {
 module "cgn_func_asp_01_autoscaler" {
   source = "../_modules/function_app_autoscaler"
 
-  location = local.location
+  location            = local.location
   autoscale_name      = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-func-as-01"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   function_app_name   = module.functions_cgn_card_02.function_app_cgn_card.name # we can point any function in the asp
   app_service_plan_id = resource.azurerm_service_plan.cgn_func_asp_01.id
 

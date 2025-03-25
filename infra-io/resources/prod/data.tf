@@ -2,6 +2,10 @@ data "azurerm_subscription" "current" {}
 
 data "azurerm_client_config" "current" {}
 
+data "azuread_group" "bonus_admins" {
+  display_name = "${local.prefix}-${local.env_short}-adgroup-bonus-admins"
+}
+
 data "azurerm_resource_group" "weu_common" {
   name = "${local.project_legacy}-rg-common"
 }

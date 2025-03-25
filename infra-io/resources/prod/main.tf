@@ -2,9 +2,10 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfappprodio"
+    storage_account_name = "iopitntfst001"
     container_name       = "terraform-state"
     key                  = "io-cgn.resources.tfstate"
+    use_azuread_auth     = true
   }
 
   required_providers {
@@ -21,9 +22,8 @@ provider "azurerm" {
 }
 
 # RESOURCE GROUP
-resource "azurerm_resource_group" "itn_cgn" {
-  name     = "${local.project}-${local.domain}-rg-01"
-  location = local.location
+data "azurerm_resource_group" "itn_cgn" {
+  name = "${local.project}-${local.domain}-rg-01"
 }
 
 # KEY VAULTS
@@ -32,7 +32,7 @@ module "key_vaults" {
 
   project             = local.project
   location            = local.location
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
 
   tenant_id = data.azurerm_client_config.current.tenant_id
 
@@ -44,8 +44,8 @@ module "redis_cgn" {
   source = "github.com/pagopa/terraform-azurerm-v3//redis_cache?ref=v8.21.0"
 
   name                = "${local.project}-${local.domain}-redis-01"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
-  location            = azurerm_resource_group.itn_cgn.location
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
+  location            = data.azurerm_resource_group.itn_cgn.location
 
   capacity              = 1
   family                = "P"

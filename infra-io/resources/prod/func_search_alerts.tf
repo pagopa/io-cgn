@@ -5,7 +5,7 @@
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_published_product_categories_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get published categories"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -14,7 +14,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_publi
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -40,7 +40,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_publi
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_online_merchants_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get online merchants"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -49,7 +49,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_onlin
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -75,7 +75,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_onlin
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_offline_merchants_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get offline merchants"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -84,7 +84,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_offli
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -110,7 +110,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_offli
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_search_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot search merchants"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -119,7 +119,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_searc
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -145,7 +145,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_searc
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_count_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot count merchants"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -154,7 +154,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_count
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -180,7 +180,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_count
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_merchant_profile_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get merchant profile"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -189,7 +189,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_merch
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
@@ -215,7 +215,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_merch
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_discount_bucket_code_failure" {
   enabled             = true
   name                = "[CGN | AppIO] App IO cannot get discount bucket code"
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
   location            = local.location
 
   scopes                  = [data.azurerm_application_gateway.io_app_gateway.id]
@@ -224,7 +224,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "cgn_search_func_disco
   auto_mitigation_enabled = false
 
   window_duration      = "PT15M" # Select the interval that's used to group the data points by using the aggregation type function. Choose an Aggregation granularity (period) that's greater than the Frequency of evaluation to reduce the likelihood of missing the first evaluation period of an added time series.
-  evaluation_frequency = "PT5M" # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
+  evaluation_frequency = "PT5M"  # Select how often the alert rule is to be run. Select a frequency that's smaller than the aggregation granularity to generate a sliding window for the evaluation.
 
   criteria {
     query                   = <<-QUERY
