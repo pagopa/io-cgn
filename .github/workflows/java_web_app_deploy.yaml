@@ -90,13 +90,12 @@ jobs:
         if: ${{inputs.environment == 'prod' && inputs.revision == 'master' }}
         env:
           VERSION: ${{ steps.make-artifact.outputs.package-version }}
-          CGN_GH_BOT_PAT: ${{ secrets.CGN_GH_BOT_PAT }}
         run : |
           echo "Making release on parent repo"
           echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "cgn-pagopa-bot"
           git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
-          git remote set-url origin https://cgn-pagopa-bot:$CGN_GH_BOT_PAT@github.com/pagopa/${{inputs.app_folder}}
+          git remote set-url origin https://${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}.git
           echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
           echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
           echo "-> Adding..." && git add . && echo "done."
