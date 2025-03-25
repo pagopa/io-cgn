@@ -49,7 +49,6 @@ concurrency:
 
 env:
   REVISION: ${{inputs.revision}}
-  BUMP_COMMAND: ${{inputs.environment == 'prod' && inputs.revision == 'master' &&  format('mvn validate versions:set -P increment-{0}', inputs.release_type) || 'echo Not making a release' }}
   BUNDLE_NAME: bundle-${{inputs.environment}}
 
 jobs:
@@ -100,30 +99,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
-      - name: Make release
-        if: ${{inputs.environment == 'prod' && inputs.revision == 'master' }}
-        id: make-release
-        run: |
-          git checkout $REVISION
-          format('mvn validate versions:set -P increment-{0}', inputs.release_type)
-          git status
-          echo "Making release on parent repo..."
-          echo "Remote url $(git config --get remote.origin.url)"
-          git config --global user.name "cgn-pagopa-bot"
-          git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
-          git remote set-url origin https://cgn-pagopa-bot:${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}.git
-          export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "Release version: $VERSION"
-          echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
-          echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
-          echo "-> Adding..." && git add . && echo "done."
-          echo "-> Committing..." && git commit -m "Bumped Version" && echo "done."
-          echo "-> Pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
-          echo "Release on parent repo completed."
-        working-directory: ./${{ inputs.app_folder }}
-
       - name: Download Artifact
         uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
@@ -169,3 +145,48 @@ jobs:
             -n ${{ inputs.web_app_name }} \
             --slot staging \
             --target-slot production
+
+  make_release:
+    name: Make Release
+    if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
+    environment: pe-app-${{ inputs.environment }}-cd
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        name: Checkout
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Init submodules
+        id: init-submodule
+        run: |
+          git submodule update --init --recursive
+        working-directory: .
+        
+      - name: Make release
+        id: make-release
+        run: |
+          git checkout $REVISION
+          format('mvn validate versions:set -P increment-{0}', inputs.release_type)
+          git status
+          echo "Making release on parent repo..."
+          echo "Remote url $(git config --get remote.origin.url)"
+          git config --global user.name "cgn-pagopa-bot"
+          git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
+          git remote set-url origin https://cgn-pagopa-bot:${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}.git
+          export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Release version: $VERSION"
+          echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
+          echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
+          echo "-> Adding..." && git add . && echo "done."
+          echo "-> Committing..." && git commit -m "Bumped Version" && echo "done."
+          echo "-> Pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
+          echo "Release on parent repo completed."
+        working-directory: ./${{ inputs.app_folder }}
