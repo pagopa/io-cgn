@@ -89,13 +89,13 @@ module "app_federated_identities" {
 resource "azurerm_role_assignment" "ci_cgn" {
   provider             = azurerm.peprod
   scope                = data.azurerm_subscription.cgn.id
-  principal_id         = module.federated_identities.federated_ci_identity.id
+  principal_id         = module.federated_identities.federated_ci_identity.principal_id
   role_definition_name = "Reader"
 }
 
 resource "azurerm_role_assignment" "cd_cgn" {
   provider             = azurerm.peprod
   scope                = data.azurerm_subscription.cgn.id
-  principal_id         = module.federated_identities.federated_cd_identity.id
+  principal_id         = module.federated_identities.federated_cd_identity.principal_id
   role_definition_name = "Contributor"
 }

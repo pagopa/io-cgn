@@ -13,7 +13,7 @@ locals {
     CreatedBy    = "Terraform"
     Environment  = "Prod"
     BusinessUnit = "CGN"
-    Source       = "https://github.com/pagopa/io-cgn/blob/main/infra/github-runner/prod"
+    Source       = "https://github.com/pagopa/io-cgn/blob/main/infra-io/identity/prod"
   }
 
   environment_cd_roles = {
