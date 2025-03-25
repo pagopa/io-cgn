@@ -169,12 +169,12 @@ jobs:
         run: |
           git submodule update --init --recursive
         working-directory: .
-        
+
       - name: Make release
         id: make-release
         run: |
           git checkout $REVISION
-          format('mvn validate versions:set -P increment-{0}', inputs.release_type)
+          mvn validate versions:set -P increment-${{inputs.release_type}}
           git status
           echo "Making release on parent repo..."
           echo "Remote url $(git config --get remote.origin.url)"
