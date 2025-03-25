@@ -12,7 +12,7 @@ module "functions_cgn_support_01" {
 
   app_service_plan_id = resource.azurerm_service_plan.cgn_func_asp_01.id
 
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
 
   subnet_id                            = resource.azurerm_subnet.cgn_common_subnet_01.id
   private_endpoint_subnet_id           = data.azurerm_subnet.pep.id

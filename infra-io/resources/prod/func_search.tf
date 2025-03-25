@@ -19,7 +19,7 @@ module "functions_cgn_search_02" {
 
   app_service_plan_id = resource.azurerm_service_plan.cgn_func_asp_01.id
 
-  resource_group_name = azurerm_resource_group.itn_cgn.name
+  resource_group_name = data.azurerm_resource_group.itn_cgn.name
 
   ai_instrumentation_key = data.azurerm_application_insights.common.instrumentation_key
   ai_connection_string   = data.azurerm_application_insights.common.connection_string

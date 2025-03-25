@@ -1,15 +1,15 @@
 data "azurerm_user_assigned_identity" "identity_prod_ci" {
-  name                = "io-p-cgn-github-ci-identity"
+  name                = "io-p-itn-cgn-infra-github-ci-id-01"
   resource_group_name = local.identity_resource_group_name
 }
 
 data "azurerm_user_assigned_identity" "identity_prod_cd" {
-  name                = "io-p-cgn-github-cd-identity"
+  name                = "io-p-itn-cgn-infra-github-cd-id-01"
   resource_group_name = local.identity_resource_group_name
 }
 
 data "azurerm_user_assigned_identity" "identity_app_prod_cd" {
-  name                = "io-p-cgn-app-github-cd-identity"
+  name                = "io-p-itn-cgn-app-github-cd-id-01"
   resource_group_name = local.identity_resource_group_name
 }
 
