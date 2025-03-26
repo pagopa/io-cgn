@@ -193,5 +193,5 @@ jobs:
           echo "-> Pushing tag..." && git push origin tag v$VERSION && echo "done."
           echo "Release on parent repo completed."
           echo "Making Pull Request..." && gh pr create --base master --head release-$VERSION --title "Bump version to $VERSION [skip ci]" --body "Package version has been bumped after a new release on production." && echo "done."
-          echo "Making Release..." && gh release create $VERSION-RELEASE && echo "done."
+          echo "Making Release..." && gh release create v$VERSION-RELEASE && echo "done."
         working-directory: ./${{ inputs.app_folder }}
