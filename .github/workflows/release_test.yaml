@@ -82,7 +82,7 @@ jobs:
           GH_TOKEN: ${{ secrets.CGN_GH_BOT_PAT }}
         run: |
           git checkout $REVISION
-          mvn validate versions:set -P increment-${{inputs.release_type}}
+          mvn --batch-mode -q validate versions:set -P increment-${{inputs.release_type}}
           git status
           echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "cgn-pagopa-bot"
