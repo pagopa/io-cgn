@@ -149,6 +149,7 @@ jobs:
   make_release:
     name: Make Release
     if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
+    needs: [deploy]
     runs-on: 'ubuntu-latest'
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
@@ -172,16 +173,18 @@ jobs:
 
       - name: Make release
         id: make-release
+        env:
+          GH_TOKEN: ${{ secrets.CGN_GH_BOT_PAT }}
         run: |
           git checkout $REVISION
           mvn validate versions:set -P increment-${{inputs.release_type}}
           git status
-          echo "Making release on parent repo..."
           echo "Remote url $(git config --get remote.origin.url)"
           git config --global user.name "cgn-pagopa-bot"
           git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
-          git remote set-url origin https://cgn-pagopa-bot:${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}.git
+          git remote set-url origin https://cgn-pagopa-bot:${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}
           export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Making release on parent repo..."
           echo "Release version: $VERSION"
           echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
           echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
@@ -189,4 +192,6 @@ jobs:
           echo "-> Committing..." && git commit -m "Bumped Version" && echo "done."
           echo "-> Pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
           echo "Release on parent repo completed."
+          echo "Making Pull Request..."
+          gh pr create --base master --head release-$VERSION --title "New version release" --body "New release has been created after deploy on production."
         working-directory: ./${{ inputs.app_folder }}
