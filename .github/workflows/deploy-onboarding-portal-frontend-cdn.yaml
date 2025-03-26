@@ -8,6 +8,13 @@ on:
         type: string
         required: false
         default: "master"
+      release_type:
+        type: choice
+        description: The type of release to build
+        options: 
+          - patch
+          - minor
+          - major
   push:
     branches:
       - master
