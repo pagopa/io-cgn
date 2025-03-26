@@ -23,22 +23,22 @@ on:
 
 jobs:
 
-  # deploy_uat:
-  #   name: Deploy Onboarding Portal Backend UAT
-  #   uses: ./.github/workflows/java_web_app_deploy.yaml
-  #   secrets: inherit
-  #   with:
-  #     app_folder: cgn-onboarding-portal-backend
-  #     environment: uat
-  #     resource_group_name: io-u-itn-cgn-pe-rg-01
-  #     web_app_name: io-u-itn-cgn-pe-backend-app-01
-  #     use_staging_slot: true
-  #     use_private_agent: true
-  #     use_labels: true
-  #     revision: ${{inputs.revision}}
+  deploy_uat:
+    name: Deploy Onboarding Portal Backend UAT
+    uses: ./.github/workflows/java_web_app_deploy.yaml
+    secrets: inherit
+    with:
+      app_folder: cgn-onboarding-portal-backend
+      environment: uat
+      resource_group_name: io-u-itn-cgn-pe-rg-01
+      web_app_name: io-u-itn-cgn-pe-backend-app-01
+      use_staging_slot: true
+      use_private_agent: true
+      use_labels: true
+      revision: ${{inputs.revision}}
 
   deploy_prod:
-  #  needs: deploy_uat
+    needs: deploy_uat
     name: Deploy Onboarding Portal Backend PROD
     uses: ./.github/workflows/java_web_app_deploy.yaml
     secrets: inherit
