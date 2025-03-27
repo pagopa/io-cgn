@@ -81,6 +81,7 @@ jobs:
         id: checkout
         run: |
           git checkout $REVISION
+          git pull
         working-directory: ./${{ inputs.app_folder }}
       
       - name: Setup Node.js
@@ -174,7 +175,7 @@ jobs:
       - name: Checkout revision
         id: checkout
         run: |
-          git checkout $REVISION
+          git checkout master
           git pull origin master
         working-directory: ./${{ inputs.app_folder }}
 
