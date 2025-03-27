@@ -177,6 +177,7 @@ jobs:
           GH_TOKEN: ${{ secrets.CGN_GH_BOT_PAT }}
         run: |
           git checkout $REVISION
+          git pull origin master
           mvn --batch-mode -q validate versions:set -P increment-${{inputs.release_type}}
           git status
           git config --global user.name "cgn-pagopa-bot"

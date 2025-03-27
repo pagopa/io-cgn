@@ -175,6 +175,7 @@ jobs:
         id: checkout
         run: |
           git checkout $REVISION
+          git pull origin master
         working-directory: ./${{ inputs.app_folder }}
 
       - name: Setup Node.js
