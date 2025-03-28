@@ -206,6 +206,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "New master release version: $VERSION"
           BRANCH_NAME="release-$VERSION-$(date +%s)"
+          TAG="v$VERSION"
           RELEASE="v$VERSION-RELEASE"
           git status
           git config --global user.name "cgn-pagopa-bot"
@@ -217,8 +218,8 @@ jobs:
           echo "-> Adding..." && git add package.json && echo "done."
           echo "-> Committing..." && git commit -m "Bump version to $VERSION [skip ci]" && echo "done."
           echo "Release last commit: $(git log --pretty=format:'%h' -n 1)"
-          echo "-> Tagging..." && git tag -a $RELEASE -m "Version $VERSION" && echo "done."
-          echo "-> Pushing..." && git push --set-upstream origin $BRANCH_NAME && git push origin tag $RELEASE && echo "done."
+          echo "-> Tagging..." && git tag -a $TAG -m "Version $VERSION" && echo "done."
+          echo "-> Pushing..." && git push --set-upstream origin $BRANCH_NAME && git push origin tag $TAG && echo "done."
           echo "Making Pull Request..." && gh pr create --base master --head $BRANCH_NAME --title "Bump version to $VERSION [skip ci]" --body "Package version has been bumped after a new release on production." && echo "done."
           echo "Making Release..." && gh release create $RELEASE && echo "done."
           echo "Release on parent repo completed."
