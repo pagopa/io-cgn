@@ -81,7 +81,12 @@ jobs:
         id: checkout
         run: |
           git checkout $REVISION
-          git pull
+          echo "Checkout commit: $(git log --pretty=format:'%h' -n 1)"
+          if [ "${{inputs.revision}}" = "master" ]; then
+            echo "Pulling last master commit..."
+            git pull origin master
+            echo "Pulled last master commit: $(git log --pretty=format:'%h' -n 1)"
+          fi
         working-directory: ./${{ inputs.app_folder }}
       
       - name: Setup Node.js
@@ -176,7 +181,10 @@ jobs:
         id: checkout
         run: |
           git checkout master
+          echo "Master checkout commit: $(git log --pretty=format:'%h' -n 1)"
+          echo "Pulling last master commit..."
           git pull origin master
+          echo "Pulled last master commit: $(git log --pretty=format:'%h' -n 1)"
         working-directory: ./${{ inputs.app_folder }}
 
       - name: Setup Node.js
@@ -191,21 +199,26 @@ jobs:
         run: |
           yarn set version 1.22.22
           yarn install --frozen-lockfile
+          echo "Working on commit: $(git log --pretty=format:'%h' -n 1)"
+          echo "Last master version: $(node -p "require('./package.json').version")"
           npm version ${{ inputs.release_type }} --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
+          echo "New master release version: $VERSION"
+          BRANCH_NAME="release-$VERSION-$(date +%s)"
+          RELEASE="v$VERSION-RELEASE"
           git status
           git config --global user.name "cgn-pagopa-bot"
           git config --global user.email "cgn-pagopa-github-bot@pagopa.it"
           git remote set-url origin https://cgn-pagopa-bot:${{ secrets.CGN_GH_BOT_PAT }}@github.com/pagopa/${{inputs.app_folder}}
           echo "Making release on parent repo..."
           echo "Release version: $VERSION"
-          echo "-> Branching..." && git checkout -b release-$VERSION && echo "done."
-          echo "-> Tagging..." && git tag -a v$VERSION -m "Version $VERSION" && echo "done."
-          echo "-> Adding..." && git add . && echo "done."
+          echo "-> Branching..." && git checkout -b $BRANCH_NAME && echo "done."
+          echo "-> Adding..." && git add package.json && echo "done."
           echo "-> Committing..." && git commit -m "Bump version to $VERSION [skip ci]" && echo "done."
-          echo "-> Pushing..." && git push --set-upstream origin release-$VERSION && echo "done."
-          echo "-> Pushing tag..." && git push origin tag v$VERSION && echo "done."
+          echo "Release last commit: $(git log --pretty=format:'%h' -n 1)"
+          echo "-> Tagging..." && git tag -a $RELEASE -m "Version $VERSION" && echo "done."
+          echo "-> Pushing..." && git push --set-upstream origin $BRANCH_NAME && git push origin tag && echo "done."
           echo "Release on parent repo completed."
-          echo "Making Pull Request..." && gh pr create --base master --head release-$VERSION --title "Bump version to $VERSION [skip ci]" --body "Package version has been bumped after a new release on production." && echo "done."
-          echo "Making Release..." && gh release create v$VERSION-RELEASE && echo "done."
+          echo "Making Pull Request..." && gh pr create --base master --head $BRANCH_NAME --title "Bump version to $VERSION [skip ci]" --body "Package version has been bumped after a new release on production." && echo "done."
+          echo "Making Release..." && gh release create $RELEASE && echo "done."
         working-directory: ./${{ inputs.app_folder }}
