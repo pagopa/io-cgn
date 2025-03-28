@@ -14,7 +14,7 @@ servers:
 security:
   - ApiKey: []
 paths:
-  /user-info/{fiscalcode}:
+  /user-info:
     post:
       summary: Get user informations about CGN
       description: "Retrieves useful informations about the user with regards to CGN"
