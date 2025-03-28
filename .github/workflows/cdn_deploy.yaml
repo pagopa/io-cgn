@@ -217,7 +217,7 @@ jobs:
           echo "-> Committing..." && git commit -m "Bump version to $VERSION [skip ci]" && echo "done."
           echo "Release last commit: $(git log --pretty=format:'%h' -n 1)"
           echo "-> Tagging..." && git tag -a $RELEASE -m "Version $VERSION" && echo "done."
-          echo "-> Pushing..." && git push --set-upstream origin $BRANCH_NAME && git push origin tag && echo "done."
+          echo "-> Pushing..." && git push --set-upstream origin $BRANCH_NAME && git push origin tag $RELEASE && echo "done."
           echo "Release on parent repo completed."
           echo "Making Pull Request..." && gh pr create --base master --head $BRANCH_NAME --title "Bump version to $VERSION [skip ci]" --body "Package version has been bumped after a new release on production." && echo "done."
           echo "Making Release..." && gh release create $RELEASE && echo "done."
