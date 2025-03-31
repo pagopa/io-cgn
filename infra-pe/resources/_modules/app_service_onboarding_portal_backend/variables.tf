@@ -238,3 +238,22 @@ variable "spring_quartz_autostartup" {
   description = "Is quartz scheduled enabled?"
 }
 
+variable "one_identity_secret" {
+  type        = string
+  description = "One Identity client secret"
+}
+
+variable "active_directory_well_known" {
+  type        = string
+  description = "Active Directory .well-known url"
+}
+
+variable "jwt_private_key" {
+  type        = string
+  description = "Private key to sign JWT"
+}
+
+variable "jwt_public_key" {
+  type        = string
+  description = "Public key to verify JWT signature"
+}

@@ -123,6 +123,26 @@ data "azurerm_key_vault_secret" "cgn_attribute_authority_base_url" {
   key_vault_id = module.key_vaults.key_vault_cgn_pe.id
 }
 
+data "azurerm_key_vault_secret" "cgn_one_identity_secret" {
+  name         = "cgn-one-identity-secret"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
+data "azurerm_key_vault_secret" "cgn_active_directory_well_known" {
+  name         = "cgn-active-directory-well-known"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
+data "azurerm_key_vault_secret" "cgn_jwt_private_key" {
+  name         = "cgn-jwt-private-key"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
+data "azurerm_key_vault_secret" "cgn_jwt_public_key" {
+  name         = "cgn-jwt-public-key"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
 module "app_service_onboarding_portal_backend" {
   source = "../_modules/app_service_onboarding_portal_backend"
 
@@ -176,6 +196,10 @@ module "app_service_onboarding_portal_backend" {
   cgn_geolocation_secret_token       = data.azurerm_key_vault_secret.cgn_geolocation_secret_token.value
   cgn_attribute_authority_base_url   = data.azurerm_key_vault_secret.cgn_attribute_authority_base_url.value
   spring_quartz_autostartup          = false
+  one_identity_secret                = data.azurerm_key_vault_secret.cgn_one_identity_secret.value
+  active_directory_well_known        = data.azurerm_key_vault_secret.cgn_active_directory_well_known.value
+  jwt_private_key                    = data.azurerm_key_vault_secret.cgn_jwt_private_key.value
+  jwt_public_key                     = data.azurerm_key_vault_secret.cgn_jwt_public_key.value
 
   tags = local.tags
 
