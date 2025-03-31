@@ -153,8 +153,9 @@ components:
           required:
             - status
     Card:
-      x-one-of: true
-      allOf:
+      discriminator:
+        propertyName: status
+      oneOf:
         - $ref: "#/components/schemas/CardPending"
         - $ref: "#/components/schemas/CardPendingDelete"
         - $ref: "#/components/schemas/CardActivated"
@@ -206,8 +207,9 @@ components:
           required:
             - card_number
     EycaCard:
-      x-one-of: true
-      allOf:
+      discriminator:
+        propertyName: status
+      oneOf:
         - $ref: "#/components/schemas/CardPending"
         - $ref: "#/components/schemas/EycaCardPendingDelete"
         - $ref: "#/components/schemas/EycaCardActivated"
