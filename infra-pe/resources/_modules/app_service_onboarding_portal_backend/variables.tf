@@ -258,6 +258,11 @@ variable "one_identity_secret" {
   description = "One Identity client secret"
 }
 
+variable "one_identity_well_known" {
+  type        = string
+  description = "One Identity .well-known url"
+}
+
 variable "active_directory_well_known" {
   type        = string
   description = "Active Directory .well-known url"
