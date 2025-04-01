@@ -201,7 +201,7 @@ module "app_service_onboarding_portal_backend" {
   cgn_geolocation_secret_token       = data.azurerm_key_vault_secret.cgn_geolocation_secret_token.value
   cgn_attribute_authority_base_url   = data.azurerm_key_vault_secret.cgn_attribute_authority_base_url.value
   spring_quartz_autostartup          = false
-  one_identity_base_url              = data.azurerm_key_vault_secret.one_identity_base_url.value
+  one_identity_base_url              = data.azurerm_key_vault_secret.cgn_one_identity_base_url.value
   one_identity_secret                = data.azurerm_key_vault_secret.cgn_one_identity_secret.value
   active_directory_well_known        = data.azurerm_key_vault_secret.cgn_active_directory_well_known.value
   jwt_private_key                    = data.azurerm_key_vault_secret.cgn_jwt_private_key.value
