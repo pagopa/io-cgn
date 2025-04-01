@@ -238,6 +238,11 @@ variable "spring_quartz_autostartup" {
   description = "Is quartz scheduled enabled?"
 }
 
+variable "one_identity_base_url" {
+  type        = string
+  description = "One Identity server base url"
+}
+
 variable "one_identity_secret" {
   type        = string
   description = "One Identity client secret"

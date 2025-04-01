@@ -75,6 +75,7 @@ locals {
       APPLICATIONINSIGHTS_CONNECTION_STRING = var.ai_connection_string
 
       # IDENTITY
+      ONE_IDENTITY_BASE_URL       = var.one_identity_base_url
       ONE_IDENTITY_SECRET         = var.one_identity_secret
       ACTIVE_DIRECTORY_WELL_KNOWN = var.active_directory_well_known
       JWT_PRIVATE_KEY             = var.jwt_private_key
