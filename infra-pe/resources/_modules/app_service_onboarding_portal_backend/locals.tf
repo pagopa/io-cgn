@@ -80,6 +80,7 @@ locals {
       ONE_IDENTITY_ID             = var.one_identity_id
       ONE_IDENTITY_SECRET         = var.one_identity_secret
       ONE_IDENTITY_WELL_KNOWN     = var.one_identity_well_known
+      ACTIVE_DIRECTORY_ID         = var.active_directory_id
       ACTIVE_DIRECTORY_WELL_KNOWN = var.active_directory_well_known
       JWT_PRIVATE_KEY             = var.jwt_private_key
       JWT_PUBLIC_KEY              = var.jwt_public_key

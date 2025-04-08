@@ -148,6 +148,11 @@ data "azurerm_key_vault_secret" "cgn_one_identity_well_known" {
   key_vault_id = module.key_vaults.key_vault_cgn_pe.id
 }
 
+data "azurerm_key_vault_secret" "cgn_active_directory_id" {
+  name         = "cgn-active-directory-id"
+  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
+}
+
 data "azurerm_key_vault_secret" "cgn_active_directory_well_known" {
   name         = "cgn-active-directory-well-known"
   key_vault_id = module.key_vaults.key_vault_cgn_pe.id
@@ -221,6 +226,7 @@ module "app_service_onboarding_portal_backend" {
   one_identity_id                    = data.azurerm_key_vault_secret.cgn_one_identity_id.value
   one_identity_secret                = data.azurerm_key_vault_secret.cgn_one_identity_secret.value
   one_identity_well_known            = data.azurerm_key_vault_secret.cgn_one_identity_well_known.value
+  active_directory_id                = data.azurerm_key_vault_secret.cgn_active_directory_id.value
   active_directory_well_known        = data.azurerm_key_vault_secret.cgn_active_directory_well_known.value
   jwt_private_key                    = data.azurerm_key_vault_secret.cgn_jwt_private_key.value
   jwt_public_key                     = data.azurerm_key_vault_secret.cgn_jwt_public_key.value
