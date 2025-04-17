@@ -82,13 +82,28 @@ export const checkAzureCosmosDbHealth = (
   dbKey?: string,
 ): HealthCheck<"AzureCosmosDB", true> =>
   pipe(
-    TE.tryCatch(async () => {
-      const client = buildCosmosClient(dbUri, dbKey);
-      const db = await client.getDatabaseAccount();
-      client.dispose();
-      return db;
-    }, toHealthProblems("AzureCosmosDB")),
-    TE.map(() => true),
+    E.tryCatch(
+      () => buildCosmosClient(dbUri, dbKey),
+      toHealthProblems("AzureCosmosDB"),
+    ),
+    TE.fromEither,
+    TE.bindTo("cosmosClient"),
+    TE.chain(({ cosmosClient }) =>
+      pipe(
+        TE.tryCatch(
+          () => cosmosClient.getDatabaseAccount(),
+          toHealthProblems("AzureCosmosDB"),
+        ),
+        TE.mapLeft((healthProblem) => {
+          cosmosClient.dispose();
+          return healthProblem;
+        }),
+        TE.map(() => {
+          cosmosClient.dispose();
+          return true;
+        }),
+      ),
+    ),
   );
 
 /**
