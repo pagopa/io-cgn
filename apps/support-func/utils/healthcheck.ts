@@ -58,18 +58,6 @@ export const checkConfigHealth = (): HealthCheck<"Config", IConfig> =>
   );
 
 /**
- * Return a CosmosClient
- */
-export const buildCosmosClient = (
-  dbUri: string,
-  dbKey?: string,
-): CosmosClient =>
-  new CosmosClient({
-    endpoint: dbUri,
-    key: dbKey,
-  });
-
-/**
  * Check the application can connect to an Azure CosmosDb instances
  *
  * @param dbUri uri of the database
