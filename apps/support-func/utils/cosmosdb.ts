@@ -12,4 +12,7 @@ const masterKey = config.COSMOSDB_CGN_KEY;
 export const cosmosdbClient = new CosmosClient({
   endpoint: cosmosDbUri,
   key: masterKey,
+  connectionPolicy: {
+    enableEndpointDiscovery: false,
+  },
 });
