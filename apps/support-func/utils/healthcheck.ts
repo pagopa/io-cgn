@@ -99,7 +99,7 @@ export const checkAzureCosmosDbHealth = (
         T.chainFirst(() => T.of(client.dispose())),
       ),
     ),
-    TE.map((_) => true),
+    TE.map(() => true),
   );
 
 /**
