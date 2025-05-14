@@ -230,6 +230,7 @@ module "app_service_onboarding_portal_backend" {
   active_directory_well_known        = data.azurerm_key_vault_secret.cgn_active_directory_well_known.value
   jwt_private_key                    = data.azurerm_key_vault_secret.cgn_jwt_private_key.value
   jwt_public_key                     = data.azurerm_key_vault_secret.cgn_jwt_public_key.value
+  min_bucket_csv_rows                = "0"
 
   tags = local.tags
 
