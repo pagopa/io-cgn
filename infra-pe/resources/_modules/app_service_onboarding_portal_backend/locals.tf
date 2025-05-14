@@ -32,7 +32,7 @@ locals {
       SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE = "200MB"
 
       # BUCKET CODE SETTINGS
-      CGN_PE_DISCOUNT_BUCKET_MINCSVROWS = "10000"
+      CGN_PE_DISCOUNT_BUCKET_MINCSVROWS = var.min_bucket_csv_rows
 
       # EMAIL
       MANAGEMENT_HEALTH_MAIL_ENABLED                     = "false"

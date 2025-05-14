@@ -282,3 +282,9 @@ variable "jwt_public_key" {
   type        = string
   description = "Public key to verify JWT signature"
 }
+
+variable "min_bucket_csv_rows" {
+  type        = string
+  description = "The minimun amount of rows to load a csv bucket file"
+  default     = "10000"
+}
