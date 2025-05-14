@@ -22,7 +22,10 @@ const config = getConfigOrThrow();
 
 initTelemetryClient();
 
-const cosmosdbClient = getCosmosDbClientInstance();
+const cosmosdbClient = getCosmosDbClientInstance(
+  config.COSMOSDB_CGN_URI,
+  config.COSMOSDB_CGN_KEY,
+);
 
 const userCgnsContainer = cosmosdbClient
   .database(config.COSMOSDB_CGN_DATABASE_NAME)
