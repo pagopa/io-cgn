@@ -9,7 +9,14 @@ const config = getConfigOrThrow();
 const cosmosDbUri = config.COSMOSDB_CGN_URI;
 const masterKey = config.COSMOSDB_CGN_KEY;
 
-export const cosmosdbClient = new CosmosClient({
-  endpoint: cosmosDbUri,
-  key: masterKey
-});
+let cosmosDbClientInstance: CosmosClient;
+
+export const getCosmosDbClientInstance = () => {
+  if (!cosmosDbClientInstance) {
+    cosmosDbClientInstance = new CosmosClient({
+      endpoint: cosmosDbUri,
+      key: masterKey,
+    });
+  }
+  return cosmosDbClientInstance;
+};

@@ -17,6 +17,7 @@ import { pipe } from "fp-ts/lib/function";
 import fetch from "node-fetch";
 
 import { IConfig, getConfig } from "./config";
+import { getCosmosDbClientInstance } from "./cosmosdb";
 
 type ProblemSource = "AzureCosmosDB" | "AzureStorage" | "Config" | "Url";
 export type HealthProblem<S extends ProblemSource> = {
@@ -72,10 +73,7 @@ export const checkAzureCosmosDbHealth = (
   pipe(
     TE.Do,
     TE.bind("client", () => {
-      const client = new CosmosClient({
-        endpoint: dbUri,
-        key: dbKey,
-      });
+      const client = getCosmosDbClientInstance();
       return TE.right(client);
     }),
     TE.chain(({ client }) =>
