@@ -35,9 +35,9 @@ module "functions_cgn_search_02" {
 
   cgn_postgres_db_admin_connection_string = data.azurerm_key_vault_secret.cgn_postgres_db_admin_connection_string.value
 
-  redis_url      = module.redis_cgn.hostname
-  redis_port     = module.redis_cgn.ssl_port
-  redis_password = module.redis_cgn.primary_access_key
+  redis_url      = module.redis_cgn_02.hostname
+  redis_port     = module.redis_cgn_02.ssl_port
+  redis_password = module.redis_cgn_02.primary_access_key
 
   cgn_cdn_endpoint_base_url = data.azurerm_key_vault_secret.cgn_cdn_endpoint_base_url.value
 
