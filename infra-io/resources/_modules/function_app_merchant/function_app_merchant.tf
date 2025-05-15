@@ -1,5 +1,5 @@
 module "function_app_cgn_merchant" {
-  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=main"
+  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=5fe5d992a856636e2f49f6720a2b735dd77f1696"
 
   environment = {
     prefix          = var.prefix

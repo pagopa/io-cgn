@@ -97,7 +97,7 @@ module "redis_cgn_02" {
   capacity              = 1
   family                = "C"
   sku_name              = "Standard"
-  redis_version         = "1"
+  redis_version         = "6"
   enable_authentication = true
   zones                 = [1, 2]
 
