@@ -13,7 +13,7 @@ resource "azurerm_federated_identity_credential" "io_infra_prod_ci" {
   name                = "io-cgn-environment-io-infra-prod-ci"
   parent_id           = module.federated_identities.federated_ci_identity.id
   resource_group_name = azurerm_resource_group.cgn_itn_01.name
-  subject             = "repo:pagopa/io-cgn:environment:io-infra-prod-ci"
+  subject             = "repo:pagopa/io-cgn:environment:io-prod-ci"
 }
 
 resource "azurerm_federated_identity_credential" "io_infra_prod_cd" {
@@ -22,5 +22,5 @@ resource "azurerm_federated_identity_credential" "io_infra_prod_cd" {
   name                = "io-cgn-environment-io-infra-prod-cd"
   parent_id           = module.federated_identities.federated_cd_identity.id
   resource_group_name = azurerm_resource_group.cgn_itn_01.name
-  subject             = "repo:pagopa/io-cgn:environment:io-infra-prod-cd"
+  subject             = "repo:pagopa/io-cgn:environment:io-prod-cd"
 }
