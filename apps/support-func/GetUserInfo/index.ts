@@ -11,7 +11,7 @@ import {
 } from "../models/user_eyca_card";
 import initTelemetryClient from "../utils/appinsights";
 import { getConfigOrThrow } from "../utils/config";
-import { cosmosdbClient } from "../utils/cosmosdb";
+import { getCosmosDbClientInstance } from "../utils/cosmosdb";
 import { GetUserInfo } from "./handler";
 
 //
@@ -21,6 +21,11 @@ import { GetUserInfo } from "./handler";
 const config = getConfigOrThrow();
 
 initTelemetryClient();
+
+const cosmosdbClient = getCosmosDbClientInstance(
+  config.COSMOSDB_CGN_URI,
+  config.COSMOSDB_CGN_KEY,
+);
 
 const userCgnsContainer = cosmosdbClient
   .database(config.COSMOSDB_CGN_DATABASE_NAME)

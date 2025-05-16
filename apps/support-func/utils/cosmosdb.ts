@@ -3,13 +3,14 @@
  */
 import { CosmosClient } from "@azure/cosmos";
 
-import { getConfigOrThrow } from "./config";
+let cosmosDbClientInstance: CosmosClient;
 
-const config = getConfigOrThrow();
-const cosmosDbUri = config.COSMOSDB_CGN_URI;
-const masterKey = config.COSMOSDB_CGN_KEY;
-
-export const cosmosdbClient = new CosmosClient({
-  endpoint: cosmosDbUri,
-  key: masterKey
-});
+export const getCosmosDbClientInstance = (dbUri: string, dbKey?: string) => {
+  if (!cosmosDbClientInstance) {
+    cosmosDbClientInstance = new CosmosClient({
+      endpoint: dbUri,
+      key: dbKey,
+    });
+  }
+  return cosmosDbClientInstance;
+};
