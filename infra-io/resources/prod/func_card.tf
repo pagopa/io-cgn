@@ -59,9 +59,9 @@ module "functions_cgn_card_02" {
   ai_connection_string   = data.azurerm_application_insights.common.connection_string
   ai_sampling_percentage = 5
 
-  redis_url      = module.redis_cgn.hostname
-  redis_port     = module.redis_cgn.ssl_port
-  redis_password = module.redis_cgn.primary_access_key
+  redis_url      = module.redis_cgn_02.hostname
+  redis_port     = module.redis_cgn_02.ssl_port
+  redis_password = module.redis_cgn_02.primary_access_key
 
   cosmosdb_cgn_uri           = data.azurerm_key_vault_secret.cosmosdb_cgn_uri.value
   cosmosdb_cgn_key           = data.azurerm_key_vault_secret.cosmosdb_cgn_key.value
