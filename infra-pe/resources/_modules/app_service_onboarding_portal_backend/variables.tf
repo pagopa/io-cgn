@@ -102,6 +102,11 @@ variable "docker_registry_server_password" {
   sensitive   = true
 }
 
+variable "environment" {
+  type        = string
+  description = "Application environment uat|prod"
+}
+
 variable "spring_datasource_url" {
   type        = string
   description = "Spring datasource url"

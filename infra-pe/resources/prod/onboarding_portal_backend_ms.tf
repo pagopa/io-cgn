@@ -198,6 +198,7 @@ module "app_service_onboarding_portal_backend" {
   docker_registry_server_url         = data.azurerm_key_vault_secret.docker_registry_server_url.value
   docker_registry_server_username    = data.azurerm_key_vault_secret.docker_registry_server_username.value
   docker_registry_server_password    = data.azurerm_key_vault_secret.docker_registry_server_password.value
+  environment                        = "prod"
   spring_datasource_url              = data.azurerm_key_vault_secret.spring_datasource_url.value
   spring_datasource_username         = data.azurerm_key_vault_secret.spring_datasource_username.value
   spring_datasource_password         = data.azurerm_key_vault_secret.spring_datasource_password.value
