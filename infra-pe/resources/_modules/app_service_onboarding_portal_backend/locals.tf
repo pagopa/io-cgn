@@ -12,6 +12,7 @@ locals {
       WEBSITE_RUN_FROM_PACKAGE            = 0
 
       # ENVIRONMENT
+      ENVIRONMENT                = var.environment
       SPRING_PROFILES_ACTIVE     = "prod"
       SERVER_PORT                = 8080
       SPRING_DATASOURCE_URL      = var.spring_datasource_url
