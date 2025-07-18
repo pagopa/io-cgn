@@ -44,16 +44,16 @@ resource "azurerm_storage_account_static_website" "cgn_pe_fe_website" {
 }
 
 resource "azurerm_storage_container" "cgn_pe_fe_profile_images" {
-  name                 = "profileimages"
-  storage_account_id = azurerm_storage_account.cgn_pe_assets_storage.id
+  name               = "profileimages"
+  storage_account_name = azurerm_storage_account.cgn_pe_assets_storage.name
 
   # tfsec:ignore:azure-storage-no-public-access
   container_access_type = "container"
 }
 
 resource "azurerm_storage_container" "cgn_pe_fe_user_documents" {
-  name                 = "userdocuments"
-  storage_account_id = azurerm_storage_account.cgn_pe_assets_storage.id
+  name               = "userdocuments"
+  storage_account_name = azurerm_storage_account.cgn_pe_assets_storage.name
 
   # tfsec:ignore:azure-storage-no-public-access
   container_access_type = "container"

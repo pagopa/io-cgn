@@ -1,7 +1,7 @@
 # IO CGN - GitHub Repository Settings
 
 <!-- markdownlint-disable -->
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 No requirements.
@@ -10,7 +10,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.11.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.13.0 |
 | <a name="provider_github"></a> [github](#provider\_github) | 6.4.0 |
 
 ## Modules
@@ -39,6 +39,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_app_cd_reviewers_teams"></a> [app\_cd\_reviewers\_teams](#input\_app\_cd\_reviewers\_teams) | List of teams that should review the job execution | `list(string)` | <pre>[<br/>  "io-cgn-contributors",<br/>  "engineering-team-cloud-eng"<br/>]</pre> | no |
 | <a name="input_domain"></a> [domain](#input\_domain) | Domain | `string` | n/a | yes |
 | <a name="input_env"></a> [env](#input\_env) | Environment | `string` | n/a | yes |
 | <a name="input_env_short"></a> [env\_short](#input\_env\_short) | Short environment | `string` | n/a | yes |
@@ -50,4 +51,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_environment"></a> [environment](#output\_environment) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
