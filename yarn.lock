@@ -4676,7 +4676,7 @@ __metadata:
     "@pagopa/eslint-config": "npm:^4.0.1"
     "@pagopa/express-azure-functions": "npm:^4.0.1"
     "@pagopa/io-functions-commons": "npm:^29.1.1"
-    "@pagopa/openapi-codegen-ts": "npm:^12.0.3"
+    "@pagopa/openapi-codegen-ts": "npm:^14.0.0"
     "@pagopa/ts-commons": "npm:^13.1.2"
     "@types/express": "npm:^4.17.9"
     "@types/jest": "npm:^29.5.12"
