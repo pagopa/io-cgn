@@ -31,10 +31,10 @@ const servicesApiKey = config.SERVICES_API_KEY;
 
 // HTTP-only fetch with optional keepalive agent
 // @see https://github.com/pagopa/io-ts-commons/blob/master/src/agent.ts#L10
-const httpApiFetch = agent.getFetch(process.env);
+const httpsApiFetch = agent.getHttpsFetch(process.env);
 
 // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
-const abortableFetch = AbortableFetch(httpApiFetch);
+const abortableFetch = AbortableFetch(httpsApiFetch);
 
 const timeoutFetch = toFetch(
   setFetchTimeout(SERVICES_REQUEST_TIMEOUT_MS as Millisecond, abortableFetch),
