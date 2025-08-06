@@ -19,19 +19,15 @@ const cgnSubscriptionKey = config.SERVICES_API_KEY;
 const DEFAULT_REQUEST_TIMEOUT_MS = 10000;
 
 // Must be an https endpoint so we use an https agent
-const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
+const abortableFetch = AbortableFetch(agent.getFetch(process.env));
 
 const fetchWithTimeout = toFetch(
   setFetchTimeout(DEFAULT_REQUEST_TIMEOUT_MS as Millisecond, abortableFetch),
 );
 
-const fetchApi: typeof fetchWithTimeout =
-  // eslint-disable-next-line
-  nodeFetch as any as typeof fetchWithTimeout;
-
 export const ServicesAPIClient = createClient<"SubscriptionKey">({
   baseUrl: servicesBaseUrl,
-  fetchApi,
+  fetchApi: fetchWithTimeout,
   withDefaults: (op) => (params) =>
     op({ SubscriptionKey: cgnSubscriptionKey, ...params }),
 });
