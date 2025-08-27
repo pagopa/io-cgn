@@ -65,8 +65,8 @@ data "azurerm_storage_account" "storage_cgn_itn" {
 }
 
 data "azurerm_application_gateway" "io_app_gateway" {
-  name                = "io-p-appgateway"
-  resource_group_name = "io-p-rg-external"
+  name                = "io-p-itn-agw-01"
+  resource_group_name = "io-p-itn-common-rg-01"
 }
 
 data "azurerm_key_vault_secret" "cosmosdb_cgn_uri" {
