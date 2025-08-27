@@ -59,6 +59,11 @@ data "azurerm_storage_account" "storage_cgn" {
   resource_group_name = format("%s-rg-cgn", local.project_legacy)
 }
 
+data "azurerm_storage_account" "storage_cgn_itn" {
+  name                = "iopitncgnst01"
+  resource_group_name = "io-p-itn-cgn-rg-01"
+}
+
 data "azurerm_application_gateway" "io_app_gateway" {
   name                = "io-p-appgateway"
   resource_group_name = "io-p-rg-external"
