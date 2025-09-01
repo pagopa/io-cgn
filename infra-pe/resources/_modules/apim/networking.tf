@@ -5,7 +5,13 @@ resource "azurerm_subnet" "cgn_pe_apim_subnet" {
   address_prefixes     = [var.cidr_subnet_cgn_pe_apim]
 
   private_endpoint_network_policies = "Enabled"
-
+delegation {
+    name = "default"
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
   service_endpoints = [
     "Microsoft.Web",
   ]
