@@ -1,3 +1,13 @@
+variable "prefix" {
+  type        = string
+  description = "IO Prefix"
+}
+
+variable "env_short" {
+  type        = string
+  description = "Short environment"
+}
+
 variable "project" {
   type        = string
   description = "IO prefix and short environment"
@@ -11,6 +21,16 @@ variable "location" {
 variable "domain" {
   type        = string
   description = "Resource domain"
+}
+
+variable "app_name" {
+  type        = string
+  description = "Application name"
+}
+
+variable "instance_number" {
+  type        = string
+  description = "Instance number"
 }
 
 variable "tags" {
