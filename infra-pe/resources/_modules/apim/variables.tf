@@ -28,6 +28,11 @@ variable "resource_group_name" {
   description = "Name of the resource group where resources will be created"
 }
 
+variable "tier" {
+  type        = string
+  description = "APIM tier"
+}
+
 variable "virtual_network" {
   type = object({
     name                = string

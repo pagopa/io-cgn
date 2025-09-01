@@ -13,10 +13,10 @@ module "apim" {
   }
 
   resource_group_name = var.resource_group_name
-  tier                = "s"
+  tier                = var.tier
 
-  publisher_email = "email@example.com"
-  publisher_name  = "Example Publisher"
+  publisher_email = "io-operations@pagopa.it"
+  publisher_name  = "PagoPa CGN Onboarding Portal"
 
   virtual_network = {
     name                = var.virtual_network.name

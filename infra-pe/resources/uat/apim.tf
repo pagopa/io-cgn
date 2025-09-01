@@ -7,7 +7,7 @@ module "cgn_pe_apim" {
   domain   = local.domain
 
   resource_group_name = azurerm_resource_group.itn_cgn_pe.name
-
+  tier                = "m"
   virtual_network = {
     resource_group_name = module.networking.vnet_common.resource_group_name
     name                = module.networking.vnet_common.name
