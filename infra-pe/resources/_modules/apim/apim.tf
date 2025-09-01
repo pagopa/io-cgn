@@ -1,5 +1,6 @@
 module "apim" {
-  source = "github.com/pagopa/dx//infra/modules/azure_api_management?ref=72543807feda33b4a85057fc2d164c18c8f3267d"
+  source  = "pagopa-dx/azure-api-management/azurerm"
+  version = "1.2.2"
 
   tags = var.tags
 
