@@ -35,7 +35,7 @@ jobs:
       storage_account_name: iouitncgnpefest01
       blob_container_name: $web
       cdn_profile_name: cgnonboardingportal-u-cdn-common
-      cdn_endpoint_name: cgnonboardingportal-u-cdnendpoint-frontend
+      cdn_endpoint_name: io-u-itn-cgn-pe-fe-fde-01
       use_private_agent: true
       use_labels: true
       revision: ${{inputs.revision}}
@@ -53,7 +53,7 @@ jobs:
       storage_account_name: iopitncgnpefest01
       blob_container_name: $web
       cdn_profile_name: cgnonboardingportal-p-cdn-common
-      cdn_endpoint_name: cgnonboardingportal-p-cdnendpoint-frontend
+      cdn_endpoint_name: io-p-itn-cgn-pe-fe-fde-01
       use_private_agent: true
       use_labels: true
       revision: ${{inputs.revision}}

@@ -156,7 +156,11 @@ jobs:
       - name: Purge CDN
         id: purge-cdn
         run: |
-          az cdn endpoint purge -g '${{ inputs.legacy_weu_resource_group_name }}' -n '${{ inputs.cdn_endpoint_name }}' --profile-name '${{ inputs.cdn_profile_name }}' --content-paths '/*'
+          az afd endpoint purge \
+            --resource-group '${{ inputs.legacy_weu_resource_group_name }}' \
+            --profile-name '${{ inputs.cdn_profile_name }}' \
+            --endpoint-name '${{ inputs.cdn_endpoint_name }}' \
+            --content-paths '/*'
         working-directory: .
 
   make_release:
