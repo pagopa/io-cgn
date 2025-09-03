@@ -22,10 +22,10 @@ module "cgn_pe_cdn" {
 
   custom_domains = [{
     host_name = var.custom_domain // custom domain,
-    dns = {
-      zone_name                = var.zone_name,
-      zone_resource_group_name = var.zone_resource_group_name
-    }
+    #dns = {
+    #  zone_name                = var.zone_name,
+    #  zone_resource_group_name = var.zone_resource_group_name
+    #}
   }]
 
   tags = var.tags
