@@ -10,7 +10,12 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 4.14.0"
+      version = "~> 4.0"
+    }
+
+    dx = {
+      source  = "pagopa-dx/azure"
+      version = "~> 0.0"
     }
   }
 }
@@ -18,6 +23,8 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+provider "dx" {}
 
 resource "azurerm_resource_group" "itn_cgn_pe" {
   name     = "${local.project}-${local.domain}-rg-01"
