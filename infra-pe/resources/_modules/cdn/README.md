@@ -3,7 +3,9 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_dx"></a> [dx](#requirement\_dx) | ~> 0.0 |
 
 ## Providers
 
