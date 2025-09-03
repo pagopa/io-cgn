@@ -42,3 +42,18 @@ variable "resource_group_name" {
   type        = string
   description = "Name of the resource group where resources will be created"
 }
+
+variable "custom_domain" {
+  type        = string
+  description = "Custom domain for the CDN"
+}
+
+variable "zone_name" {
+  type        = string
+  description = "DNS zone name for the custom domain"
+}
+
+variable "zone_resource_group_name" {
+  type        = string
+  description = "Resource group name where the DNS zone is located"
+}
