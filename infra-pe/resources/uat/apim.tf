@@ -13,7 +13,7 @@ module "cgn_pe_apim" {
     name                = module.networking.vnet_common.name
   }
 
-  cidr_subnet_cgn_pe_apim = "10.26.3.0/24"
+  cidr_subnet_cgn_pe_apim = "10.25.3.0/24"
   
   tags = local.tags
 }
