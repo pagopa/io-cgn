@@ -20,6 +20,7 @@
 |------|--------|---------|
 | <a name="module_app_service_attribute_authority"></a> [app\_service\_attribute\_authority](#module\_app\_service\_attribute\_authority) | ../_modules/app_service_attribute_authority | n/a |
 | <a name="module_app_service_onboarding_portal_backend"></a> [app\_service\_onboarding\_portal\_backend](#module\_app\_service\_onboarding\_portal\_backend) | ../_modules/app_service_onboarding_portal_backend | n/a |
+| <a name="module_cgn_pe_apim"></a> [cgn\_pe\_apim](#module\_cgn\_pe\_apim) | ../_modules/apim | n/a |
 | <a name="module_cgn_pe_fe"></a> [cgn\_pe\_fe](#module\_cgn\_pe\_fe) | ../_modules/cdn | n/a |
 | <a name="module_dns"></a> [dns](#module\_dns) | ../_modules/dns | n/a |
 | <a name="module_dns_weu"></a> [dns\_weu](#module\_dns\_weu) | ../_modules/dns | n/a |
