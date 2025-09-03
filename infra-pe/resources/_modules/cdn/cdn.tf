@@ -14,7 +14,7 @@ module "cgn_pe_cdn" {
   resource_group_name = var.resource_group_name
 
   origins = {
-    storage = {
+    website = {
       host_name = azurerm_storage_account.cgn_pe_fe_storage.primary_web_host
       priority  = 1
     }
