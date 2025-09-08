@@ -54,11 +54,6 @@ data "azurerm_storage_account" "storage_api" {
   resource_group_name = format("%s-rg-internal", local.project_legacy)
 }
 
-data "azurerm_storage_account" "storage_cgn" {
-  name                = replace("${local.project_legacy}stcgn", "-", "")
-  resource_group_name = format("%s-rg-cgn", local.project_legacy)
-}
-
 data "azurerm_storage_account" "storage_cgn_itn" {
   name                = "iopitncgnst01"
   resource_group_name = "io-p-itn-cgn-rg-01"
