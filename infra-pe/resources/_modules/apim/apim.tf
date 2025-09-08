@@ -1,6 +1,6 @@
 module "apim" {
   source  = "pagopa-dx/azure-api-management/azurerm"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   tags = var.tags
 
@@ -14,7 +14,7 @@ module "apim" {
   }
 
   resource_group_name = var.resource_group_name
-  tier                = var.tier
+  use_case            = var.tier
 
   publisher_email = "io-operations@pagopa.it"
   publisher_name  = "PagoPa CGN Onboarding Portal"
