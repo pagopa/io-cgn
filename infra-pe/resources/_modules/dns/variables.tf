@@ -34,6 +34,7 @@ variable "private_dns_zones" {
     "azure_api_net"            = "azure-api.net"
     "management_azure_api_net" = "management.azure-api.net"
     "scm_azure_api_net"        = "scm.azure-api.net"
+    "pep_azure_api_net"        = "privatelink.azure-api.net"
   }
 }
 

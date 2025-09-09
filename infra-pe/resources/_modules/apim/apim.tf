@@ -24,5 +24,7 @@ module "apim" {
     resource_group_name = var.virtual_network.resource_group_name
   }
   subnet_id                     = resource.azurerm_subnet.cgn_pe_apim_subnet.id
-  virtual_network_type_internal = true
+  subnet_pep_id                 = var.private_endpoint_subnet_id
+  virtual_network_type_internal = false
+  enable_public_network_access  = false
 }
