@@ -101,7 +101,7 @@ provider "registry.terraform.io/hashicorp/random" {
 
 provider "registry.terraform.io/pagopa-dx/azure" {
   version     = "0.6.5"
-  constraints = "~> 0.0, >= 0.0.6, < 1.0.0"
+  constraints = "~> 0.0, >= 0.0.6, >= 0.6.5, < 1.0.0"
   hashes = [
     "h1:su5yvwATlFV0fzF3UbEulBSMp9ALjiONxEmnhIAAmz4=",
     "zh:319796ba889cdb64e7b3863bea0fc69607e1d32fe97bc160303ba1a7ef80b2ae",

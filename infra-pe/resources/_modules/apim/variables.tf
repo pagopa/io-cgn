@@ -45,3 +45,8 @@ variable "cidr_subnet_cgn_pe_apim" {
   type        = string
   description = "CIDR block for apim subnet"
 }
+
+variable "private_endpoint_subnet_id" {
+  type        = string
+  description = "Private Endpoints subnet Id"
+}
