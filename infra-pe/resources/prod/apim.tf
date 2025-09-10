@@ -13,7 +13,8 @@ module "cgn_pe_apim" {
     name                = module.networking.vnet_common.name
   }
 
-  cidr_subnet_cgn_pe_apim = "10.26.5.0/24"
+  cidr_subnet_cgn_pe_apim    = "10.26.5.0/24"
+  private_endpoint_subnet_id = module.networking.pep_snet.id
 
   tags = local.tags
 }
