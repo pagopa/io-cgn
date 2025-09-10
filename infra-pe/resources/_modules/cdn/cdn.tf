@@ -199,7 +199,7 @@ resource "azurerm_cdn_frontdoor_rule" "caching" {
   }
 
   conditions {
-    request_uri_condition {
+    url_path_condition {
       operator = "Any"
     }
   }
@@ -219,6 +219,7 @@ resource "azurerm_cdn_frontdoor_rule" "global_assets" {
       cache_behavior                = "OverrideAlways"
       compression_enabled           = false
       query_string_caching_behavior = "IgnoreQueryString"
+      cache_duration                = "01:00:00"
     }
 
     response_header_action {
@@ -269,11 +270,12 @@ resource "azurerm_cdn_frontdoor_rule" "profile_images_cache" {
       cache_behavior                = "OverrideAlways"
       compression_enabled           = false
       query_string_caching_behavior = "IgnoreQueryString"
+      cache_duration                = "00:15:00"
     }
   }
 
   conditions {
-    request_uri_condition {
+    url_path_condition {
       operator         = "BeginsWith"
       match_values     = ["/profileimages"]
       negate_condition = false
