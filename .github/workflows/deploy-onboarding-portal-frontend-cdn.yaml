@@ -31,11 +31,10 @@ jobs:
       app_folder: cgn-onboarding-portal-frontend
       environment: uat
       resource_group_name: io-u-itn-cgn-pe-rg-01
-      legacy_weu_resource_group_name: cgnonboardingportal-u-public-rg
       storage_account_name: iouitncgnpefest01
       blob_container_name: $web
-      cdn_profile_name: cgnonboardingportal-u-cdn-common
-      cdn_endpoint_name: io-u-itn-cgn-pe-fe-fde-01
+      cdn_profile_name: io-u-itn-cgn-pe-frontend-afd-01
+      cdn_endpoint_name: io-u-itn-cgn-pe-frontend-fde-01
       use_private_agent: true
       use_labels: true
       revision: ${{inputs.revision}}
@@ -49,11 +48,10 @@ jobs:
       app_folder: cgn-onboarding-portal-frontend
       environment: prod
       resource_group_name: io-p-itn-cgn-pe-rg-01
-      legacy_weu_resource_group_name: cgnonboardingportal-p-public-rg
       storage_account_name: iopitncgnpefest01
       blob_container_name: $web
-      cdn_profile_name: cgnonboardingportal-p-cdn-common
-      cdn_endpoint_name: io-p-itn-cgn-pe-fe-fde-01
+      cdn_profile_name: io-p-itn-cgn-pe-frontend-afd-01
+      cdn_endpoint_name: io-p-itn-cgn-pe-frontend-fde-01
       use_private_agent: true
       use_labels: true
       revision: ${{inputs.revision}}
