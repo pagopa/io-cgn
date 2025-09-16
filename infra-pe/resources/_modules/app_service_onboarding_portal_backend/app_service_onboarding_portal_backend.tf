@@ -16,6 +16,7 @@ module "app_service_onboarding_portal_backend" {
   health_check_path   = "/actuator/health"
 
   tier = var.onboarding_portal_backend_tier
+  app_service_plan_id = azurerm_service_plan.app_service_plan_onboarding_portal_backend.id
 
   # SETTINGS
   app_settings      = merge(local.onboarding_portal_backend.app_settings, local.onboarding_portal_backend.production_slot_settings)

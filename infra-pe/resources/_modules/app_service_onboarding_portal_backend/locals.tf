@@ -1,4 +1,11 @@
 locals {
+  sku_name_mapping = {
+    s  = "B1"
+    m  = "P0v3"
+    l  = "P1v3"
+    xl = "P2v3"
+  }
+
   onboarding_portal_backend = {
     app_settings = {
       # APP SETTINGS
