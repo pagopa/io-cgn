@@ -18,3 +18,8 @@ module "cgn_pe_apim" {
 
   tags = local.tags
 }
+
+resource "azurerm_api_management_policy" "apim_global_policy" {
+  api_management_id = module.cgn_pe_apim.apim.id
+  xml_content       = file("apis/_base_policy.xml")
+}

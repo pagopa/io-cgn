@@ -1,3 +1,6 @@
-output "id" {
-  value = module.apim.id
+output "apim" {
+  value = {
+    id   = module.apim.id
+    name = module.apim.name
+  }
 }

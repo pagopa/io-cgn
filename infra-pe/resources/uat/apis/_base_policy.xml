@@ -1,0 +1,33 @@
+<policies>
+    <inbound>
+        <cors allow-credentials="true">
+            <allowed-origins>
+                <origin>https://portal.cgnonboardingportal-uat.pagopa.it</origin>
+                <origin>https://cgnonboardingportal-u-cdnendpoint-frontend.azureedge.net/</origin>
+                <origin>http://localhost:3000</origin>
+                <origin>http://127.0.0.1:3000</origin>
+            </allowed-origins>
+            <allowed-methods preflight-result-max-age="300">
+                <method>GET</method>
+                <method>POST</method>
+                <method>PUT</method>
+                <method>DELETE</method>
+                <method>OPTIONS</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>Content-Type</header>
+                <header>Authorization</header>
+                <header>Accept</header>
+                <header>x-cgn-token</header>
+            </allowed-headers>
+            <expose-headers>
+                <header>*</header>
+            </expose-headers>
+        </cors>
+    </inbound>
+    <backend>
+        <forward-request />
+    </backend>
+    <outbound />
+    <on-error />
+</policies>

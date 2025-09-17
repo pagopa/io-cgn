@@ -22,6 +22,7 @@ No requirements.
 | Name | Type |
 |------|------|
 | [azurerm_private_dns_a_record.weu_pep](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_a_record) | resource |
+| [azurerm_service_plan.app_service_plan_onboarding_portal_backend](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/service_plan) | resource |
 
 ## Inputs
 
