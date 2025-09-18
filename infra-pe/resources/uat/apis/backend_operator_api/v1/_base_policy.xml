@@ -1,0 +1,15 @@
+<policies>
+    <inbound>
+        <base />
+        <set-backend-service base-url="https://io-u-itn-cgn-pe-backend-app-01.azurewebsites.net" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

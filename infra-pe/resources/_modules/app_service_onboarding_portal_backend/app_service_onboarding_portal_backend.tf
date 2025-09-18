@@ -15,7 +15,7 @@ module "app_service_onboarding_portal_backend" {
   resource_group_name = var.resource_group_name
   health_check_path   = "/actuator/health"
 
-  tier = var.onboarding_portal_backend_tier
+  tier                = var.onboarding_portal_backend_tier
   app_service_plan_id = azurerm_service_plan.app_service_plan_onboarding_portal_backend.id
 
   # SETTINGS

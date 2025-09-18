@@ -1,4 +1,4 @@
-resource "azurerm_service_plan" "app_service_plan_onboarding_portal_backend" {  
+resource "azurerm_service_plan" "app_service_plan_onboarding_portal_backend" {
   name                   = "${var.project}-${var.domain}-backend-asp-01"
   location               = var.location
   resource_group_name    = var.resource_group_name
