@@ -56,10 +56,10 @@ resource "azurerm_cdn_frontdoor_origin" "this" {
   }))
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.this.id
   enabled                        = true
-  host_name                      = azurerm_storage_account.cgn_pe_assets_storage.primary_web_host
+  host_name                      = azurerm_storage_account.cgn_pe_assets_storage.primary_blob_host
   http_port                      = 80
   https_port                     = 443
-  origin_host_header             = azurerm_storage_account.cgn_pe_assets_storage.primary_web_host
+  origin_host_header             = azurerm_storage_account.cgn_pe_assets_storage.primary_blob_host
   priority                       = 1
   weight                         = 1000
   certificate_name_check_enabled = false
