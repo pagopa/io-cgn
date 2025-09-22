@@ -5,6 +5,9 @@ import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 
+import { ServicesAPIClient } from "../clients/services";
+import { MessagesAPIClient } from "../clients/services-messages";
+
 export const makeNewMessage = (content: MessageContent): NewMessage =>
   pipe(
     NewMessage.decode({
@@ -20,44 +23,49 @@ export const makeNewMessage = (content: MessageContent): NewMessage =>
  * using the IO Notification API (REST).
  * Returns the status of the response.
  */
-export const getGetProfile =
-  (apiUrl: string, apiKey: string, timeoutFetch: typeof fetch) =>
+export const GetProfile =
+  (servicesAPIClient: ServicesAPIClient) =>
   async (fiscalCode: FiscalCode): Promise<number> => {
-    const response = await timeoutFetch(
-      `${apiUrl}/api/v1/profiles/${fiscalCode}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Ocp-Apim-Subscription-Key": apiKey,
+    const status = pipe(
+      await servicesAPIClient.getProfileByPOST({
+        payload: { fiscal_code: fiscalCode },
+      }),
+      E.fold(
+        (err) => {
+          throw new Error(
+            "GetProfile validation error: " + readableReport(err),
+          );
         },
-        method: "GET",
-      },
+        (res) => res.status,
+      ),
     );
 
-    return response.status;
+    return status;
   };
 
-export type GetProfileT = ReturnType<typeof getGetProfile>;
+export type GetProfile = ReturnType<typeof GetProfile>;
 
 /**
  * Send a message to the user that matches the provided fiscal code
  * using the IO Notification API (REST).
  */
-export const getSendMessage =
-  (apiUrl: string, apiKey: string, timeoutFetch: typeof fetch) =>
+export const SendMessage =
+  (messagesAPIClient: MessagesAPIClient) =>
   async (fiscalCode: FiscalCode, newMessage: NewMessage): Promise<number> => {
-    const response = await timeoutFetch(
-      `${apiUrl}/api/v1/messages/${fiscalCode}`,
-      {
-        body: JSON.stringify(newMessage),
-        headers: {
-          "Content-Type": "application/json",
-          "Ocp-Apim-Subscription-Key": apiKey,
+    const status = pipe(
+      await messagesAPIClient.submitMessageforUserWithFiscalCodeInBody({
+        message: { ...newMessage, fiscal_code: fiscalCode },
+      }),
+      E.fold(
+        (err) => {
+          throw new Error(
+            "SendMessage validation error: " + readableReport(err),
+          );
         },
-        method: "POST",
-      },
+        (res) => res.status,
+      ),
     );
-    return response.status;
+    return status;
   };
 
-export type SendMessageT = ReturnType<typeof getSendMessage>;
+export type SendMessage = ReturnType<typeof SendMessage>;

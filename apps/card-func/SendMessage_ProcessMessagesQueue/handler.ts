@@ -9,8 +9,8 @@ import { MessageToSendMessage } from "../types/queue-message";
 import { throwError, trackError } from "../utils/errors";
 import { getMessage } from "../utils/messages";
 import {
-  GetProfileT,
-  SendMessageT,
+  GetProfile,
+  SendMessage,
   makeNewMessage,
 } from "../utils/notifications";
 
@@ -51,7 +51,7 @@ const checkSendMessageStatus = (
     : TE.left(new Error("Send message internal error"));
 
 export const handler =
-  (getProfile: GetProfileT, sendMessage: SendMessageT) =>
+  (getProfile: GetProfile, sendMessage: SendMessage) =>
   (
     context: Context,
     messageToSendMessage: MessageToSendMessage,
