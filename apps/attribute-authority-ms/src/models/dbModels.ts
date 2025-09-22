@@ -17,8 +17,7 @@ import {
   NonAttribute,
   Sequelize,
 } from "sequelize";
-
-import sequelize = require("sequelize");
+import * as sequelize from "sequelize";
 
 export class Organization extends Model<
   InferAttributes<Organization>,

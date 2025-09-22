@@ -31,7 +31,6 @@ export type RedisParams = t.TypeOf<typeof RedisParams>;
 
 // global app configuration
 export type IConfig = t.TypeOf<typeof IConfig>;
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const IConfig = t.intersection([
   t.interface({
     APPINSIGHTS_SAMPLING_PERCENTAGE: NonEmptyString,

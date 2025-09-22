@@ -5,7 +5,7 @@
   "version": "4.0.8",
   "license": "MIT",
   "scripts": {
-    "prebuild": "shx rm -rf dist && yarn generate:definitions && yarn generate:api-eyca && yarn generate:api-services",
+    "prebuild": "shx rm -rf dist && yarn generate",
     "build": "tsc",
     "watch": "tsc -w",
     "start": "dotenv -e .env func start --javascript",
@@ -13,9 +13,11 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "lint-api": "oval validate -p openapi/index.yaml",
+    "generate": "yarn generate:definitions && yarn generate:api-eyca && yarn generate:api-services && yarn generate:api-services:messages",
     "generate:definitions": "shx rm -rf generated/definitions && gen-api-models --api-spec openapi/index.yaml --out-dir generated/definitions",
     "generate:api-eyca": "shx rm -rf generated/eyca-api && gen-api-models --api-spec openapi/eyca.yaml --no-strict --out-dir generated/eyca-api --request-types --response-decoders --client",
     "generate:api-services": "shx rm -rf generated/services-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-functions-services/v3.3.0/openapi/index.yaml --no-strict --out-dir generated/services-api --request-types --response-decoders --client",
+    "generate:api-services:messages": "shx rm -rf generated/services-api-messages && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-messages/refs/tags/services-func@1.0.3/apps/services-func/openapi/index.yaml --no-strict --out-dir generated/services-api-messages --request-types --response-decoders --client",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
   },
