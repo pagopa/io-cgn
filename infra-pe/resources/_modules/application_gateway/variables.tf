@@ -70,3 +70,26 @@ variable "apim_hostname" {
   type        = string
   description = "APIM hostname"
 }
+
+variable "app_gw_cert_name" {
+  type        = string
+  description = "Application Gateway certificate name in Key Vault"
+}
+
+variable "app_gateway_min_capacity" {
+  type        = number
+  description = "Minimum capacity for Application Gateway"
+  default     = 1
+}
+
+variable "app_gateway_max_capacity" {
+  type        = number
+  description = "Maximum capacity for Application Gateway"
+  default     = 1
+}
+
+variable "app_gateway_alerts_enabled" {
+  type        = bool
+  description = "Enable Application Gateway alerts"
+  default     = false
+}

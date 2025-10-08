@@ -37,9 +37,7 @@ module "agw_identity_roles" {
       resource_group_name = var.resource_group_name
       has_rbac_support = true
       roles = {
-        certificates = "reader"
         secrets      = "reader"
-        keys         = "reader"
       }
       description = "Allow AGW to access TLS certificates"
     }

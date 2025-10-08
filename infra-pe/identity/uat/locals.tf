@@ -18,7 +18,8 @@ locals {
 
   environment_cd_roles = {
     subscription = [
-      "Contributor"
+      "Contributor",
+      "Key Vault Data Access Administrator"
     ]
     resource_groups = {
       terraform-state-rg = [
@@ -34,7 +35,9 @@ locals {
     subscription = [
       "Reader",
       "Reader and Data Access",
-      "PagoPA IaC Reader"
+      "PagoPA IaC Reader",
+      "Key Vault Certificate User",
+      "Key Vault Secrets User"
     ]
     resource_groups = {
       terraform-state-rg = [
