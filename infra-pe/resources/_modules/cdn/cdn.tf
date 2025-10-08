@@ -178,10 +178,79 @@ resource "azurerm_cdn_frontdoor_rule" "rewrite_admin_rout" {
   }
 }
 
+resource "azurerm_cdn_frontdoor_rule" "rewrite_operator_route" {
+  name                      = "RewriteOperatorRoute"
+  cdn_frontdoor_rule_set_id = module.cgn_pe_cdn.rule_set_id
+  order                     = 5
+  behavior_on_match         = "Continue"
+
+  actions {
+    url_rewrite_action {
+      source_pattern          = "/operator/"
+      destination             = "/index.html"
+      preserve_unmatched_path = false
+    }
+  }
+
+  conditions {
+    request_uri_condition {
+      operator         = "Contains"
+      match_values     = ["/operator/"]
+      negate_condition = false
+    }
+  }
+}
+
+resource "azurerm_cdn_frontdoor_rule" "rewrite_login_route" {
+  name                      = "RewriteLoginRoute"
+  cdn_frontdoor_rule_set_id = module.cgn_pe_cdn.rule_set_id
+  order                     = 6
+  behavior_on_match         = "Continue"
+
+  actions {
+    url_rewrite_action {
+      source_pattern          = "/login"
+      destination             = "/index.html"
+      preserve_unmatched_path = false
+    }
+  }
+
+  conditions {
+    request_uri_condition {
+      operator         = "Contains"
+      match_values     = ["/login"]
+      negate_condition = false
+    }
+  }
+}
+
+resource "azurerm_cdn_frontdoor_rule" "rewrite_help_route" {
+  name                      = "RewriteHelpRoute"
+  cdn_frontdoor_rule_set_id = module.cgn_pe_cdn.rule_set_id
+  order                     = 7
+  behavior_on_match         = "Continue"
+
+  actions {
+    url_rewrite_action {
+      source_pattern          = "/help"
+      destination             = "/index.html"
+      preserve_unmatched_path = false
+    }
+  }
+
+  conditions {
+    request_uri_condition {
+      operator         = "Contains"
+      match_values     = ["/help"]
+      negate_condition = false
+    }
+  }
+}
+
 resource "azurerm_cdn_frontdoor_rule" "caching" {
   name                      = "Caching"
   cdn_frontdoor_rule_set_id = module.cgn_pe_cdn.rule_set_id
-  order                     = 5
+  order                     = 8
   behavior_on_match         = "Continue"
 
   actions {
