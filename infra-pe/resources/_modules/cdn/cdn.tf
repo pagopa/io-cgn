@@ -178,6 +178,7 @@ resource "azurerm_cdn_frontdoor_rule" "rewrite_admin_rout" {
   }
 }
 
+/*
 resource "azurerm_cdn_frontdoor_rule" "rewrite_operator_route" {
   name                      = "RewriteOperatorRoute"
   cdn_frontdoor_rule_set_id = module.cgn_pe_cdn.rule_set_id
@@ -246,6 +247,7 @@ resource "azurerm_cdn_frontdoor_rule" "rewrite_help_route" {
     }
   }
 }
+*/
 
 resource "azurerm_cdn_frontdoor_rule" "caching" {
   name                      = "Caching"
