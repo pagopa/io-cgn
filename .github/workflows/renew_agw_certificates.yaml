@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  infra_review_uat:
+  renew_uat:
     uses: pagopa/io-infra/.github/workflows/ssl_certificate_renewal.yaml@b04e50d300f48d840b77d5e913ede0d8a605aa4f
     name: Renew PE UAT certificate
     secrets: inherit
@@ -17,10 +17,11 @@ jobs:
         environment: pe-uat
         use_selfhosted_agent: true
 
-  infra_review_prod:
+  renew_prod:
     uses: pagopa/io-infra/.github/workflows/ssl_certificate_renewal.yaml@b04e50d300f48d840b77d5e913ede0d8a605aa4f
     name: Renew PE PROD certificate
     secrets: inherit
+    needs: [renew_uat]
     with:
         csr_common_name: cgnonboardingportal.pagopa.it
         azure_dns_zone_resource_group: cgnonboardingportal-p-public-rg
