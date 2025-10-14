@@ -14,7 +14,7 @@ jobs:
         azure_dns_zone: cgnonboardingportal-uat.pagopa.it
         key_vault_name: io-u-itn-cgn-pe-kv-01
         force_renew_cert: false
-        environment: uat
+        environment: pe-uat
         use_selfhosted_agent: true
 
   infra_review_prod:
@@ -27,6 +27,6 @@ jobs:
         azure_dns_zone: cgnonboardingportal.pagopa.it
         key_vault_name: io-p-itn-cgn-pe-kv-01
         force_renew_cert: false
-        environment: prod
+        environment: pe-prod
         use_selfhosted_agent: true
       
