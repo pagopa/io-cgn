@@ -17,7 +17,7 @@ resource "azurerm_user_assigned_identity" "app_gw_identity" {
 }
 
 module "appgateway_snet" {
-  source               = "git::https://github.com/pagopa/terraform-azurerm-v4.git//subnet?ref=v8.8.0"
+  source               = "git::https://github.com/pagopa/terraform-azurerm-v4.git//subnet?ref=v7.40.3"
   name                 = "${var.project}-cgn-pe-agw-snet-01"
   address_prefixes     = var.cidr_subnet_cgn_pe_appgateway
   virtual_network_name = var.virtual_network.name
@@ -45,7 +45,7 @@ module "agw_identity_roles" {
 }
 
 module "app_gw" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v4.git//app_gateway?ref=v8.8.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v4.git//app_gateway?ref=v7.40.3"
 
   name                = "${var.project}-cgn-pe-agw-01"
   resource_group_name = var.resource_group_name
