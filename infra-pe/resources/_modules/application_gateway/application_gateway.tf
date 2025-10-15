@@ -19,7 +19,7 @@ resource "azurerm_user_assigned_identity" "app_gw_identity" {
 module "appgateway_snet" {
   source               = "git::https://github.com/pagopa/terraform-azurerm-v4.git//subnet?ref=v7.40.3"
   name                 = "${var.project}-cgn-pe-agw-snet-01"
-  address_prefixes     = var.cidr_subnet_cgn_pe_appgateway
+  address_prefixes     = [var.cidr_subnet_cgn_pe_appgateway]
   virtual_network_name = var.virtual_network.name
   resource_group_name  = var.resource_group_name
 }
@@ -27,17 +27,17 @@ module "appgateway_snet" {
 module "agw_identity_roles" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
   version = "~> 1.0"
-  
-  principal_id = azurerm_user_assigned_identity.app_gw_identity.principal_id
+
+  principal_id    = azurerm_user_assigned_identity.app_gw_identity.principal_id
   subscription_id = var.azure_subscription_id
 
   key_vault = [
     {
-      name = var.key_vault_name
+      name                = var.key_vault_name
       resource_group_name = var.resource_group_name
-      has_rbac_support = true
+      has_rbac_support    = true
       roles = {
-        secrets      = "reader"
+        secrets = "reader"
       }
       description = "Allow AGW to access TLS certificates"
     }
@@ -86,25 +86,23 @@ module "app_gw" {
 
   trusted_client_certificates = []
 
-  ssl_profiles = {
-    type = [{
-      name                             = "${var.project}-cgn-pe-ssl-profile"
-      trusted_client_certificate_names = null
-      verify_client_cert_issuer_dn     = false
-      ssl_policy = {
-        disabled_protocols = []
-        policy_type        = "Custom"
-        policy_name        = ""
-        cipher_suites = [
-          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-          "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-          "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-          "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
-        ]
-        min_protocol_version = "TLSv1_2"
-      }
-    }]
-  }
+  ssl_profiles = [{
+    name                             = "${var.project}-cgn-pe-ssl-profile"
+    trusted_client_certificate_names = null
+    verify_client_cert_issuer_dn     = false
+    ssl_policy = {
+      disabled_protocols = []
+      policy_type        = "Custom"
+      policy_name        = ""
+      cipher_suites = [
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+        "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+      ]
+      min_protocol_version = "TLSv1_2"
+    }
+  }]
 
   # Configure listeners
   listeners = {
@@ -117,7 +115,7 @@ module "app_gw" {
       firewall_policy_id = null
 
       certificate = {
-        name = var.app_gateway_certificate_name
+        name = var.app_gw_cert_name
         id = replace(
           data.azurerm_key_vault_certificate.app_gw_platform.secret_id,
           "/${data.azurerm_key_vault_certificate.app_gw_platform.version}",
@@ -133,6 +131,7 @@ module "app_gw" {
       listener              = "api"
       backend               = "apim"
       rewrite_rule_set_name = "rewrite-rule-set-api"
+      priority              = 1
     }
   }
 
