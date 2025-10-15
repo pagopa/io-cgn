@@ -93,3 +93,9 @@ variable "app_gateway_alerts_enabled" {
   description = "Enable Application Gateway alerts"
   default     = false
 }
+
+variable "azurerm_monitor_action_group_id" {
+  type        = string
+  description = "Monitor Action Group ID for alerts"
+  default     = null
+}

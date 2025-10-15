@@ -149,11 +149,7 @@ module "app_gw" {
 
   action = [
     {
-      action_group_id    = data.azurerm_monitor_action_group.slack.id
-      webhook_properties = null
-    },
-    {
-      action_group_id    = data.azurerm_monitor_action_group.email.id
+      action_group_id    = var.azurerm_monitor_action_group_id
       webhook_properties = null
     }
   ]
