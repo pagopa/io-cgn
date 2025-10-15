@@ -1,5 +1,5 @@
 module "postgresql_db" {
-  source = "github.com/pagopa/dx//infra/modules/azure_postgres_server?ref=main"
+  source = "github.com/pagopa/dx//infra/modules/azure_postgres_server?ref=2a3a36c3a1d0fa4bb9c425d853d2ddf17266937b"
 
   environment = {
     prefix          = var.prefix
