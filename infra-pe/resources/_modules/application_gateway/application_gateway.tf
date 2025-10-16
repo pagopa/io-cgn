@@ -130,7 +130,7 @@ module "app_gw" {
     api = {
       listener              = "api"
       backend               = "apim"
-      rewrite_rule_set_name = "rewrite-rule-set-api"
+      rewrite_rule_set_name = null
       priority              = 1
     }
   }
@@ -259,5 +259,6 @@ module "app_gw" {
     }
   }
 
+  depends_on = [module.agw_identity_roles]
   tags = var.tags
 }

@@ -7,7 +7,7 @@ module "application_gateway" {
   location  = local.location
   domain    = local.domain
 
-  azure_subscription_id = data.azurerm_subscription.current.id
+  azure_subscription_id = data.azurerm_subscription.current.subscription_id
   resource_group_name   = azurerm_resource_group.itn_cgn_pe.name
 
   sku = {
