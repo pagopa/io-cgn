@@ -1,0 +1,33 @@
+name: Renew AGW Certs Portale Esercenti
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  renew_uat:
+    uses: pagopa/io-infra/.github/workflows/ssl_certificate_renewal.yaml@b04e50d300f48d840b77d5e913ede0d8a605aa4f
+    name: Renew PE UAT certificate
+    secrets: inherit
+    with:
+        csr_common_name: cgnonboardingportal-uat.pagopa.it
+        azure_dns_zone_resource_group: cgnonboardingportal-u-public-rg
+        azure_dns_zone: cgnonboardingportal-uat.pagopa.it
+        key_vault_name: io-u-itn-cgn-pe-kv-01
+        force_renew_cert: false
+        environment: pe-uat
+        use_selfhosted_agent: true
+
+  renew_prod:
+    uses: pagopa/io-infra/.github/workflows/ssl_certificate_renewal.yaml@b04e50d300f48d840b77d5e913ede0d8a605aa4f
+    name: Renew PE PROD certificate
+    secrets: inherit
+    needs: [renew_uat]
+    with:
+        csr_common_name: cgnonboardingportal.pagopa.it
+        azure_dns_zone_resource_group: cgnonboardingportal-p-public-rg
+        azure_dns_zone: cgnonboardingportal.pagopa.it
+        key_vault_name: io-p-itn-cgn-pe-kv-01
+        force_renew_cert: false
+        environment: pe-prod
+        use_selfhosted_agent: true
+      
