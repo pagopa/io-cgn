@@ -25,7 +25,7 @@ module "application_gateway" {
   key_vault_name = module.key_vaults.key_vault_cgn_pe.name
 
   apim_hostname            = module.cgn_pe_apim.apim.gateway_hostname
-  app_gw_cert_name         = "cgnonboardingportal-pagopa-it"
+  app_gw_cert_name         = "api-cgnonboardingportal-pagopa-it"
   app_gateway_min_capacity = 0
   app_gateway_max_capacity = 2
 
