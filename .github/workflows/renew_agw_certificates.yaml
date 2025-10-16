@@ -9,11 +9,11 @@ jobs:
     name: Renew PE UAT certificate
     secrets: inherit
     with:
-        csr_common_name: cgnonboardingportal-uat.pagopa.it
+        csr_common_name: api.cgnonboardingportal-uat.pagopa.it
         azure_dns_zone_resource_group: cgnonboardingportal-u-public-rg
         azure_dns_zone: cgnonboardingportal-uat.pagopa.it
         key_vault_name: io-u-itn-cgn-pe-kv-01
-        force_renew_cert: false
+        force_renew_cert: true
         environment: pe-uat
         use_selfhosted_agent: true
 
@@ -23,11 +23,11 @@ jobs:
     secrets: inherit
     needs: [renew_uat]
     with:
-        csr_common_name: cgnonboardingportal.pagopa.it
+        csr_common_name: api.cgnonboardingportal.pagopa.it
         azure_dns_zone_resource_group: cgnonboardingportal-p-public-rg
         azure_dns_zone: cgnonboardingportal.pagopa.it
         key_vault_name: io-p-itn-cgn-pe-kv-01
-        force_renew_cert: false
+        force_renew_cert: true
         environment: pe-prod
         use_selfhosted_agent: true
       
