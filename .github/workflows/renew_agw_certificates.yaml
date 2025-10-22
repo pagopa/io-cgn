@@ -2,6 +2,8 @@ name: Renew AGW Certs Portale Esercenti
 
 on:
   workflow_dispatch: {}
+  schedule:
+    - cron: '0 2 1 * *'  # At 02:00 on day-of-month 1
 
 jobs:
   renew_uat:
