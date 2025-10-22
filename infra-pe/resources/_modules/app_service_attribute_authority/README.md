@@ -15,7 +15,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_app_service_attribute_authority"></a> [app\_service\_attribute\_authority](#module\_app\_service\_attribute\_authority) | github.com/pagopa/dx//infra/modules/azure_app_service | main |
+| <a name="module_app_service_attribute_authority"></a> [app\_service\_attribute\_authority](#module\_app\_service\_attribute\_authority) | github.com/pagopa/dx//infra/modules/azure_app_service | a08a2c9d95678902fd74382804693d33c8169e55 |
 
 ## Resources
 

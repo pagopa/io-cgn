@@ -21,7 +21,7 @@ resource "azurerm_dns_a_record" "api" {
 
 resource "azurerm_dns_cname_record" "portal" {
   name                = "portal"
-  target_resource_id  = module.cgn_pe_fe.cdn.id # TODO: Fix with FE CDN Endpoint ID
+  target_resource_id  = module.cgn_pe_fe.cdn.endpoint_id
   resource_group_name = "cgnonboardingportal-u-public-rg"
   ttl                 = 300
   zone_name           = azurerm_dns_zone.public.name

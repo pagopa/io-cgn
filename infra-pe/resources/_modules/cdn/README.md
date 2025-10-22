@@ -17,7 +17,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cgn_pe_cdn"></a> [cgn\_pe\_cdn](#module\_cgn\_pe\_cdn) | pagopa-dx/azure-cdn/azurerm | ~> 0.2 |
+| <a name="module_cgn_pe_cdn"></a> [cgn\_pe\_cdn](#module\_cgn\_pe\_cdn) | pagopa-dx/azure-cdn/azurerm | 0.3.2 |
 
 ## Resources
 
@@ -61,5 +61,7 @@
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_cdn"></a> [cdn](#output\_cdn) | n/a |
 <!-- END_TF_DOCS -->

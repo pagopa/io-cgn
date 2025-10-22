@@ -1,6 +1,6 @@
 module "cgn_pe_cdn" {
   source  = "pagopa-dx/azure-cdn/azurerm"
-  version = "~> 0.2"
+  version = "0.3.2"
 
   environment = {
     prefix          = var.prefix
