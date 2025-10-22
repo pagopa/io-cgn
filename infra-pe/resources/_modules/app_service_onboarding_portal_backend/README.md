@@ -15,7 +15,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_app_service_onboarding_portal_backend"></a> [app\_service\_onboarding\_portal\_backend](#module\_app\_service\_onboarding\_portal\_backend) | github.com/pagopa/dx//infra/modules/azure_app_service | main |
+| <a name="module_app_service_onboarding_portal_backend"></a> [app\_service\_onboarding\_portal\_backend](#module\_app\_service\_onboarding\_portal\_backend) | github.com/pagopa/dx//infra/modules/azure_app_service | a08a2c9d95678902fd74382804693d33c8169e55 |
 
 ## Resources
 

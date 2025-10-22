@@ -260,5 +260,5 @@ module "app_gw" {
   }
 
   depends_on = [module.agw_identity_roles]
-  tags = var.tags
+  tags       = var.tags
 }
