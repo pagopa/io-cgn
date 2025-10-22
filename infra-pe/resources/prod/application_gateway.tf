@@ -7,7 +7,7 @@ module "application_gateway" {
   location  = local.location
   domain    = local.domain
 
-  azure_subscription_id = data.azurerm_subscription.current.id
+  azure_subscription_id = data.azurerm_subscription.current.subscription_id
   resource_group_name   = azurerm_resource_group.itn_cgn_pe.name
 
   sku = {
@@ -25,7 +25,7 @@ module "application_gateway" {
   key_vault_name = module.key_vaults.key_vault_cgn_pe.name
 
   apim_hostname            = module.cgn_pe_apim.apim.gateway_hostname
-  app_gw_cert_name         = "cgnonboardingportal-pagopa-it"
+  app_gw_cert_name         = "api-cgnonboardingportal-pagopa-it"
   app_gateway_min_capacity = 0
   app_gateway_max_capacity = 2
 

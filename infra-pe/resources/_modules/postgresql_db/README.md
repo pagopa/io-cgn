@@ -13,7 +13,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_postgresql_db"></a> [postgresql\_db](#module\_postgresql\_db) | github.com/pagopa/dx//infra/modules/azure_postgres_server | main |
+| <a name="module_postgresql_db"></a> [postgresql\_db](#module\_postgresql\_db) | github.com/pagopa/dx//infra/modules/azure_postgres_server | 2a3a36c3a1d0fa4bb9c425d853d2ddf17266937b |
 
 ## Resources
 
