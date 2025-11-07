@@ -16,18 +16,18 @@ module "function_app_autoscaler" {
   }
 
   scheduler = {
-    maximum = 10
+    maximum = 30
     normal_load = {
-      default = 6
-      minimum = 3
+      default = 15
+      minimum = 15
     }
   }
 
   scale_metrics = {
     cpu = {
-      upper_threshold   = 70
+      upper_threshold   = 50
       increase_by       = 2
-      cooldown_increase = 2
+      cooldown_increase = 3
 
       lower_threshold   = 15
       decrease_by       = 1
