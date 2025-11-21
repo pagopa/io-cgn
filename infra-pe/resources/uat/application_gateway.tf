@@ -32,5 +32,7 @@ module "application_gateway" {
   app_gateway_alerts_enabled      = true
   azurerm_monitor_action_group_id = data.azurerm_monitor_action_group.ag_cgn_pe.id
 
+  alert_sensitivity = "Low"
+
   tags = local.tags
 }

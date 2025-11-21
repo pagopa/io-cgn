@@ -24,7 +24,6 @@
 | <a name="module_cgn_pe_apim"></a> [cgn\_pe\_apim](#module\_cgn\_pe\_apim) | ../_modules/apim | n/a |
 | <a name="module_cgn_pe_fe"></a> [cgn\_pe\_fe](#module\_cgn\_pe\_fe) | ../_modules/cdn | n/a |
 | <a name="module_dns"></a> [dns](#module\_dns) | ../_modules/dns | n/a |
-| <a name="module_dns_weu"></a> [dns\_weu](#module\_dns\_weu) | ../_modules/dns | n/a |
 | <a name="module_key_vaults"></a> [key\_vaults](#module\_key\_vaults) | ../_modules/key_vaults | n/a |
 | <a name="module_networking"></a> [networking](#module\_networking) | ../_modules/networking | n/a |
 | <a name="module_postgresql_db"></a> [postgresql\_db](#module\_postgresql\_db) | ../_modules/postgresql_db | n/a |
@@ -96,7 +95,6 @@
 | [azurerm_monitor_action_group.ag_cgn_pe](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/monitor_action_group) | data source |
 | [azurerm_resource_group.weu_pe_monitor_rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
-| [azurerm_virtual_network.weu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
 
 ## Inputs
 

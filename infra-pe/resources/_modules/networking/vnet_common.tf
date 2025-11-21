@@ -10,13 +10,3 @@ module "vnet_common" {
 
   tags = var.tags
 }
-
-resource "azurerm_virtual_network_peering" "itn_weu" {
-  name                      = format("%s-to-%s", module.vnet_common.name, data.azurerm_virtual_network.weu.name)
-  resource_group_name       = var.resource_group_name
-  virtual_network_name      = module.vnet_common.name
-  remote_virtual_network_id = data.azurerm_virtual_network.weu.id
-
-  allow_gateway_transit = false
-  use_remote_gateways   = false
-}
