@@ -1,4 +1,4 @@
-name: Deploy CDN (onboarding-portal-frontend-cdn)
+name: Deploy CDN PROD (onboarding-portal-frontend-cdn)
 
 on:
   workflow_dispatch: 
