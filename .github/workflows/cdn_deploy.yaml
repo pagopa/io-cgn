@@ -151,6 +151,7 @@ jobs:
 
       - name: Purge CDN
         id: purge-cdn
+        timeout-minutes: 120
         run: |
           az afd endpoint purge \
             --resource-group '${{ inputs.resource_group_name }}' \
