@@ -56,6 +56,8 @@ module "container_app_job" {
   environment_name = module.runner_commons.container_app_environment.name
   environment_rg   = module.runner_commons.container_app_environment.resource_group_name
 
+  replica_timeout_in_seconds = 7200
+
   job = {
     name = "infra"
   }
