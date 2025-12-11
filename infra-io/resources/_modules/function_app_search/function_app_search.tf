@@ -14,7 +14,7 @@ module "function_app_cgn_search" {
 
   resource_group_name = var.resource_group_name
   health_check_path   = "/api/v1/cgn/operator-search/info"
-  node_version        = 20
+  node_version        = 22
 
   subnet_id                            = var.subnet_id
   subnet_cidr                          = var.cidr_subnet_cgn_search_func
