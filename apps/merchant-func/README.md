@@ -24,8 +24,8 @@ Una volta clonato il repo assicurarsi di:
 
 ```shell
 cp env.example .env
-yarn install
-yarn build
+pnpm install
+pnpm build
 docker-compose up -d --build
 docker-compose logs -f functions
 open http://localhost/some/path/test

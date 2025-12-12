@@ -149,3 +149,6 @@ __azurite_*
 **/modules/**/.terraform.lock.hcl
 
 out
+
+# PNPM
+.pnpm-store
