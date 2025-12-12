@@ -1,5 +1,5 @@
 module "app_service_attribute_authority" {
-  source = "github.com/pagopa/dx//infra/modules/azure_app_service?ref=a08a2c9d95678902fd74382804693d33c8169e55"
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service?ref=5084d6f93194b71fdb40243e0d489d39cbe71958"
 
   environment = {
     prefix          = var.prefix
