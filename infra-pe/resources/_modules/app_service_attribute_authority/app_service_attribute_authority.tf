@@ -1,5 +1,6 @@
 module "app_service_attribute_authority" {
-  source = "github.com/pagopa/dx//infra/modules/azure_app_service?ref=5084d6f93194b71fdb40243e0d489d39cbe71958"
+  source  = "pagopa-dx/azure-app-service/azurerm"
+  version = "~> 2.0"
 
   environment = {
     prefix          = var.prefix
@@ -14,7 +15,7 @@ module "app_service_attribute_authority" {
   health_check_path   = "/ping"
   node_version        = 22
 
-  tier = var.attribute_authority_tier
+  size = var.attribute_authority_tier
 
   # SETTINGS
   app_settings      = local.attribute_authority.app_settings
