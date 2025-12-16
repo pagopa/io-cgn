@@ -52,7 +52,6 @@ module "redis_cgn_02" {
   sku_name              = "Standard"
   redis_version         = "6"
   enable_authentication = true
-  custom_zones          = [1, 2]
 
   // when azure can apply patch?
   patch_schedules = [{
