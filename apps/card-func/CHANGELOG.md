@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.10
+
+### Patch Changes
+
+- a403525: changed queues visibility timeout
+
 ## 4.0.9
 
 ### Patch Changes

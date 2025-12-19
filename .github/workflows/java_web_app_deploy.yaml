@@ -159,7 +159,7 @@ jobs:
     name: Make Release
     if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
     needs: [deploy]
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
       id-token: write
@@ -179,7 +179,7 @@ jobs:
         run: |
           git submodule update --init --recursive
         working-directory: .
-      
+
       - name: Checkout revision
         id: checkout
         run: |
