@@ -20,10 +20,11 @@ module "cgn_func_asp_01_autoscaler" {
 }
 
 resource "azurerm_subnet" "cgn_common_subnet_01" {
-  name                 = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-common-snet-01"
-  virtual_network_name = data.azurerm_virtual_network.vnet_common_itn.name
-  resource_group_name  = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
-  address_prefixes     = ["10.20.28.0/26"]
+  name                              = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-common-snet-01"
+  virtual_network_name              = data.azurerm_virtual_network.vnet_common_itn.name
+  resource_group_name               = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
+  address_prefixes                  = ["10.20.28.0/26"]
+  private_endpoint_network_policies = "Enabled"
 
   delegation {
     name = "default"
@@ -35,10 +36,11 @@ resource "azurerm_subnet" "cgn_common_subnet_01" {
 }
 
 resource "azurerm_subnet" "cgn_func_search_subnet_01" {
-  name                 = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-func-search-snet-01"
-  virtual_network_name = data.azurerm_virtual_network.vnet_common_itn.name
-  resource_group_name  = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
-  address_prefixes     = ["10.20.28.64/26"]
+  name                              = "${local.prefix}-${local.env_short}-${local.location_short}-${local.domain}-func-search-snet-01"
+  virtual_network_name              = data.azurerm_virtual_network.vnet_common_itn.name
+  resource_group_name               = data.azurerm_virtual_network.vnet_common_itn.resource_group_name
+  address_prefixes                  = ["10.20.28.64/26"]
+  private_endpoint_network_policies = "Enabled"
 
   delegation {
     name = "default"

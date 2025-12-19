@@ -1,15 +1,15 @@
 resource "azurerm_storage_account" "cgn_storage" {
-  name                            = "${replace(var.project, "-", "")}${replace(var.domain, "-", "")}st01"
-  resource_group_name             = var.resource_group_name
-  location                        = var.location
-  account_tier                    = "Standard"
-  account_kind                    = "StorageV2"
-  account_replication_type        = "ZRS"
-  https_traffic_only_enabled      = true
-  allow_nested_items_to_be_public = true
-  public_network_access_enabled   = true
-  shared_access_key_enabled       = true
-  min_tls_version                 = "TLS1_2"
+  name                             = "${replace(var.project, "-", "")}${replace(var.domain, "-", "")}st01"
+  resource_group_name              = var.resource_group_name
+  location                         = var.location
+  account_tier                     = "Standard"
+  account_kind                     = "StorageV2"
+  account_replication_type         = "ZRS"
+  https_traffic_only_enabled       = true
+  allow_nested_items_to_be_public  = true
+  public_network_access_enabled    = true
+  shared_access_key_enabled        = true
+  min_tls_version                  = "TLS1_2"
 
   blob_properties {
     versioning_enabled = true
