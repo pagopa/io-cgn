@@ -61,12 +61,12 @@ env:
 jobs:
   build:
     name: Build Artifact
-    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}    
+    runs-on: ${{ inputs.use_labels && inputs.use_private_agent && inputs.environment || inputs.use_private_agent && 'self-hosted' || 'ubuntu-latest' }}
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         name: Checkout
-      
+
       - name: Init submodules
         id: init-submodule
         run: |
@@ -84,7 +84,7 @@ jobs:
             echo "Pulled last master commit: $(git log --pretty=format:'%h' -n 1)"
           fi
         working-directory: ./${{ inputs.app_folder }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
         with:
@@ -121,7 +121,7 @@ jobs:
 
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@87c55149d96e628cc2ef7e6fc2aab372015aec85 # v4.1.3
         with:
           name: ${{ env.BUNDLE_NAME }}
 
@@ -164,7 +164,7 @@ jobs:
     name: Make Release
     if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
     needs: [deploy]
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
       id-token: write
@@ -178,7 +178,7 @@ jobs:
         run: |
           git submodule update --init --recursive
         working-directory: .
-      
+
       - name: Checkout revision
         id: checkout
         run: |
