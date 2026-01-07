@@ -1,4 +1,10 @@
 locals {
+  sku_name_mapping = {
+    s  = "B1"
+    m  = "P0v3"
+    l  = "P1v3"
+    xl = "P2v3"
+  }
   attribute_authority = {
     app_settings = {
       NODE_ENV = "production"
