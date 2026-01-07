@@ -11,7 +11,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "<= 3.117.0"
+      version = "<= 4.32.0"
     }
   }
 }
@@ -41,7 +41,7 @@ module "key_vaults" {
 
 # REDIS
 module "redis_cgn_02" {
-  source = "github.com/pagopa/terraform-azurerm-v3//redis_cache?ref=v8.21.0"
+  source = "github.com/pagopa/terraform-azurerm-v4//redis_cache?ref=c658d61b0219842a57b3ec0a9646198160aadde3"
 
   name                = "${local.project}-${local.domain}-redis-02"
   resource_group_name = data.azurerm_resource_group.itn_cgn.name
@@ -52,7 +52,6 @@ module "redis_cgn_02" {
   sku_name              = "Standard"
   redis_version         = "6"
   enable_authentication = true
-  zones                 = [1, 2]
 
   // when azure can apply patch?
   patch_schedules = [{

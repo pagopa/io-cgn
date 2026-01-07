@@ -15,8 +15,8 @@ cp env.example .env
 Replace in .env file the envs with the proper values.
 
 ```shell
-yarn install
-yarn build
+pnpm install
+pnpm build
 docker-compose up -d --build
 docker-compose logs -f functions
 open http://localhost/some/path/test

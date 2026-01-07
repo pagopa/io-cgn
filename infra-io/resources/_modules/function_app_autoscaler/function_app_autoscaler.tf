@@ -1,5 +1,5 @@
 module "function_app_autoscaler" {
-  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=5fe5d992a856636e2f49f6720a2b735dd77f1696"
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=5084d6f93194b71fdb40243e0d489d39cbe71958"
 
   location            = var.location
   autoscale_name      = var.autoscale_name
