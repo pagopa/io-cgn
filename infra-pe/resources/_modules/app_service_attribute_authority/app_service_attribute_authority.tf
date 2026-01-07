@@ -14,7 +14,7 @@ module "app_service_attribute_authority" {
   health_check_path   = "/ping"
   node_version        = 22
 
-  size                = local.sku_name_mapping[var.attribute_authority_tier]
+  tier                = var.attribute_authority_tier
   app_service_plan_id = azurerm_service_plan.app_service_plan_attribute_authority.id
 
   # SETTINGS
