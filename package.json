@@ -8,7 +8,7 @@
     "code-review": "turbo run typecheck format:check lint lint-api build test:coverage",
     "format": "turbo run format",
     "lint": "turbo run lint",
-    "version": "changeset version && pnpm install --mode update-lockfile",
+    "version": "changeset version && pnpm install --lockfile-only",
     "release": "changeset tag"
   },
   "devDependencies": {
