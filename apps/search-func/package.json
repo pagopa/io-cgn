@@ -2,7 +2,7 @@
   "name": "search-func",
   "description": "Functions exposed to the citizen that allows to search merchants, offers and opportunities",
   "author": "IO team",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "license": "MIT",
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate:definitions",

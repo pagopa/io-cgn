@@ -2,7 +2,7 @@
   "name": "card-func",
   "description": "Functions exposed to the citizen",
   "author": "IO CGN",
-  "version": "4.0.10",
+  "version": "4.0.11",
   "license": "MIT",
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate",
