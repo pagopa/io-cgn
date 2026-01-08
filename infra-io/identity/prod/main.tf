@@ -81,7 +81,7 @@ module "app_federated_identities" {
 
   identity_type = "app"
 
-  continuos_integration = { enable = false }
+  continuos_integration = { enable = true }
 
   tags = local.tags
 }
