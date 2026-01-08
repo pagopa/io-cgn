@@ -1,5 +1,11 @@
 # attribute-authority-ms
 
+## 2.2.10
+
+### Patch Changes
+
+- f505d59: Updated to node 22, migrated to pnpm
+
 ## 2.2.9
 
 ### Patch Changes

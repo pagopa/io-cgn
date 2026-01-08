@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.5
+
+### Patch Changes
+
+- f505d59: Updated to node 22, migrated to pnpm
+
 ## 4.0.4
 
 ### Patch Changes
