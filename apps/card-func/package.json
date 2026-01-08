@@ -12,7 +12,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
-    "lint-api": "oval validate -p openapi/index.yaml",
+    "lint:api": "sh api-lint.sh",
     "generate": "pnpm generate:definitions && pnpm generate:api-eyca && pnpm generate:api-services && pnpm generate:api-services:messages",
     "generate:definitions": "shx rm -rf generated/definitions && gen-api-models --api-spec openapi/index.yaml --out-dir generated/definitions",
     "generate:api-eyca": "shx rm -rf generated/eyca-api && gen-api-models --api-spec openapi/eyca.yaml --no-strict --out-dir generated/eyca-api --request-types --response-decoders --client",

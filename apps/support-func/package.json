@@ -12,6 +12,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
+    "lint:api": "sh api-lint.sh",
     "generate:definitions": "shx rm -rf generated/definitions && gen-api-models --api-spec openapi/index.yaml --out-dir generated/definitions",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
