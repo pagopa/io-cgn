@@ -8,6 +8,11 @@ data "azurerm_user_assigned_identity" "identity_prod_cd" {
   resource_group_name = local.identity_resource_group_name
 }
 
+data "azurerm_user_assigned_identity" "identity_app_prod_ci" {
+  name                = "io-p-itn-cgn-app-github-ci-id-01"
+  resource_group_name = local.identity_resource_group_name
+}
+
 data "azurerm_user_assigned_identity" "identity_app_prod_cd" {
   name                = "io-p-itn-cgn-app-github-cd-id-01"
   resource_group_name = local.identity_resource_group_name
