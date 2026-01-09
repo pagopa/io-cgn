@@ -21,15 +21,15 @@
       "hubName": "FunctionsTemplateHub"
     },
     "queues": {
-      "maxPollingInterval": "00:01:00",
-      "visibilityTimeout": "00:05:00",
+      "maxPollingInterval": "00:02:00",
+      "visibilityTimeout": "00:07:00",
       "batchSize": 1,
-      "maxDequeueCount": 10,
+      "maxDequeueCount": 20,
       "newBatchThreshold": 0
     }
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[3.*, 4.0.0)"
+    "version": "[4.*, 5.0.0)"
   }
 }

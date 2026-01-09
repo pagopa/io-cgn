@@ -20,6 +20,7 @@ jobs:
       resource_group_name: io-p-itn-cgn-rg-01
       web_app_name: io-p-itn-cgn-merchant-func-02
       use_labels: true
+      use_private_agent: true
       override_labels: io-prod
       disable_auto_staging_deploy: true
     permissions:

@@ -4,6 +4,11 @@
   "author": "IO team",
   "version": "3.5.1",
   "license": "MIT",
+  "files": [
+    "dist",
+    "host.json",
+    "**/function.json"
+  ],
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate:definitions",
     "build": "tsc",

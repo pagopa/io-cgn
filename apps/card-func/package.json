@@ -4,6 +4,11 @@
   "author": "IO CGN",
   "version": "4.0.11",
   "license": "MIT",
+  "files": [
+    "dist",
+    "host.json",
+    "**/function.json"
+  ],
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate",
     "build": "tsc",
