@@ -6,7 +6,8 @@
   "license": "MIT",
   "files": [
     "dist",
-    "host.json"
+    "host.json",
+    "**/function.json"
   ],
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate:definitions",
