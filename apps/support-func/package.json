@@ -4,6 +4,9 @@
   "author": "IO CGN",
   "version": "1.0.2",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prebuild": "shx rm -rf dist && pnpm generate:definitions",
     "build": "tsc",
