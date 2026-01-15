@@ -95,6 +95,7 @@ jobs:
           fi
 
           # generate node_modules folder excluding devDependencies
+          rm -rf node_modules
           pnpm install --prod --frozen-lockfile --config.node-linker=hoisted
 
           FORMAT=$(jq -r 'if .type == "module" then "esm" else "cjs" end' package.json)
