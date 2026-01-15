@@ -40,35 +40,38 @@ module "runner_commons" {
   }
 }
 
-module "container_app_job" {
-  source = "github.com/pagopa/terraform-azurerm-v3.git//container_app_job_gh_runner_v2?ref=v8.60.0"
+module "container_app_job_selfhosted_runner" {
+  source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
+  version = "~> 1.0"
 
-  location            = local.location.weu
-  prefix              = local.prefix
-  env_short           = local.env_short
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location.itn
+    instance_number = "01"
+  }
+
   resource_group_name = module.runner_commons.container_app_environment.resource_group_name
-  runner_labels       = [local.env]
 
-  key_vault_name        = "${local.project}-${local.domain}-kv-01"
-  key_vault_rg          = "${local.project}-${local.domain}-rg-01"
-  key_vault_secret_name = "github-runner-pat"
-
-  environment_name = module.runner_commons.container_app_environment.name
-  environment_rg   = module.runner_commons.container_app_environment.resource_group_name
-
-  replica_timeout_in_seconds = 7200
-
-  job = {
-    name = "infra"
-  }
-  job_meta = {
-    repo = local.repo_name
+  repository = {
+    name = local.repo_name
   }
 
-  container = {
-    cpu    = 2
-    memory = "4Gi"
-    image  = "ghcr.io/pagopa/github-self-hosted-runner-azure:latest"
+  container_app_environment = {
+    id       = module.runner_commons.container_app_environment.id
+    location = local.location.itn
+
+    cpu                        = 2
+    memory                     = "4Gi"
+    replica_timeout_in_seconds = 7200
+    use_labels                 = true
+    override_labels            = [local.env]
+  }
+
+  key_vault = {
+    name                = "${local.project}-itn-${local.domain}-kv-01"
+    resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
+    use_rbac            = true
   }
 
   tags = local.tags
