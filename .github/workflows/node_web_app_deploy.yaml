@@ -76,6 +76,7 @@ jobs:
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo
+
       - name: Build
         run: pnpm build
         working-directory: ./out
@@ -85,12 +86,32 @@ jobs:
         run: |
           set -e
 
-          pnpm install --prod --frozen-lockfile
+          # determine the entry point file name from package.json main property
+          ENTRY_POINT=$(jq -r '.main' package.json)
+
+          if [ -z $ENTRY_POINT ]; then
+            echo "::error::invalid target"
+            exit 1
+          fi
+
+          FORMAT=$(jq -r 'if .type == "module" then "esm" else "cjs" end' package.json)
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
 
           mkdir ${{ github.run_id }}
 
-          # create the artifact (zip)
-          zip -r $BUNDLE_NAME.zip dist/*
+          # bundle compiled code, excluding node_modules
+          curl -fsSL https://esbuild.github.io/dl/v0.21.5 | sh
+          ./esbuild index=$ENTRY_POINT --bundle --format=$FORMAT --platform=node --target=node20 --packages=external --outdir=${{ github.run_id }} --allow-overwrite
+
+          # create a new package.json file, with the updated entry point
+          jq --arg sha "+$SHORT_SHA" '{"name": .name, "version": (.version + $sha), "main": "index.js", "type": (if has("type") then .type else "commonjs" end), "dependencies": .dependencies}' package.json > ${{ github.run_id }}/package.json
+
+          DEFAULT_FILES='"host.json"'
+          FILES=$(jq -r --arg default "$DEFAULT_FILES" 'if has("files") then .files else [$default] end | join(" ")' package.json)
+
+          # create the artifact (zip) with node_modules, index.js and package.json
+          zip -r $BUNDLE_NAME.zip node_modules $FILES
+          zip -ju $BUNDLE_NAME.zip ${{ github.run_id }}/index.js ${{ github.run_id }}/package.json
 
           echo "artifact-path=$(realpath $BUNDLE_NAME.zip)" >> "$GITHUB_OUTPUT"
         working-directory: ./out/apps/${{ env.WORKSPACE }}
