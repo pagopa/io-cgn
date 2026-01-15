@@ -99,3 +99,9 @@ variable "azurerm_monitor_action_group_id" {
   description = "Monitor Action Group ID for alerts"
   default     = null
 }
+
+variable "alert_sensitivity" {
+  type        = string
+  description = "Alert sensitivity level"
+  default     = "Medium"
+}

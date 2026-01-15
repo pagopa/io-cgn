@@ -168,7 +168,7 @@ module "app_gw" {
           aggregation              = "Average"
           metric_name              = "ComputeUnits"
           operator                 = "GreaterOrLessThan"
-          alert_sensitivity        = "High"
+          alert_sensitivity        = var.alert_sensitivity
           evaluation_total_count   = 2
           evaluation_failure_count = 2
           dimension                = []
@@ -208,7 +208,7 @@ module "app_gw" {
           aggregation              = "Average"
           metric_name              = "BackendLastByteResponseTime"
           operator                 = "GreaterThan"
-          alert_sensitivity        = "High"
+          alert_sensitivity        = var.alert_sensitivity
           evaluation_total_count   = 2
           evaluation_failure_count = 2
           dimension                = []
@@ -229,7 +229,7 @@ module "app_gw" {
           aggregation              = "Total"
           metric_name              = "TotalRequests"
           operator                 = "GreaterThan"
-          alert_sensitivity        = "Medium"
+          alert_sensitivity        = var.alert_sensitivity
           evaluation_total_count   = 1
           evaluation_failure_count = 1
           dimension                = []
@@ -250,7 +250,7 @@ module "app_gw" {
           aggregation              = "Total"
           metric_name              = "FailedRequests"
           operator                 = "GreaterThan"
-          alert_sensitivity        = "High"
+          alert_sensitivity        = var.alert_sensitivity
           evaluation_total_count   = 2
           evaluation_failure_count = 2
           dimension                = []

@@ -1,49 +1,43 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "globalDependencies": ["**/.env.*local"],
+  "tasks": {
     "build": {
-      "dependsOn": ["^build", "^typecheck"],
-      "inputs": ["src/**/*.ts"],
+      "inputs": ["lib/**/*.ts", "src/**/*.ts", "package.json", "tsconfig.json"],
       "outputs": ["dist/**"],
-      "outputMode": "errors-only"
-    },
-    "container-start": {
-      "outputMode": "full"
-    },
-    "lint": {
-      "inputs": ["src/**/*.ts"],
-      "outputMode": "errors-only"
-    },
-    "lint-api": {
-      "inputs": ["src/**/*.ts"],
-      "outputMode": "errors-only"
-    },
-    "test": {
-      "dependsOn": ["^test"],
-      "inputs": ["src/**/*.spec.ts"],
-      "outputMode": "errors-only"
-    },
-    "test:coverage": {
-      "dependsOn": ["^test"],
-      "inputs": ["src/**/*.spec.ts"],
-      "outputMode": "full"
-    },
-    "format": {
-      "outputMode": "errors-only"
-    },
-    "format:check": {
-      "outputMode": "errors-only"
+      "dependsOn": ["generate", "^build"]
     },
     "typecheck": {
-      "dependsOn": ["^build"],
-      "inputs": ["src/**/*.ts"],
-      "outputMode": "errors-only"
+      "inputs": [
+        "lib/**/*.ts",
+        "src/**/*.ts",
+        "package.json",
+        "tsconfig.json",
+        "!vitest.config.*"
+      ],
+      "outputs": [],
+      "dependsOn": ["^build", "^typecheck"]
     },
-    "//#test:coverage": {
-      "dependsOn": ["^build"],
-      "inputs": ["apps/**/src/**/*.ts", "packages/**/src/**/*.ts"],
-      "outputs": ["coverage"],
-      "outputMode": "errors-only"
+    "format": {},
+    "format:check": {},
+    "generate": {
+      "inputs": ["./*-openapi.yaml", "./*.yaml"],
+      "outputs": ["src/generated/**/*"]
+    },
+    "lint": {
+      "inputs": ["lib/**/*.ts", "src/**/*.ts"]
+    },
+    "lint:check": {
+      "inputs": ["lib/**/*.ts", "src/**/*.ts"]
+    },
+    "lint:api": {
+      "inputs": ["lib/**/*.ts", "src/**/*.ts"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "test:coverage": {
+      "dependsOn": ["build"]
     }
   }
 }

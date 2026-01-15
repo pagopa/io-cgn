@@ -32,6 +32,7 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_alert_sensitivity"></a> [alert\_sensitivity](#input\_alert\_sensitivity) | Alert sensitivity level | `string` | `"Medium"` | no |
 | <a name="input_apim_hostname"></a> [apim\_hostname](#input\_apim\_hostname) | APIM hostname | `string` | n/a | yes |
 | <a name="input_app_gateway_alerts_enabled"></a> [app\_gateway\_alerts\_enabled](#input\_app\_gateway\_alerts\_enabled) | Enable Application Gateway alerts | `bool` | `false` | no |
 | <a name="input_app_gateway_max_capacity"></a> [app\_gateway\_max\_capacity](#input\_app\_gateway\_max\_capacity) | Maximum capacity for Application Gateway | `number` | `1` | no |

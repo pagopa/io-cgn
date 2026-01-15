@@ -12,9 +12,10 @@ module "app_service_attribute_authority" {
 
   resource_group_name = var.resource_group_name
   health_check_path   = "/ping"
-  node_version        = 20
+  node_version        = 22
 
-  tier = var.attribute_authority_tier
+  tier                = var.attribute_authority_tier
+  app_service_plan_id = azurerm_service_plan.app_service_plan_attribute_authority.id
 
   # SETTINGS
   app_settings      = local.attribute_authority.app_settings

@@ -1,5 +1,5 @@
 module "function_app_cgn_search" {
-  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=5fe5d992a856636e2f49f6720a2b735dd77f1696"
+  source = "github.com/pagopa/dx//infra/modules/azure_function_app?ref=5084d6f93194b71fdb40243e0d489d39cbe71958"
 
   environment = {
     prefix          = var.prefix
@@ -14,7 +14,7 @@ module "function_app_cgn_search" {
 
   resource_group_name = var.resource_group_name
   health_check_path   = "/api/v1/cgn/operator-search/info"
-  node_version        = 20
+  node_version        = 22
 
   subnet_id                            = var.subnet_id
   subnet_cidr                          = var.cidr_subnet_cgn_search_func

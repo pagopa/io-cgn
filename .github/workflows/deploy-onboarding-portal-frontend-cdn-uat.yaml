@@ -1,0 +1,42 @@
+name: Deploy CDN UAT (onboarding-portal-frontend-cdn)
+
+on:
+  workflow_dispatch: 
+    inputs:
+      revision:
+        description: You can specify a revision to deploy as any commit hash or branch name
+        type: string
+        required: false
+        default: "master"
+      release_type:
+        type: choice
+        description: The type of release to build
+        options: 
+          - patch
+          - minor
+          - major
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/deploy-onboarding-portal-frontend-cdn.yaml"
+
+jobs:
+
+  deploy_uat:
+    name: Deploy Onboarding Portal Frontend UAT
+    uses: ./.github/workflows/cdn_deploy.yaml
+    secrets: inherit
+    with:
+      app_folder: cgn-onboarding-portal-frontend
+      environment: uat
+      resource_group_name: io-u-itn-cgn-pe-rg-01
+      storage_account_name: iouitncgnpefest01
+      blob_container_name: $web
+      cdn_profile_name: io-u-itn-cgn-pe-frontend-afd-01
+      cdn_endpoint_name: io-u-itn-cgn-pe-frontend-fde-01
+      use_private_agent: true
+      use_labels: true
+      revision: ${{inputs.revision}}
+
+  

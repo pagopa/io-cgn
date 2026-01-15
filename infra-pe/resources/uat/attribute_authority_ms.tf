@@ -14,7 +14,7 @@ module "app_service_attribute_authority" {
 
   resource_group_name = azurerm_resource_group.itn_cgn_pe.name
 
-  attribute_authority_tier = "s"
+  attribute_authority_tier = "m"
 
   ai_instrumentation_key = data.azurerm_application_insights.ai_cgn_pe.instrumentation_key
   ai_connection_string   = data.azurerm_application_insights.ai_cgn_pe.connection_string

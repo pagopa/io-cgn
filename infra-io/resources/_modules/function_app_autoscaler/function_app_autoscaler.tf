@@ -1,5 +1,5 @@
 module "function_app_autoscaler" {
-  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=5fe5d992a856636e2f49f6720a2b735dd77f1696"
+  source = "github.com/pagopa/dx//infra/modules/azure_app_service_plan_autoscaler?ref=5084d6f93194b71fdb40243e0d489d39cbe71958"
 
   location            = var.location
   autoscale_name      = var.autoscale_name
@@ -16,18 +16,18 @@ module "function_app_autoscaler" {
   }
 
   scheduler = {
-    maximum = 10
+    maximum = 30
     normal_load = {
-      default = 6
-      minimum = 3
+      default = 15
+      minimum = 15
     }
   }
 
   scale_metrics = {
     cpu = {
-      upper_threshold   = 70
+      upper_threshold   = 50
       increase_by       = 2
-      cooldown_increase = 2
+      cooldown_increase = 3
 
       lower_threshold   = 15
       decrease_by       = 1

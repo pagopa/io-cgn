@@ -25,6 +25,13 @@ locals {
     reviewers_teams = ["io-cgn-contributors", "engineering-team-cloud-eng"]
   }
 
+  app_ci = {
+    secrets = {
+      "ARM_CLIENT_ID"       = data.azurerm_user_assigned_identity.identity_app_prod_ci.client_id
+      "ARM_SUBSCRIPTION_ID" = data.azurerm_subscription.current.subscription_id
+    }
+  }
+
   app_cd = {
     secrets = {
       "ARM_CLIENT_ID"       = data.azurerm_user_assigned_identity.identity_app_prod_cd.client_id

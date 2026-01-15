@@ -12,14 +12,18 @@ on:
 jobs:
   deploy:
     name: Deploy Search Func
-    uses: pagopa/dx/.github/workflows/function_app_deploy.yaml@edaa2a22738b738092e71dd9bdf6494aca593980
+    uses: pagopa/dx/.github/workflows/release-azure-appsvc-v1.yaml@d187d7667ee20d93cb588e06d7ab194ece3de911
     secrets: inherit
     with:
       workspace_name: search-func
       environment: io-app-prod
       resource_group_name: io-p-itn-cgn-rg-01
-      function_app_name: io-p-itn-cgn-search-func-02
-      health_check_path: "/api/v1/cgn/operator-search/info"
-      use_staging_slot: true
+      web_app_name: io-p-itn-cgn-search-func-02
       use_labels: true
+      use_private_agent: true
       override_labels: io-prod
+      disable_auto_staging_deploy: true
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write

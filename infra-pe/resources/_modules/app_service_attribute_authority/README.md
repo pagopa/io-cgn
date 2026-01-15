@@ -7,9 +7,7 @@ No requirements.
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.14.0 |
+No providers.
 
 ## Modules
 
@@ -19,9 +17,7 @@ No requirements.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azurerm_private_dns_a_record.weu_pep](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_a_record) | resource |
+No resources.
 
 ## Inputs
 

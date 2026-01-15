@@ -7,9 +7,7 @@ No requirements.
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.117.0 |
+No providers.
 
 ## Modules
 
@@ -20,10 +18,7 @@ No requirements.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azurerm_virtual_network_peering.itn_weu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
-| [azurerm_virtual_network.weu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
+No resources.
 
 ## Inputs
 

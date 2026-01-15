@@ -112,7 +112,7 @@ jobs:
       contents: read
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@87c55149d96e628cc2ef7e6fc2aab372015aec85 # v4.1.3
         with:
           name: ${{ env.BUNDLE_NAME }}
 
@@ -159,7 +159,7 @@ jobs:
     name: Make Release
     if: ${{ inputs.environment == 'prod' && inputs.revision == 'master' && !github.event.act }}
     needs: [deploy]
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     environment: pe-app-${{ inputs.environment }}-cd
     permissions:
       id-token: write
@@ -179,7 +179,7 @@ jobs:
         run: |
           git submodule update --init --recursive
         working-directory: .
-      
+
       - name: Checkout revision
         id: checkout
         run: |
