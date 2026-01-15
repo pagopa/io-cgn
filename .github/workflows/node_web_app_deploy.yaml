@@ -94,6 +94,9 @@ jobs:
             exit 1
           fi
 
+          # generate node_modules folder excluding devDependencies
+          pnpm install --prod --frozen-lockfile
+
           FORMAT=$(jq -r 'if .type == "module" then "esm" else "cjs" end' package.json)
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
 
