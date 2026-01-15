@@ -95,8 +95,7 @@ jobs:
           fi
 
           # generate node_modules folder excluding devDependencies
-          rm -rf node_modules
-          pnpm install --prod --frozen-lockfile --config.node-linker=hoisted
+          pnpm install --prod --frozen-lockfile
 
           FORMAT=$(jq -r 'if .type == "module" then "esm" else "cjs" end' package.json)
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
@@ -105,7 +104,7 @@ jobs:
 
           # bundle compiled code, excluding node_modules
           curl -fsSL https://esbuild.github.io/dl/v0.24.2 | sh
-          ./esbuild index=$ENTRY_POINT --bundle --format=$FORMAT --platform=node --target=node22 --packages=external --outdir=${{ github.run_id }} --allow-overwrite
+          ./esbuild index=$ENTRY_POINT --bundle --format=$FORMAT --platform=node --target=node22 --outdir=${{ github.run_id }} --allow-overwrite
 
           # create a new package.json file, with the updated entry point
           jq --arg sha "+$SHORT_SHA" '{"name": .name, "version": (.version + $sha), "main": "index.js", "type": (if has("type") then .type else "commonjs" end), "dependencies": .dependencies}' package.json > ${{ github.run_id }}/package.json
