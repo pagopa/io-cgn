@@ -3,7 +3,10 @@ import { pipe } from "fp-ts/lib/function";
 
 import { BoundingBox } from "../generated/definitions/BoundingBox";
 import { Coordinates } from "../generated/definitions/Coordinates";
-import { OfflineMerchantSearchRequest, OrderingEnum } from "../generated/definitions/OfflineMerchantSearchRequest";
+import {
+  OfflineMerchantSearchRequest,
+  OrderingEnum,
+} from "../generated/definitions/OfflineMerchantSearchRequest";
 import { ProductCategory } from "../generated/definitions/ProductCategory";
 import { ProductCategoryToQueryColumn } from "../models/ProductCategories";
 
@@ -81,10 +84,10 @@ const orderingParameter = (
   ordering === OrderingEnum.alphabetic
     ? "searchable_name"
     : pipe(
-      maybeUserCoordinates,
-      O.map(() => "distance"),
-      O.getOrElse(() => "searchable_name"),
-    );
+        maybeUserCoordinates,
+        O.map(() => "distance"),
+        O.getOrElse(() => "searchable_name"),
+      );
 
 export const countMerchantsQuery = `SELECT COUNT(*)::integer AS count FROM merchant`;
 
@@ -141,20 +144,20 @@ SELECT
   number_of_new_discounts::integer,
   latitude,
   longitude${pipe(
-  searchRequest.userCoordinates,
-  O.fromNullable,
-  O.map(distanceParameter),
-  O.map((distanceParam) => `,${distanceParam}`),
-  O.getOrElse(() => ""),
-)}
+    searchRequest.userCoordinates,
+    O.fromNullable,
+    O.map(distanceParameter),
+    O.map((distanceParam) => `,${distanceParam}`),
+    O.getOrElse(() => ""),
+  )}
 FROM offline_merchant
 WHERE 1 = 1
   ${pipe(
-  searchRequest.boundingBox,
-  O.fromNullable,
-  O.map(boundingBoxFilter),
-  O.getOrElse(() => ""),
-)}
+    searchRequest.boundingBox,
+    O.fromNullable,
+    O.map(boundingBoxFilter),
+    O.getOrElse(() => ""),
+  )}
   ${nameFilterQueryPart(O.fromNullable(searchRequest.merchantName))}
   ${categoryFilter(O.fromNullable(searchRequest.productCategories))}
 ORDER BY ${orderingParameter(
