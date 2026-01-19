@@ -3,8 +3,10 @@ import { pipe } from "fp-ts/lib/function";
 
 import { BoundingBox } from "../generated/definitions/BoundingBox";
 import { Coordinates } from "../generated/definitions/Coordinates";
-import { OrderingEnum } from "../generated/definitions/OfflineMerchantSearchRequest";
-import { OfflineMerchantSearchRequest } from "../generated/definitions/OfflineMerchantSearchRequest";
+import {
+  OfflineMerchantSearchRequest,
+  OrderingEnum,
+} from "../generated/definitions/OfflineMerchantSearchRequest";
 import { ProductCategory } from "../generated/definitions/ProductCategory";
 import { ProductCategoryToQueryColumn } from "../models/ProductCategories";
 
@@ -249,7 +251,8 @@ SELECT
     (d.start_date >= NOW() - INTERVAL '15 days') AS is_new,
     array_agg(d.product_category) AS product_categories
 FROM discounts_with_categories d
-GROUP BY 1,2,3,4,5,6,7,8,9,10,11`;
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11
+ORDER BY is_new DESC`;
 
 export const SelectDiscountBucketCodeByDiscount = `
 SELECT 
