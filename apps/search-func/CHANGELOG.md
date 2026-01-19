@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.5.2
+
+### Patch Changes
+
+- 27593c2: fixed merchant opportunities ordering
+
 ## 3.5.1
 
 ### Patch Changes
