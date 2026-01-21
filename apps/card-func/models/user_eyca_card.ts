@@ -1,7 +1,7 @@
 import { Container } from "@azure/cosmos";
 import { RetrievedVersionedModel } from "@pagopa/io-functions-commons/dist/src/utils/cosmosdb_model_versioned";
 import { wrapWithKind } from "@pagopa/io-functions-commons/dist/src/utils/types";
-import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as t from "io-ts";
 
 import { EycaCard } from "../generated/definitions/EycaCard";
@@ -10,11 +10,13 @@ import { UserCardVersionedDeletable } from "./user_card_versionend_deletable";
 export const USER_EYCA_CARD_COLLECTION_NAME = "user-eyca-cards";
 export const USER_EYCA_CARD_MODEL_PK_FIELD = "fiscalCode" as const;
 
-const UserEycaCard = t.interface({
+export const UserEycaCard = t.interface({
   // the EYCA card related to the user
   card: EycaCard,
   // The id of the user
   fiscalCode: FiscalCode,
+  // The Eyca identifier
+  id: NonEmptyString,
 });
 export type UserEycaCard = t.TypeOf<typeof UserEycaCard>;
 

@@ -34,7 +34,8 @@ const aPendingEycaCard: CardPending = {
 
 const aUserEycaCard: UserEycaCard = {
   card: aPendingEycaCard,
-  fiscalCode: aFiscalCode
+  fiscalCode: aFiscalCode,
+  id: "A_USER_EYCA_CARD_ID" as NonEmptyString,
 };
 
 const aRevokedEycaCard: EycaCardRevoked = {

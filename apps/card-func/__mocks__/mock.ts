@@ -249,6 +249,7 @@ export const aUserEycaCardExpired: EycaCardExpired = {
 export const aUserEycaCard: UserEycaCard = {
   card: {} as EycaCard,
   fiscalCode: aFiscalCode,
+  id: "A_USER_EYCA_CARD_ID" as NonEmptyString,
 };
 
 // mock user eyca card model
