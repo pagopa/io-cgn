@@ -37,7 +37,7 @@ describe("ProcessActivatedEycaQueue", () => {
     )(context, cardActivatedMessageMock);
 
     await expect(promised).rejects.toStrictEqual(
-      new Error("COSMOS_ERROR|Cannot query cosmos CGN")
+      new Error("COSMOS_ERROR|Cannot query cosmos EYCA")
     );
 
     expect(eycaFindLastVersionByModelIdMock).toBeCalledTimes(1);

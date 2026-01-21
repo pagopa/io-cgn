@@ -47,7 +47,7 @@ const getUserEycaCard = (
     userEycaCardModel.findLastVersionByModelId([fiscalCode]),
     TE.mapLeft(
       (cosmosErrors) =>
-        new Error(`${cosmosErrors.kind}|Cannot query cosmos CGN`),
+        new Error(`${cosmosErrors.kind}|Cannot query cosmos EYCA`),
     ),
     TE.chainW(
       O.fold(
@@ -111,7 +111,7 @@ export const handler =
       TE.mapLeft(
         trackError(
           context,
-          `[${activatedEycaMessage.request_id}] EycaActivation_2_ProcessPendingQueue`,
+          `[${activatedEycaMessage.request_id}] EycaActivation_3_ProcessActivatedQueue`,
         ),
       ),
       TE.mapLeft(throwError),

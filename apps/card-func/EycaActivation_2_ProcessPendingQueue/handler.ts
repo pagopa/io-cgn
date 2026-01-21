@@ -2,12 +2,13 @@ import { Context } from "@azure/functions";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+import { flow, pipe } from "fp-ts/lib/function";
 
 import { StatusEnum as ActivatedStatusEnum } from "../generated/definitions/CardActivated";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
 import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
 import { CardPendingMessage } from "../types/queue-message";
+import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
 import { PreIssueEycaCard } from "../utils/eyca";
 import { QueueStorage } from "../utils/queue";
@@ -30,6 +31,9 @@ const upsertEycaCard = (
     TE.mapLeft(
       (cosmosErrors) =>
         new Error(`${cosmosErrors.kind}|Cannot upsert cosmos EYCA`),
+    ),
+    TE.chain(
+      flow(UserEycaCard.decode, TE.fromEither, TE.mapLeft(errorsToError)),
     ),
   );
 
