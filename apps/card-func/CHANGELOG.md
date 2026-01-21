@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.12
+
+### Patch Changes
+
+- 2133f4d: added decoder to upsert eyca result
+
 ## 4.0.11
 
 ### Patch Changes
