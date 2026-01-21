@@ -10,7 +10,7 @@ import { UserCardVersionedDeletable } from "./user_card_versionend_deletable";
 export const USER_CGN_COLLECTION_NAME = "user-cgns";
 export const USER_CGN_MODEL_PK_FIELD = "fiscalCode" as const;
 
-const UserCgn = t.interface({
+export const UserCgn = t.interface({
   // the CGN card related to the user
   card: Card,
   // The id of the user

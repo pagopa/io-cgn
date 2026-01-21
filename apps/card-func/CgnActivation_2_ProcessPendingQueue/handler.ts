@@ -1,6 +1,6 @@
 import { Context } from "@azure/functions";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
-import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -17,7 +17,6 @@ import {
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
 import { CardPendingMessage } from "../types/queue-message";
 import { isCardActivated } from "../utils/cgn_checks";
-import { genRandomCardCode } from "../utils/cgnCode";
 import { errorsToError } from "../utils/conversions";
 import { throwError, trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
@@ -29,22 +28,17 @@ import { StoreCardExpirationFunction } from "../utils/table_storage";
  */
 const upsertCgnCard = (userCgnModel: UserCgnModel, fiscalCode: FiscalCode) =>
   pipe(
-    TE.tryCatch(() => genRandomCardCode(), E.toError),
-    TE.mapLeft(() => new Error("Cannot generate a new CGN code")),
-    TE.chain((cgnCode) =>
-      pipe(
-        userCgnModel.upsert({
-          card: { status: PendingStatusEnum.PENDING },
-          fiscalCode,
-          id: cgnCode,
-          kind: "INewUserCgn",
-        }),
-        TE.mapLeft(
-          (cosmosErrors) =>
-            new Error(`${cosmosErrors.kind}|Cannot upsert cosmos CGN`),
-        ),
-      ),
+    userCgnModel.upsert({
+      card: { status: PendingStatusEnum.PENDING },
+      fiscalCode,
+      id: `${fiscalCode}-0000000000000000` as NonEmptyString, // this will be replaced by upsert internally
+      kind: "INewUserCgn",
+    }),
+    TE.mapLeft(
+      (cosmosErrors) =>
+        new Error(`${cosmosErrors.kind}|Cannot upsert cosmos CGN`),
     ),
+    TE.chain(flow(UserCgn.decode, TE.fromEither, TE.mapLeft(errorsToError))),
   );
 
 /**
