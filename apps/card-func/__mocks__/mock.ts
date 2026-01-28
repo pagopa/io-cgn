@@ -313,6 +313,17 @@ export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
   ),
 );
 
+export const getProfileByPOSTMock = jest.fn().mockImplementation(() =>
+  E.right(
+    makeServiceResponse(
+      HttpStatusCodeEnum.HTTP_STATUS_200,
+      JSON.stringify({
+        sender_allowed: true
+      }),
+    ),
+  ),
+);
+
 export const fakeServicesAPIClient = createClient<"SubscriptionKey">({
   baseUrl: "",
   fetchApi: async () => new Response(),
@@ -322,6 +333,7 @@ export const fakeServicesAPIClient = createClient<"SubscriptionKey">({
 export const servicesClientMock = {
   ...fakeServicesAPIClient,
   upsertServiceActivation: upsertServiceActivationMock,
+  getProfileByPOST: getProfileByPOSTMock,
 };
 
 // mock storage
