@@ -147,7 +147,7 @@ export const context = {
 
 export const makeServiceResponse = (
   status: HttpStatusCodeEnum,
-  value: string,
+  value: unknown,
 ) => ({
   headers: [],
   status,
@@ -301,15 +301,20 @@ export const deleteCcdbEycaCardMock = jest
 // mock services api client
 export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
   E.right(
-    makeServiceResponse(
-      HttpStatusCodeEnum.HTTP_STATUS_200,
-      JSON.stringify({
-        fiscal_code: aFiscalCode,
-        service_id: "qwertyuiop",
-        status: ActivationStatusEnum.PENDING,
-        version: 1,
-      }),
-    ),
+    makeServiceResponse(HttpStatusCodeEnum.HTTP_STATUS_200, {
+      fiscal_code: aFiscalCode,
+      service_id: "qwertyuiop",
+      status: ActivationStatusEnum.PENDING,
+      version: 1,
+    }),
+  ),
+);
+
+export const getProfileByPOSTMock = jest.fn().mockResolvedValue(
+  E.right(
+    makeServiceResponse(HttpStatusCodeEnum.HTTP_STATUS_200, {
+      sender_allowed: true,
+    }),
   ),
 );
 
@@ -321,6 +326,7 @@ export const fakeServicesAPIClient = createClient<"SubscriptionKey">({
 
 export const servicesClientMock = {
   ...fakeServicesAPIClient,
+  getProfileByPOST: getProfileByPOSTMock,
   upsertServiceActivation: upsertServiceActivationMock,
 };
 
