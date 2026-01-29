@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.1.0
+
+### Minor Changes
+
+- 5838583: Added external APIS and endpoint
+
 ## 4.0.12
 
 ### Patch Changes
