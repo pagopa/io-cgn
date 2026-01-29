@@ -138,7 +138,7 @@ describe("StartCgnActivationExternal", () => {
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
 
-  it("should fail if CGN activation starts and services api is not reachable", async () => {
+  it("should fail if CGN activation starts and the services getProfile API is not reachable", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     getProfileByPOSTMock.mockRejectedValueOnce(new Error("any error"));
     const startCgnActivationHandler = StartCgnActivationHandler(
