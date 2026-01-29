@@ -1,18 +1,18 @@
 openapi: 3.0.3
 info:
   version: 1.1.0
-  title: IO CGN DPGSCU API
+  title: IO CGN EXTERNAL ACTIVATION API
   contact:
     name: IO team
     url: https://forum.italia.it/c/progetto-io
   x-logo:
     url: https://io.italia.it/assets/img/io-logo-blue.svg
   description: >
-    Documentation of the IO CGN DPGSCU API.
+    Documentation of the IO CGN EXTERNAL ACTIVATION API.
 servers:
-  - url: https://api.cd.italia.it/api/v1/cgn
+  - url: https://api.cd.italia.it/api/cgn/v1
 security:
-  - ApiKey: []
+  - SubscriptionKey: []
 paths:
   "/activation":
     post:
@@ -48,12 +48,11 @@ paths:
                 $ref: "#/components/schemas/ProblemJson"
 components:
   securitySchemes:
-    ApiKey:
+    SubscriptionKey:
       type: apiKey
-      name: X-Functions-Key
+      name: Ocp-Apim-Subscription-Key
       in: header
-      description: The API key to access this function app.
-
+      description: The subscription key to access the API.
   schemas:
     FiscalCodePayload:
       type: object
