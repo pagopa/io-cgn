@@ -29,14 +29,14 @@ paths:
             schema:
               $ref: "#/components/schemas/FiscalCodePayload"
       responses:
-        "201":
-          description: Request created.
         "202":
-          description: Processing request.
+          description: Request created.
         "401":
-          description: Wrong or missing subscription key.
+          description: Wrong or missing function key.
         "403":
-          description: Forbidden.
+          description: Forbidden. Maybe user is not eligible for CGN.
+        "404":
+          description: No user found with the provided fiscal code.
         "409":
           description: |
             Cannot start a new activation because the user's cgn is already activated
