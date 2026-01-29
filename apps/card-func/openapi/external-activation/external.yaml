@@ -10,7 +10,7 @@ info:
   description: >
     Documentation of the IO CGN EXTERNAL ACTIVATION API.
 servers:
-  - url: https://api.cd.italia.it/api/cgn/v1
+  - url: https://api.cd.italia.it/api/cgn-external/v1
 security:
   - SubscriptionKey: []
 paths:
@@ -20,7 +20,7 @@ paths:
       summary: |
         Start a new CGN activation process passing the user's fiscal code in body
       description: |
-        Start the activation process for a CGN
+        Start the activation process for a CGN from external
       requestBody:
         description: The body must contain the user's fiscal code
         required: true
