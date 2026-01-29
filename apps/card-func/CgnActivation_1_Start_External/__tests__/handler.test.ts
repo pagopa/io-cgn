@@ -152,7 +152,7 @@ describe("StartCgnActivationExternal", () => {
     expect(enqueueMessageMock).toHaveBeenCalledTimes(0);
   });
 
-  it("should return Not Found if CGN activation starts and services api returns 404", async () => {
+  it("should return Not Found if CGN activation starts and the services getProfile API returns 404", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() => TE.of(O.none));
     getProfileByPOSTMock.mockResolvedValueOnce(E.right(
       makeServiceResponse(
