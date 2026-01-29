@@ -41,7 +41,6 @@ import {
 import { errorsToError } from "../utils/conversions";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 
 type IStartCgnActivationHandler = (
   context: Context,
@@ -133,10 +132,6 @@ const getProfile = (
     ),
     TE.chainW(flow(TE.fromEither, TE.mapLeft(errorsToError))),
     TE.chainW(TE.fromPredicate(isGetProfileSuccess, mapGetProfileFailure)),
-    TE.map((successResponse) => {
-      console.dir(successResponse.value, { depth: null });
-      return successResponse;
-    }),
     TE.map((successResponse) =>
       LimitedProfile.is(successResponse.value)
         ? O.some(successResponse.value)

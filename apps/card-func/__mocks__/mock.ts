@@ -52,7 +52,6 @@ import {
 } from "../types/queue-message";
 import * as expirationUtils from "../utils/card_expiration";
 import { QueueStorage } from "../utils/queue";
-import { LimitedProfile } from "../generated/services-api/LimitedProfile";
 
 export const telemetryClientMock: TelemetryClient = {
   trackEvent: jest.fn().mockImplementation(({ name, properties }) => {
@@ -148,7 +147,7 @@ export const context = {
 
 export const makeServiceResponse = (
   status: HttpStatusCodeEnum,
-  value: any,
+  value: unknown,
 ) => ({
   headers: [],
   status,
@@ -302,26 +301,20 @@ export const deleteCcdbEycaCardMock = jest
 // mock services api client
 export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
   E.right(
-    makeServiceResponse(
-      HttpStatusCodeEnum.HTTP_STATUS_200,
-      JSON.stringify({
-        fiscal_code: aFiscalCode,
-        service_id: "qwertyuiop",
-        status: ActivationStatusEnum.PENDING,
-        version: 1,
-      }),
-    ),
+    makeServiceResponse(HttpStatusCodeEnum.HTTP_STATUS_200, {
+      fiscal_code: aFiscalCode,
+      service_id: "qwertyuiop",
+      status: ActivationStatusEnum.PENDING,
+      version: 1,
+    }),
   ),
 );
 
 export const getProfileByPOSTMock = jest.fn().mockResolvedValue(
   E.right(
-    makeServiceResponse(
-      HttpStatusCodeEnum.HTTP_STATUS_200,
-      {
-        sender_allowed: true
-      },
-    ),
+    makeServiceResponse(HttpStatusCodeEnum.HTTP_STATUS_200, {
+      sender_allowed: true,
+    }),
   ),
 );
 
