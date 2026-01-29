@@ -31,7 +31,12 @@ secureExpressApp(app);
 // Add express route
 app.post(
   "/api/v1/cgn/activation",
-  StartCgnActivation(ServicesAPIClient, userCgnModel, config.CGN_UPPER_BOUND_AGE, queueStorage),
+  StartCgnActivation(
+    ServicesAPIClient,
+    userCgnModel,
+    config.CGN_UPPER_BOUND_AGE,
+    queueStorage,
+  ),
 );
 
 const azureFunctionHandler = createAzureFunctionHandler(app);

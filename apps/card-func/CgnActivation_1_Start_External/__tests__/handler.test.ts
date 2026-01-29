@@ -163,7 +163,7 @@ describe("StartCgnActivationExternal", () => {
           status: HttpStatusCodeEnum.HTTP_STATUS_404
         })
       ),
-    ),);
+    ));
     const startCgnActivationHandler = StartCgnActivationHandler(
       servicesClientMock,
       userCgnModelMock as any,

@@ -6,6 +6,7 @@ import {
   wrapRequestHandler,
 } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
+import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import {
   IResponseErrorConflict,
   IResponseErrorForbiddenNotAuthorized,
@@ -20,13 +21,16 @@ import {
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as express from "express";
-import * as O from "fp-ts/lib/Option";
 import * as E from "fp-ts/lib/Either";
+import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { ulid } from "ulid";
 
+import { ServicesAPIClient } from "../clients/services";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
+import { LimitedProfile } from "../generated/services-api/LimitedProfile";
+import { ProblemJson } from "../generated/services-api-messages/ProblemJson";
 import { UserCgnModel } from "../models/user_cgn";
 import { CardPendingMessage } from "../types/queue-message";
 import {
@@ -34,13 +38,10 @@ import {
   extractCgnExpirationDate,
   isCardActivated,
 } from "../utils/cgn_checks";
+import { errorsToError } from "../utils/conversions";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { ServicesAPIClient } from "../clients/services";
-import { IResponseType } from "@pagopa/ts-commons/lib/requests";
-import { LimitedProfile } from "../generated/services-api/LimitedProfile";
-import { errorsToError } from "../utils/conversions";
-import { ProblemJson } from "../generated/services-api-messages/ProblemJson";
+import { cons } from "fp-ts/lib/ReadonlyNonEmptyArray";
 
 type IStartCgnActivationHandler = (
   context: Context,
@@ -99,10 +100,9 @@ const getCgnExpirationDataTask = (
 const isGetProfileSuccess = (
   res: IResponseType<number, unknown, never>,
 ): res is
-  IResponseType<200, LimitedProfile, never>
+  | IResponseType<200, LimitedProfile, never>
   | IResponseType<404, ProblemJson, never> =>
   res.status === 200 || res.status === 404;
-
 
 /**
  * Maps statuses to error
@@ -111,38 +111,38 @@ const isGetProfileSuccess = (
  */
 const mapGetProfileFailure = (
   res: IResponseType<number, unknown, never>,
-): Error =>
-  new Error(
-    `Cannot get profile with response code ${res.status}`,
-  );
+): Error => new Error(`Cannot get profile with response code ${res.status}`);
 
 /**
  * Get citizen profile
- * @param servicesClient 
- * @param fiscalCode 
- * @returns 
+ * @param servicesClient
+ * @param fiscalCode
+ * @returns
  */
 const getProfile = (
   servicesClient: ServicesAPIClient,
-  fiscalCode: FiscalCode
+  fiscalCode: FiscalCode,
 ): TE.TaskEither<Error, O.Option<LimitedProfile>> =>
   pipe(
     TE.tryCatch(
       async () =>
-        servicesClient.getProfileByPOST({ payload: { fiscal_code: fiscalCode } }),
+        servicesClient.getProfileByPOST({
+          payload: { fiscal_code: fiscalCode },
+        }),
       E.toError,
     ),
     TE.chainW(flow(TE.fromEither, TE.mapLeft(errorsToError))),
-    TE.chainW(
-      TE.fromPredicate(
-        isGetProfileSuccess,
-        mapGetProfileFailure,
-      ),
-    ),
+    TE.chainW(TE.fromPredicate(isGetProfileSuccess, mapGetProfileFailure)),
+    TE.map((successResponse) => {
+      console.dir(successResponse.value, { depth: null });
+      return successResponse;
+    }),
     TE.map((successResponse) =>
-      LimitedProfile.is(successResponse.value) ? O.some(successResponse.value) : O.none
+      LimitedProfile.is(successResponse.value)
+        ? O.some(successResponse.value)
+        : O.none,
     ),
-  )
+  );
 
 /**
  *
@@ -155,7 +155,10 @@ const shouldActivateNewCGN = (
   servicesClient: ServicesAPIClient,
   userCgnModel: UserCgnModel,
   fiscalCode: FiscalCode,
-): TE.TaskEither<IResponseErrorConflict | IResponseErrorInternal | IResponseErrorNotFound, boolean> =>
+): TE.TaskEither<
+  IResponseErrorConflict | IResponseErrorInternal | IResponseErrorNotFound,
+  boolean
+> =>
   pipe(
     // check if profile exists
     getProfile(servicesClient, fiscalCode),
@@ -164,17 +167,24 @@ const shouldActivateNewCGN = (
     TE.chainW(
       flow(
         TE.fromOption(() => new Error("Profile not found")),
-        TE.mapLeft((e) => ResponseErrorNotFound(e.message, "Cannot find profile for the given fiscal code"))
-      )
+        TE.mapLeft((e) =>
+          ResponseErrorNotFound(
+            e.message,
+            "Cannot find profile for the given fiscal code",
+          ),
+        ),
+      ),
     ),
-    TE.chainW((_) =>
+    TE.chainW(() =>
       // check if CGN already exists
       pipe(
         userCgnModel.findLastVersionByModelId([fiscalCode]),
         TE.mapLeft((cosmosErrors) => new Error(cosmosErrors.kind)),
         TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
-        TE.mapLeft(() => ResponseErrorInternal("Cannot query for existing CGN")),
-      )
+        TE.mapLeft(() =>
+          ResponseErrorInternal("Cannot query for existing CGN"),
+        ),
+      ),
     ),
     TE.chainW(
       O.fold(
@@ -183,15 +193,16 @@ const shouldActivateNewCGN = (
         // existing CGN found, check if already activated
         (userCgn) =>
           isCardActivated(userCgn)
-            ?
-            // already activated CGN, cannot activate a new one 
-            pipe(
-              TE.left(new Error("CGN already activated")),
-              TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
-              TE.mapLeft((e) => ResponseErrorConflict(e.message)),
-            )
+            ? // already activated CGN, cannot activate a new one
+              pipe(
+                TE.left(new Error("CGN already activated")),
+                TE.mapLeft(
+                  trackError(context, "CgnActivation_1_Start_External"),
+                ),
+                TE.mapLeft((e) => ResponseErrorConflict(e.message)),
+              )
             : // if not activated we try to "re-activate", next flow will be idempotent
-            TE.of(true),
+              TE.of(true),
       ),
     ),
   );
@@ -203,34 +214,32 @@ export const StartCgnActivationHandler =
     cgnUpperBoundAge: NonNegativeInteger,
     queueStorage: QueueStorage,
   ): IStartCgnActivationHandler =>
-    async (context: Context, fiscalCode: FiscalCode) =>
-      pipe(
-        shouldActivateNewCGN(context, servicesClient, userCgnModel, fiscalCode),
-        TE.chainW(() =>
-          getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge),
+  async (context: Context, fiscalCode: FiscalCode) =>
+    pipe(
+      shouldActivateNewCGN(context, servicesClient, userCgnModel, fiscalCode),
+      TE.chainW(() =>
+        getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge),
+      ),
+      TE.map(
+        (expirationDate) =>
+          ({
+            activation_date: new Date(),
+            expiration_date: expirationDate,
+            fiscal_code: fiscalCode,
+            request_id: ulid(),
+            status: PendingStatusEnum.PENDING,
+          }) as CardPendingMessage,
+      ),
+      TE.chainFirstW((pendingCardMessage) =>
+        pipe(
+          queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
+          TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
+          TE.mapLeft((e) => ResponseErrorInternal(e.message)),
         ),
-        TE.map(
-          (expirationDate) =>
-            ({
-              activation_date: new Date(),
-              expiration_date: expirationDate,
-              fiscal_code: fiscalCode,
-              request_id: ulid(),
-              status: PendingStatusEnum.PENDING,
-            }) as CardPendingMessage,
-        ),
-        TE.chainFirstW((pendingCardMessage) =>
-          pipe(
-            queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
-            TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
-            TE.mapLeft((e) => ResponseErrorInternal(e.message)),
-          ),
-        ),
-        TE.map((_) =>
-          ResponseSuccessAccepted(undefined, undefined),
-        ),
-        TE.toUnion,
-      )();
+      ),
+      TE.map(() => ResponseSuccessAccepted(undefined, undefined)),
+      TE.toUnion,
+    )();
 
 export const StartCgnActivation = (
   servicesClient: ServicesAPIClient,

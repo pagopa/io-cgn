@@ -52,6 +52,7 @@ import {
 } from "../types/queue-message";
 import * as expirationUtils from "../utils/card_expiration";
 import { QueueStorage } from "../utils/queue";
+import { LimitedProfile } from "../generated/services-api/LimitedProfile";
 
 export const telemetryClientMock: TelemetryClient = {
   trackEvent: jest.fn().mockImplementation(({ name, properties }) => {
@@ -147,7 +148,7 @@ export const context = {
 
 export const makeServiceResponse = (
   status: HttpStatusCodeEnum,
-  value: string,
+  value: any,
 ) => ({
   headers: [],
   status,
@@ -313,13 +314,13 @@ export const upsertServiceActivationMock = jest.fn().mockImplementation(() =>
   ),
 );
 
-export const getProfileByPOSTMock = jest.fn().mockImplementation(() =>
+export const getProfileByPOSTMock = jest.fn().mockResolvedValue(
   E.right(
     makeServiceResponse(
       HttpStatusCodeEnum.HTTP_STATUS_200,
-      JSON.stringify({
+      {
         sender_allowed: true
-      }),
+      },
     ),
   ),
 );
@@ -332,8 +333,8 @@ export const fakeServicesAPIClient = createClient<"SubscriptionKey">({
 
 export const servicesClientMock = {
   ...fakeServicesAPIClient,
-  upsertServiceActivation: upsertServiceActivationMock,
   getProfileByPOST: getProfileByPOSTMock,
+  upsertServiceActivation: upsertServiceActivationMock,
 };
 
 // mock storage
