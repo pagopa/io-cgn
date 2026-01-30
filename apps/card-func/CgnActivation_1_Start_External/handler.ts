@@ -1,5 +1,6 @@
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
 import {
   withRequestMiddlewares,
   wrapRequestHandler,
@@ -28,6 +29,7 @@ import { ulid } from "ulid";
 
 import { ServicesAPIClient } from "../clients/services";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
+import { FiscalCodePayload } from "../generated/definitions-external-activation/FiscalCodePayload";
 import { LimitedProfile } from "../generated/services-api/LimitedProfile";
 import { ProblemJson } from "../generated/services-api-messages/ProblemJson";
 import { UserCgnModel } from "../models/user_cgn";
@@ -40,8 +42,6 @@ import {
 import { errorsToError } from "../utils/conversions";
 import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
-import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
-import { FiscalCodePayload } from "../generated/definitions-external-activation/FiscalCodePayload";
 
 type IStartCgnActivationHandler = (
   context: Context,
@@ -190,15 +190,15 @@ const shouldActivateNewCGN = (
         (userCgn) =>
           isCardActivated(userCgn)
             ? // already activated CGN, cannot activate a new one
-            pipe(
-              TE.left(new Error("CGN already activated")),
-              TE.mapLeft(
-                trackError(context, "CgnActivation_1_Start_External"),
-              ),
-              TE.mapLeft((e) => ResponseErrorConflict(e.message)),
-            )
+              pipe(
+                TE.left(new Error("CGN already activated")),
+                TE.mapLeft(
+                  trackError(context, "CgnActivation_1_Start_External"),
+                ),
+                TE.mapLeft((e) => ResponseErrorConflict(e.message)),
+              )
             : // if not activated we try to "re-activate", next flow will be idempotent
-            TE.of(true),
+              TE.of(true),
       ),
     ),
   );
@@ -210,32 +210,41 @@ export const StartCgnActivationHandler =
     cgnUpperBoundAge: NonNegativeInteger,
     queueStorage: QueueStorage,
   ): IStartCgnActivationHandler =>
-    async (context: Context, fiscalCodePayload: FiscalCodePayload) =>
-      pipe(
-        shouldActivateNewCGN(context, servicesClient, userCgnModel, fiscalCodePayload.fiscal_code),
-        TE.chainW(() =>
-          getCgnExpirationDataTask(context, fiscalCodePayload.fiscal_code, cgnUpperBoundAge),
+  async (context: Context, fiscalCodePayload: FiscalCodePayload) =>
+    pipe(
+      shouldActivateNewCGN(
+        context,
+        servicesClient,
+        userCgnModel,
+        fiscalCodePayload.fiscal_code,
+      ),
+      TE.chainW(() =>
+        getCgnExpirationDataTask(
+          context,
+          fiscalCodePayload.fiscal_code,
+          cgnUpperBoundAge,
         ),
-        TE.map(
-          (expirationDate) =>
-            ({
-              activation_date: new Date(),
-              expiration_date: expirationDate,
-              fiscal_code: fiscalCodePayload.fiscal_code,
-              request_id: ulid(),
-              status: PendingStatusEnum.PENDING,
-            }) as CardPendingMessage,
+      ),
+      TE.map(
+        (expirationDate) =>
+          ({
+            activation_date: new Date(),
+            expiration_date: expirationDate,
+            fiscal_code: fiscalCodePayload.fiscal_code,
+            request_id: ulid(),
+            status: PendingStatusEnum.PENDING,
+          }) as CardPendingMessage,
+      ),
+      TE.chainFirstW((pendingCardMessage) =>
+        pipe(
+          queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
+          TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
+          TE.mapLeft((e) => ResponseErrorInternal(e.message)),
         ),
-        TE.chainFirstW((pendingCardMessage) =>
-          pipe(
-            queueStorage.enqueuePendingCGNMessage(pendingCardMessage),
-            TE.mapLeft(trackError(context, "CgnActivation_1_Start_External")),
-            TE.mapLeft((e) => ResponseErrorInternal(e.message)),
-          ),
-        ),
-        TE.map(() => ResponseSuccessAccepted(undefined, undefined)),
-        TE.toUnion,
-      )();
+      ),
+      TE.map(() => ResponseSuccessAccepted(undefined, undefined)),
+      TE.toUnion,
+    )();
 
 export const StartCgnActivation = (
   servicesClient: ServicesAPIClient,

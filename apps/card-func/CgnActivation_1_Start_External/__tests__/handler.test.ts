@@ -41,7 +41,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorInternal");
   });
 
@@ -55,7 +55,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorConflict");
   });
 
@@ -69,7 +69,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorConflict");
   });
 
@@ -83,7 +83,7 @@ describe("StartCgnActivationExternal", () => {
     );
     const response = await startCgnActivationHandler(
       context,
-      aCGNUneligibleFiscalCode
+      { fiscal_code: aCGNUneligibleFiscalCode }
     );
     expect(response.kind).toBe("IResponseErrorForbiddenNotAuthorized");
   });
@@ -96,7 +96,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseSuccessAccepted");
     if (response.kind === "IResponseSuccessAccepted") {
       expect(response.payload).toBeFalsy();
@@ -114,7 +114,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseSuccessAccepted");
     if (response.kind === "IResponseSuccessAccepted") {
       expect(response.payload).toBeFalsy();
@@ -133,7 +133,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorInternal");
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
   });
@@ -147,7 +147,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorInternal");
     expect(enqueueMessageMock).toHaveBeenCalledTimes(0);
   });
@@ -170,7 +170,7 @@ describe("StartCgnActivationExternal", () => {
       DEFAULT_CGN_UPPER_BOUND_AGE,
       queueStorageMock
     );
-    const response = await startCgnActivationHandler(context, aFiscalCode);
+    const response = await startCgnActivationHandler(context, { fiscal_code: aFiscalCode });
     expect(response.kind).toBe("IResponseErrorNotFound");
     expect(enqueueMessageMock).toHaveBeenCalledTimes(0);
   });
