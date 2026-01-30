@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.1.1
+
+### Patch Changes
+
+- 50efa2c: Fix: Fixed CF retrieval
+
 ## 4.1.0
 
 ### Minor Changes

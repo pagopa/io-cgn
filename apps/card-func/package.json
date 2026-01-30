@@ -2,7 +2,7 @@
   "name": "card-func",
   "description": "Functions exposed to the citizen",
   "author": "IO CGN",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "license": "MIT",
   "files": [
     "dist",
