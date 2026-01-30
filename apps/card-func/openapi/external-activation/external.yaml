@@ -38,8 +38,9 @@ paths:
         "404":
           description: No user found with the provided fiscal code.
         "409":
-          description: |
-            Cannot start a new activation because the user's cgn is already activated
+          description: Cannot start a new activation because the user's cgn is already activated
+        "429":
+          description: Too many requests.
         "500":
           description: Service unavailable.
           content:
