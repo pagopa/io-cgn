@@ -10,7 +10,7 @@ info:
   description: >
     Documentation of the IO CGN EXTERNAL ACTIVATION API.
 servers:
-  - url: https://api.cd.italia.it/api/cgn-external/v1
+  - url: https://api.io.pagopa.it/api/cgn-external/v1
 security:
   - SubscriptionKey: []
 paths:
