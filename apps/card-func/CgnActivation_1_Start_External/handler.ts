@@ -1,6 +1,6 @@
 import { Context } from "@azure/functions";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
-import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
 import {
   withRequestMiddlewares,
   wrapRequestHandler,
@@ -29,6 +29,7 @@ import { ulid } from "ulid";
 
 import { ServicesAPIClient } from "../clients/services";
 import { StatusEnum as PendingStatusEnum } from "../generated/definitions/CardPending";
+import { FiscalCodePayload } from "../generated/definitions-external-activation/FiscalCodePayload";
 import { LimitedProfile } from "../generated/services-api/LimitedProfile";
 import { ProblemJson } from "../generated/services-api-messages/ProblemJson";
 import { UserCgnModel } from "../models/user_cgn";
@@ -44,7 +45,7 @@ import { QueueStorage } from "../utils/queue";
 
 type IStartCgnActivationHandler = (
   context: Context,
-  fiscalCode: FiscalCode,
+  fiscalCodePayload: FiscalCodePayload,
 ) => Promise<
   | IResponseErrorConflict
   | IResponseErrorForbiddenNotAuthorized
@@ -209,18 +210,27 @@ export const StartCgnActivationHandler =
     cgnUpperBoundAge: NonNegativeInteger,
     queueStorage: QueueStorage,
   ): IStartCgnActivationHandler =>
-  async (context: Context, fiscalCode: FiscalCode) =>
+  async (context: Context, fiscalCodePayload: FiscalCodePayload) =>
     pipe(
-      shouldActivateNewCGN(context, servicesClient, userCgnModel, fiscalCode),
+      shouldActivateNewCGN(
+        context,
+        servicesClient,
+        userCgnModel,
+        fiscalCodePayload.fiscal_code,
+      ),
       TE.chainW(() =>
-        getCgnExpirationDataTask(context, fiscalCode, cgnUpperBoundAge),
+        getCgnExpirationDataTask(
+          context,
+          fiscalCodePayload.fiscal_code,
+          cgnUpperBoundAge,
+        ),
       ),
       TE.map(
         (expirationDate) =>
           ({
             activation_date: new Date(),
             expiration_date: expirationDate,
-            fiscal_code: fiscalCode,
+            fiscal_code: fiscalCodePayload.fiscal_code,
             request_id: ulid(),
             status: PendingStatusEnum.PENDING,
           }) as CardPendingMessage,
@@ -250,7 +260,7 @@ export const StartCgnActivation = (
   );
   const middlewaresWrap = withRequestMiddlewares(
     ContextMiddleware(),
-    RequiredParamMiddleware("fiscalcode", FiscalCode),
+    RequiredBodyPayloadMiddleware(FiscalCodePayload),
   );
   return wrapRequestHandler(middlewaresWrap(handler));
 };
