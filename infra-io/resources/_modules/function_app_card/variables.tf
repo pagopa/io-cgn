@@ -261,11 +261,6 @@ variable "apim_platform_resource_group_name" {
   description = "The resource group name of the API Management platform"
 }
 
-variable "app_backend_api_key_secret" {
-  type        = string
-  description = "API key secret for the app backend"
-}
-
 variable "io_cgn_tag_name" {
   type        = string
   description = "The name of the IO CGN tag"

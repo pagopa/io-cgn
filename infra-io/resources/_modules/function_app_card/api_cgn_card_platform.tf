@@ -44,15 +44,6 @@ resource "azurerm_api_management_product_api" "cgn_card_platform_v1" {
   product_id          = var.apim_cgn_product_id
 }
 
-resource "azurerm_api_management_named_value" "app_backend_key" {
-  name                = "io-app-backend-key"
-  api_management_name = var.apim_platform_name
-  resource_group_name = var.apim_platform_resource_group_name
-  display_name        = "io-app-backend-key"
-  value               = var.app_backend_api_key_secret
-  secret              = true
-}
-
 resource "azurerm_api_management_api_tag" "io_cgn_card_api_tag" {
   api_id = azurerm_api_management_api.cgn_card_platform_v1.id
   name   = var.io_cgn_tag_name

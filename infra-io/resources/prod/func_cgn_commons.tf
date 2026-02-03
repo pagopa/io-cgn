@@ -64,6 +64,15 @@ resource "azurerm_api_management_product" "cgn_platform" {
   approval_required     = false
 }
 
+resource "azurerm_api_management_named_value" "app_backend_key" {
+  name                = "io-app-backend-key"
+  api_management_name = data.azurerm_api_management.apim_platform.name
+  resource_group_name = data.azurerm_api_management.apim_platform.resource_group_name
+  display_name        = "io-app-backend-key"
+  value               = data.azurerm_key_vault_secret.app_backend_api_key_secret.value
+  secret              = true
+}
+
 resource "azurerm_api_management_tag" "io_cgn_tag" {
   api_management_id = data.azurerm_api_management.apim_platform.id
   name              = "IO-CGN"
