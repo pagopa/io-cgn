@@ -7,11 +7,6 @@ data "azurerm_key_vault_secret" "cgn_cdn_endpoint_base_url" {
   key_vault_id = module.key_vaults.key_vault_cgn.id
 }
 
-data "azurerm_key_vault_secret" "app_backend_api_key_secret" {
-  name         = "appbackend-APP-BACKEND-PRIMARY-KEY"
-  key_vault_id = module.key_vaults.key_vault_cdc.id
-}
-
 module "functions_cgn_search_02" {
   source = "../_modules/function_app_search"
 
