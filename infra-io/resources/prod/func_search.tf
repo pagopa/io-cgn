@@ -7,6 +7,11 @@ data "azurerm_key_vault_secret" "cgn_cdn_endpoint_base_url" {
   key_vault_id = module.key_vaults.key_vault_cgn.id
 }
 
+data "azurerm_key_vault_secret" "app_backend_api_key_secret" {
+  name         = "appbackend-APP-BACKEND-PRIMARY-KEY"
+  key_vault_id = module.key_vaults.key_vault_cdc.id
+}
+
 module "functions_cgn_search_02" {
   source = "../_modules/function_app_search"
 
@@ -40,6 +45,13 @@ module "functions_cgn_search_02" {
   redis_password = module.redis_cgn_02.primary_access_key
 
   cgn_cdn_endpoint_base_url = data.azurerm_key_vault_secret.cgn_cdn_endpoint_base_url.value
+
+  apim_platform_name                = data.azurerm_api_management.apim_platform.name
+  apim_platform_resource_group_name = data.azurerm_api_management.apim_platform.resource_group_name
+
+  app_backend_api_key_secret = data.azurerm_key_vault_secret.app_backend_api_key_secret.value
+
+  io_cgn_tag_name = azurerm_api_management_tag.io_cgn_tag.name
 
   tags = local.tags
 }

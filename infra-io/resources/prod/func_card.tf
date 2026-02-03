@@ -33,6 +33,11 @@ data "azurerm_key_vault_secret" "cgn_legal_backup_storage_connection" {
   key_vault_id = module.key_vaults.key_vault_cgn.id
 }
 
+data "azurerm_key_vault_secret" "app_backend_api_key_secret" {
+  name         = "appbackend-APP-BACKEND-PRIMARY-KEY"
+  key_vault_id = module.key_vaults.key_vault_cdc.id
+}
+
 module "functions_cgn_card_02" {
   source = "../_modules/function_app_card"
 
@@ -97,6 +102,13 @@ module "functions_cgn_card_02" {
   otp_ttl_in_seconds   = "600"
   cgn_upper_bound_age  = "36"
   eyca_upper_bound_age = "31"
+
+  apim_platform_name                = data.azurerm_api_management.apim_platform.name
+  apim_platform_resource_group_name = data.azurerm_api_management.apim_platform.resource_group_name
+
+  app_backend_api_key_secret = data.azurerm_key_vault_secret.app_backend_api_key_secret.value
+
+  io_cgn_tag_name = azurerm_api_management_tag.io_cgn_tag.name
 
   nat_gateway_id = data.azurerm_nat_gateway.itn_ng.id
 

@@ -50,3 +50,8 @@ resource "azurerm_subnet" "cgn_func_search_subnet_01" {
     }
   }
 }
+
+resource "azurerm_api_management_tag" "io_cgn_tag" {
+  api_management_id = data.azurerm_api_management.apim_platform.id
+  name              = "IO-CGN"
+}

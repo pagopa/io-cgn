@@ -78,3 +78,8 @@ data "azurerm_key_vault_secret" "storage_cgn_connection_string" {
   name         = "STORAGE-CGN-CONNECTION-STRING"
   key_vault_id = module.key_vaults.key_vault_cgn.id
 }
+
+data "azurerm_api_management" "apim_platform" {
+  name                = "io-p-itn-platform-api-gateway-apim-01"
+  resource_group_name = "io-p-itn-common-rg-01"
+}
