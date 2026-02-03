@@ -15,12 +15,20 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_function_app_cgn_card"></a> [function\_app\_cgn\_card](#module\_function\_app\_cgn\_card) | github.com/pagopa/dx//infra/modules/azure_function_app | 5fe5d992a856636e2f49f6720a2b735dd77f1696 |
+| <a name="module_function_app_cgn_card"></a> [function\_app\_cgn\_card](#module\_function\_app\_cgn\_card) | github.com/pagopa/dx//infra/modules/azure_function_app | 5084d6f93194b71fdb40243e0d489d39cbe71958 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [azurerm_api_management_api.cgn_card_platform_v1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api) | resource |
+| [azurerm_api_management_api_policy.cgn_card_platform_v1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_policy) | resource |
+| [azurerm_api_management_api_tag.io_cgn_card_api_tag](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_tag) | resource |
+| [azurerm_api_management_api_version_set.cgn_card_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_version_set) | resource |
+| [azurerm_api_management_named_value.app_backend_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_named_value) | resource |
+| [azurerm_api_management_product.cgn_card_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product) | resource |
+| [azurerm_api_management_product_api.cgn_card_platform_v1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product_api) | resource |
+| [azurerm_api_management_product_policy.cgn_card_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product_policy) | resource |
 | [azurerm_subnet_nat_gateway_association.functions_messages_citizen_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_nat_gateway_association) | resource |
 
 ## Inputs
@@ -32,6 +40,9 @@ No requirements.
 | <a name="input_ai_connection_string"></a> [ai\_connection\_string](#input\_ai\_connection\_string) | The connection string to connect to application insights | `string` | n/a | yes |
 | <a name="input_ai_instrumentation_key"></a> [ai\_instrumentation\_key](#input\_ai\_instrumentation\_key) | The key to connect to application insights | `string` | n/a | yes |
 | <a name="input_ai_sampling_percentage"></a> [ai\_sampling\_percentage](#input\_ai\_sampling\_percentage) | The sampling percentage for application insights | `string` | n/a | yes |
+| <a name="input_apim_platform_name"></a> [apim\_platform\_name](#input\_apim\_platform\_name) | The name of the API Management platform | `string` | n/a | yes |
+| <a name="input_apim_platform_resource_group_name"></a> [apim\_platform\_resource\_group\_name](#input\_apim\_platform\_resource\_group\_name) | The resource group name of the API Management platform | `string` | n/a | yes |
+| <a name="input_app_backend_api_key_secret"></a> [app\_backend\_api\_key\_secret](#input\_app\_backend\_api\_key\_secret) | API key secret for the app backend | `string` | n/a | yes |
 | <a name="input_app_service_plan_id"></a> [app\_service\_plan\_id](#input\_app\_service\_plan\_id) | The app service plan where you want to host the functions | `string` | `null` | no |
 | <a name="input_cgn_legal_backup_container_name"></a> [cgn\_legal\_backup\_container\_name](#input\_cgn\_legal\_backup\_container\_name) | Legal backup container name | `string` | n/a | yes |
 | <a name="input_cgn_legal_backup_folder_name"></a> [cgn\_legal\_backup\_folder\_name](#input\_cgn\_legal\_backup\_folder\_name) | Legal backup folder name | `string` | n/a | yes |
@@ -51,6 +62,7 @@ No requirements.
 | <a name="input_eyca_api_username"></a> [eyca\_api\_username](#input\_eyca\_api\_username) | EYCA API username | `string` | n/a | yes |
 | <a name="input_eyca_upper_bound_age"></a> [eyca\_upper\_bound\_age](#input\_eyca\_upper\_bound\_age) | EYCA upper bound age | `string` | n/a | yes |
 | <a name="input_instance_number"></a> [instance\_number](#input\_instance\_number) | The istance number to create | `string` | n/a | yes |
+| <a name="input_io_cgn_tag_name"></a> [io\_cgn\_tag\_name](#input\_io\_cgn\_tag\_name) | The name of the IO CGN tag | `string` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | Azure region | `string` | n/a | yes |
 | <a name="input_messages_queue_name"></a> [messages\_queue\_name](#input\_messages\_queue\_name) | Messages queue name | `string` | n/a | yes |
 | <a name="input_nat_gateway_id"></a> [nat\_gateway\_id](#input\_nat\_gateway\_id) | The ID of the NAT Gateway | `string` | n/a | yes |

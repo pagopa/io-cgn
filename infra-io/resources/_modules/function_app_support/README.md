@@ -13,7 +13,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_function_app_cgn_support"></a> [function\_app\_cgn\_support](#module\_function\_app\_cgn\_support) | github.com/pagopa/dx//infra/modules/azure_function_app | 5fe5d992a856636e2f49f6720a2b735dd77f1696 |
+| <a name="module_function_app_cgn_support"></a> [function\_app\_cgn\_support](#module\_function\_app\_cgn\_support) | github.com/pagopa/dx//infra/modules/azure_function_app | 5084d6f93194b71fdb40243e0d489d39cbe71958 |
 
 ## Resources
 

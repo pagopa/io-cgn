@@ -41,5 +41,11 @@ module "functions_cgn_search_02" {
 
   cgn_cdn_endpoint_base_url = data.azurerm_key_vault_secret.cgn_cdn_endpoint_base_url.value
 
+  apim_cgn_product_id               = azurerm_api_management_product.cgn_platform.product_id
+  apim_platform_name                = data.azurerm_api_management.apim_platform.name
+  apim_platform_resource_group_name = data.azurerm_api_management.apim_platform.resource_group_name
+
+  io_cgn_tag_name = azurerm_api_management_tag.io_cgn_tag.name
+
   tags = local.tags
 }
