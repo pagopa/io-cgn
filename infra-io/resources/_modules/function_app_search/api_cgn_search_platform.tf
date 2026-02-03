@@ -1,11 +1,3 @@
-resource "azurerm_api_management_product_policy" "cgn_search_platform" {
-  product_id          = var.apim_cgn_product_id
-  api_management_name = var.apim_platform_name
-  resource_group_name = var.apim_platform_resource_group_name
-
-  xml_content = file("${path.module}/policies/_base_policy.xml")
-}
-
 resource "azurerm_api_management_api_version_set" "cgn_search_platform" {
   name                = "cgn_search_platform_v1"
   api_management_name = var.apim_platform_name
