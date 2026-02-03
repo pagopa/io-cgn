@@ -1,7 +1,7 @@
 resource "azurerm_api_management_product" "cgn_search_platform" {
-  product_id   = "io-cdc-support-api"
-  display_name = "IO CDC SUPPORT API"
-  description  = "Product for IO CDC Support Platform APIs"
+  product_id   = "io-cgn-search-api"
+  display_name = "IO CGN SEARCH API"
+  description  = "Product for IO CGN Search Platform APIs"
 
   api_management_name = var.apim_platform_name
   resource_group_name = var.apim_platform_resource_group_name
@@ -23,12 +23,12 @@ resource "azurerm_api_management_api_version_set" "cgn_search_platform" {
   name                = "cgn_search_platform_v1"
   api_management_name = azurerm_api_management_product.cgn_search_platform.api_management_name
   resource_group_name = azurerm_api_management_product.cgn_search_platform.resource_group_name
-  display_name        = "Carta della Cultura Support Platform APIs"
+  display_name        = "CGN Search Platform APIs"
   versioning_scheme   = "Segment"
 }
 
 resource "azurerm_api_management_api" "cgn_search_platform_v1" {
-  name = format("%s-%s-cdc-support-api", var.prefix, var.env_short)
+  name = format("%s-%s-cgn-search-api", var.prefix, var.env_short)
 
   api_management_name = var.apim_platform_name
   resource_group_name = var.apim_platform_resource_group_name
@@ -39,9 +39,9 @@ resource "azurerm_api_management_api" "cgn_search_platform_v1" {
   version        = "v1"
   revision       = "1"
 
-  description  = "These APIs support App IO about Carta della Cultura"
-  display_name = "CdC Support API"
-  path         = "api/cdc-support"
+  description  = "These APIs support App IO about CGN Search"
+  display_name = "CGN Search API"
+  path         = "api/cgn-search"
   protocols    = ["https"]
 
   import {
@@ -74,12 +74,7 @@ resource "azurerm_api_management_named_value" "app_backend_key" {
   secret              = true
 }
 
-resource "azurerm_api_management_tag" "io_cdc_tag" {
-  api_management_id = data.azurerm_api_management.apim_platform.id
-  name              = "IO-CDC"
-}
-
-resource "azurerm_api_management_api_tag" "io_cdc_api_tag" {
+resource "azurerm_api_management_api_tag" "io_cgn_search_api_tag" {
   api_id = azurerm_api_management_api.cgn_search_platform_v1.id
   name   = var.io_cgn_tag_name
 }

@@ -74,7 +74,7 @@ resource "azurerm_api_management_named_value" "app_backend_key" {
   secret              = true
 }
 
-resource "azurerm_api_management_api_tag" "io_cgn_api_tag" {
+resource "azurerm_api_management_api_tag" "io_cgn_card_api_tag" {
   api_id = azurerm_api_management_api.cgn_card_platform_v1.id
   name   = var.io_cgn_tag_name
 }
