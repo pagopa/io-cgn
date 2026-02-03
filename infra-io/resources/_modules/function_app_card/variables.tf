@@ -246,6 +246,11 @@ variable "eyca_upper_bound_age" {
   description = "EYCA upper bound age"
 }
 
+variable "apim_cgn_product_id" {
+  type        = string
+  description = "The product ID of the CGN API Management product"
+}
+
 variable "apim_platform_name" {
   type        = string
   description = "The name of the API Management platform"

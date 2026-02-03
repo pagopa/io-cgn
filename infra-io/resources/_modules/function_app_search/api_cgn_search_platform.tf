@@ -1,28 +1,15 @@
-resource "azurerm_api_management_product" "cgn_search_platform" {
-  product_id   = "io-cgn-search-api"
-  display_name = "IO CGN SEARCH API"
-  description  = "Product for IO CGN Search Platform APIs"
-
+resource "azurerm_api_management_product_policy" "cgn_search_platform" {
+  product_id          = var.apim_cgn_product_id
   api_management_name = var.apim_platform_name
   resource_group_name = var.apim_platform_resource_group_name
-
-  published             = true
-  subscription_required = false
-  approval_required     = false
-}
-
-resource "azurerm_api_management_product_policy" "cgn_search_platform" {
-  product_id          = azurerm_api_management_product.cgn_search_platform.product_id
-  api_management_name = azurerm_api_management_product.cgn_search_platform.api_management_name
-  resource_group_name = azurerm_api_management_product.cgn_search_platform.resource_group_name
 
   xml_content = file("${path.module}/policies/_base_policy.xml")
 }
 
 resource "azurerm_api_management_api_version_set" "cgn_search_platform" {
   name                = "cgn_search_platform_v1"
-  api_management_name = azurerm_api_management_product.cgn_search_platform.api_management_name
-  resource_group_name = azurerm_api_management_product.cgn_search_platform.resource_group_name
+  api_management_name = var.apim_platform_name
+  resource_group_name = var.apim_platform_resource_group_name
   display_name        = "CGN Search Platform APIs"
   versioning_scheme   = "Segment"
 }
@@ -62,7 +49,7 @@ resource "azurerm_api_management_product_api" "cgn_search_platform_v1" {
   api_name            = azurerm_api_management_api.cgn_search_platform_v1.name
   api_management_name = azurerm_api_management_api.cgn_search_platform_v1.api_management_name
   resource_group_name = azurerm_api_management_api.cgn_search_platform_v1.resource_group_name
-  product_id          = azurerm_api_management_product.cgn_search_platform.product_id
+  product_id          = var.apim_cgn_product_id
 }
 
 resource "azurerm_api_management_named_value" "app_backend_key" {

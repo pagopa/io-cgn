@@ -98,6 +98,7 @@ module "functions_cgn_card_02" {
   cgn_upper_bound_age  = "36"
   eyca_upper_bound_age = "31"
 
+  apim_cgn_product_id               = azurerm_api_management_product.cgn_platform.product_id
   apim_platform_name                = data.azurerm_api_management.apim_platform.name
   apim_platform_resource_group_name = data.azurerm_api_management.apim_platform.resource_group_name
 

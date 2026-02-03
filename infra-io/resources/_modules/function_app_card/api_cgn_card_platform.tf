@@ -1,28 +1,15 @@
-resource "azurerm_api_management_product" "cgn_card_platform" {
-  product_id   = "io-cgn-card-api"
-  display_name = "IO CGN CARD API"
-  description  = "Product for IO CGN Card Platform APIs"
-
+resource "azurerm_api_management_product_policy" "cgn_card_platform" {
+  product_id          = var.apim_cgn_product_id
   api_management_name = var.apim_platform_name
   resource_group_name = var.apim_platform_resource_group_name
-
-  published             = true
-  subscription_required = false
-  approval_required     = false
-}
-
-resource "azurerm_api_management_product_policy" "cgn_card_platform" {
-  product_id          = azurerm_api_management_product.cgn_card_platform.product_id
-  api_management_name = azurerm_api_management_product.cgn_card_platform.api_management_name
-  resource_group_name = azurerm_api_management_product.cgn_card_platform.resource_group_name
 
   xml_content = file("${path.module}/policies/_base_policy.xml")
 }
 
 resource "azurerm_api_management_api_version_set" "cgn_card_platform" {
   name                = "cgn_card_platform_v1"
-  api_management_name = azurerm_api_management_product.cgn_card_platform.api_management_name
-  resource_group_name = azurerm_api_management_product.cgn_card_platform.resource_group_name
+  api_management_name = var.apim_platform_name
+  resource_group_name = var.apim_platform_resource_group_name
   display_name        = "CGN Card Platform APIs"
   versioning_scheme   = "Segment"
 }
@@ -40,7 +27,7 @@ resource "azurerm_api_management_api" "cgn_card_platform_v1" {
   revision       = "1"
 
   description  = "These APIs support App IO about CGN Card"
-  display_name = "CGN API"
+  display_name = "CGN Card API"
   path         = "api/cgn-card"
   protocols    = ["https"]
 
@@ -62,7 +49,7 @@ resource "azurerm_api_management_product_api" "cgn_card_platform_v1" {
   api_name            = azurerm_api_management_api.cgn_card_platform_v1.name
   api_management_name = azurerm_api_management_api.cgn_card_platform_v1.api_management_name
   resource_group_name = azurerm_api_management_api.cgn_card_platform_v1.resource_group_name
-  product_id          = azurerm_api_management_product.cgn_card_platform.product_id
+  product_id          = var.apim_cgn_product_id
 }
 
 resource "azurerm_api_management_named_value" "app_backend_key" {
