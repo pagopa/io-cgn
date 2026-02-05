@@ -1,0 +1,23 @@
+{
+  "servers": {
+    "azure-learn-mcp-server": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp",
+      "gallery": "https://mcp.dx.pagopa.it/workspaces/default",
+      "version": "1.0.0"
+    },
+    "dx-mcp-server": {
+      "type": "http",
+      "url": "https://api.dx.pagopa.it/mcp",
+      "gallery": "https://mcp.dx.pagopa.it/workspaces/default",
+      "version": "0.0.9"
+    },
+    "github-mcp-server": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "gallery": "https://mcp.dx.pagopa.it/workspaces/default",
+      "version": "0.24.0"
+    }
+  },
+  "inputs": []
+}

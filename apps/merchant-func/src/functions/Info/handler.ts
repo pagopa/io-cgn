@@ -1,29 +1,34 @@
-import { wrapRequestHandler } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
+import { HttpRequest, InvocationContext } from "@azure/functions";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
   ResponseErrorInternal,
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
-import * as express from "express";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import * as packageJson from "../package.json";
-import { HealthCheck, checkApplicationHealth } from "../utils/healthcheck";
+import * as packageJson from "../../../package.json";
+import {
+  HealthCheck,
+  checkApplicationHealth,
+} from "../../utils/healthcheck.js";
+import { simpleHandler } from "../../utils/middleware.js";
 
 interface IInfo {
   readonly name: string;
   readonly version: string;
 }
 
-type InfoHandler = () => Promise<
-  IResponseErrorInternal | IResponseSuccessJson<IInfo>
->;
+type InfoHandler = (
+  _request: HttpRequest,
+  _context: InvocationContext,
+) => TE.TaskEither<IResponseErrorInternal, IResponseSuccessJson<IInfo>>;
 
 export const InfoHandler =
   (healthCheck: HealthCheck): InfoHandler =>
-  (): Promise<IResponseErrorInternal | IResponseSuccessJson<IInfo>> =>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_request, _context): ReturnType<InfoHandler> =>
     pipe(
       healthCheck,
       TE.bimap(
@@ -34,11 +39,10 @@ export const InfoHandler =
             version: packageJson.version,
           }),
       ),
-      TE.toUnion,
-    )();
+    );
 
-export const Info = (): express.RequestHandler => {
+export const Info = () => {
   const handler = InfoHandler(checkApplicationHealth());
 
-  return wrapRequestHandler(handler);
+  return simpleHandler(handler);
 };

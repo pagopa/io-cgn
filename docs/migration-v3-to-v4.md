@@ -1,0 +1,543 @@
+# Azure Functions Programming Model V3 to V4 Migration Guide
+
+## Overview
+
+This guide documents the migration of the `merchant-func` app from Azure Functions Programming Model V3 to V4. This migration is **required** for Node.js 22+ compatibility, as V3 is not supported on Node 22.
+
+**Migration completed**: February 2026  
+**App**: `apps/merchant-func`  
+**Functions migrated**: 2 (ValidateOtp, Info)
+
+## Why Migrate?
+
+- **Node.js 22+ Requirement**: V3 programming model is incompatible with Node.js 22
+- **Modern ESM Support**: V4 uses ES Modules natively, aligning with modern JavaScript
+- **Simplified Code**: Eliminates function.json files in favor of code-based configuration
+- **Better TypeScript Support**: First-class TypeScript support without adapters
+- **Native HTTP Handling**: No need for Express adapters, cleaner HTTP request/response model
+
+## Key Changes Summary
+
+| Aspect                  | V3                               | V4                            |
+| ----------------------- | -------------------------------- | ----------------------------- |
+| **SDK Package**         | `@azure/functions@^3.x` (devDep) | `@azure/functions@^4.x` (dep) |
+| **Module System**       | CommonJS                         | ES Modules (ESM)              |
+| **Function Definition** | `function.json` files            | Code-based with decorators    |
+| **HTTP Framework**      | Express via adapter              | Native or Express built-in    |
+| **Entry Point**         | Individual function exports      | Central `src/functions.ts`    |
+| **Context**             | `Context` from V3                | `InvocationContext`           |
+| **HTTP Request**        | Express `Request`                | `HttpRequest`                 |
+| **HTTP Response**       | Express `Response`               | `HttpResponseInit`            |
+| **Middleware**          | Express middleware               | Custom V4 middleware          |
+
+## Migration Steps
+
+### 1. Update Dependencies
+
+**package.json changes:**
+
+```json
+{
+  "main": "dist/src/functions.js",
+  "files": [
+    "dist",
+    "host.json"
+    // Removed: "**/function.json"
+  ],
+  "dependencies": {
+    "@azure/functions": "^4.7.0"
+    // Removed: "@pagopa/express-azure-functions"
+    // Removed: "express"
+    // Keep: fp-ts, io-ts, redis, applicationinsights, etc.
+  },
+  "devDependencies": {
+    // Removed: "@azure/functions" (moved to dependencies)
+    // Removed: "@types/express"
+  }
+}
+```
+
+### 2. Update TypeScript Configuration
+
+**tsconfig.json changes:**
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022", // Was: "es6"
+    "module": "ES2022", // Was: "commonjs"
+    "moduleResolution": "node16", // Was: "node" (use node16 for TS 4.x compatibility)
+    "esModuleInterop": true, // Added
+    "allowSyntheticDefaultImports": true // Added
+  }
+}
+```
+
+### 3. Update Host Configuration
+
+**host.json changes:**
+
+```json
+{
+  "extensions": {
+    // Removed: "http": { "routePrefix": "" }
+    // V4 handles routing in code, not host.json
+    "durableTask": { ... }
+  }
+}
+```
+
+### 4. Create V4 Middleware System
+
+Since we removed Express, we need V4-compatible middleware for body validation and error handling.
+
+**New file: `utils/middleware.ts`**
+
+Key exports:
+
+- `HttpResponseInit` - V4 response type
+- `toHttpResponse()` - Convert io-functions-commons responses to V4 format
+- `requireBodyPayload()` - Body validation middleware using io-ts
+- `withMiddlewares()` - Compose middleware chains
+- `wrapV4RequestHandler()` - Wrap TaskEither handlers
+- `simpleHandler()` - For handlers without body validation
+
+Example usage:
+
+```typescript
+import {
+  requireBodyPayload,
+  withMiddlewares,
+  wrapV4RequestHandler,
+} from "../utils/middleware.js";
+
+const handler = (
+  payload: MyPayload,
+  request: HttpRequest,
+  context: InvocationContext,
+) => pipe();
+// business logic returning TaskEither
+
+const middlewareWrap = withMiddlewares(requireBodyPayload(MyPayloadCodec))(
+  handler,
+);
+
+export default wrapV4RequestHandler(middlewareWrap);
+```
+
+### 5. Migrate Function Handlers
+
+#### Pattern: From V3 to V4
+
+**V3 Handler Pattern:**
+
+```typescript
+// handler.ts (V3)
+import { Context } from "@azure/functions";
+import { ContextMiddleware } from "@pagopa/io-functions-commons/...";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/...";
+import * as express from "express";
+
+type Handler = (context: Context, payload: Payload) => Promise<Response>;
+
+export const MyHandler: Handler = async (context, payload) => {
+  return pipe(
+    // logic
+    TE.toUnion,
+  )();
+};
+
+export const MyFunction = (): express.RequestHandler => {
+  const handler = MyHandler();
+  const middlewaresWrap = withRequestMiddlewares(
+    ContextMiddleware(),
+    RequiredBodyPayloadMiddleware(PayloadCodec),
+  );
+  return wrapRequestHandler(middlewaresWrap(handler));
+};
+```
+
+**V4 Handler Pattern:**
+
+```typescript
+// handler.ts (V4)
+import { HttpRequest, InvocationContext } from "@azure/functions";
+import {
+  requireBodyPayload,
+  withMiddlewares,
+  wrapV4RequestHandler,
+} from "../utils/middleware.js";
+
+type Handler = (
+  payload: Payload,
+  request: HttpRequest,
+  context: InvocationContext,
+) => TE.TaskEither<ResponseTypes, IResponseSuccessJson<Result>>;
+
+export const MyHandler: Handler = (payload, _request, _context) => {
+  return pipe();
+  // logic - NO TE.toUnion, NO ()
+};
+
+export const MyFunction = () => {
+  const handler = MyHandler();
+  const middlewareWrap = withMiddlewares(requireBodyPayload(PayloadCodec))(
+    handler,
+  );
+  return wrapV4RequestHandler(middlewareWrap);
+};
+```
+
+**Key Changes:**
+
+1. Handler now receives `(payload, request, context)` instead of `(context, payload)`
+2. Handler returns `TaskEither` directly, not `Promise` (no `TE.toUnion()`)
+3. Import from V4 SDK and new middleware system
+4. Add `.js` extensions to local imports (ESM requirement)
+
+#### Pattern: Simple Handlers (No Body Validation)
+
+**V3:**
+
+```typescript
+export const InfoHandler = (): Promise<Response> =>
+  pipe(healthCheck, TE.toUnion)();
+
+export const Info = (): express.RequestHandler =>
+  wrapRequestHandler(InfoHandler());
+```
+
+**V4:**
+
+```typescript
+export const InfoHandler = (
+  _request: HttpRequest,
+  _context: InvocationContext,
+) =>
+  pipe(
+    healthCheck,
+    // No TE.toUnion
+  );
+
+export const Info = () => simpleHandler(InfoHandler());
+```
+
+### 6. Migrate Function Index Files
+
+**V3 index.ts:**
+
+```typescript
+import { Context } from "@azure/functions";
+import createAzureFunctionHandler from "@pagopa/express-azure-functions/...";
+import { secureExpressApp } from "@pagopa/io-functions-commons/...";
+import * as express from "express";
+
+const app = express();
+secureExpressApp(app);
+
+app.post("/api/v1/...", MyFunction());
+
+const azureFunctionHandler = createAzureFunctionHandler(app);
+
+const httpStart = (context: Context): void => {
+  setAppContext(app, context);
+  azureFunctionHandler(context);
+};
+
+export default httpStart;
+```
+
+**V4 index.ts:**
+
+```typescript
+import { HttpRequest, InvocationContext } from "@azure/functions";
+import { HttpResponseInit } from "../utils/middleware.js";
+import { MyFunction } from "./handler.js";
+
+const myFunctionHandler = MyFunction();
+
+export async function myFunction(
+  request: HttpRequest,
+  context: InvocationContext,
+): Promise<HttpResponseInit> {
+  context.log(`MyFunction HTTP trigger processed request.`);
+  return myFunctionHandler(request, context);
+}
+```
+
+### 7. Create Central Function Registration
+
+**New file: `src/functions.ts`**
+
+This replaces all individual `function.json` files:
+
+```typescript
+import { app } from "@azure/functions";
+
+import { validateOtp } from "../ValidateOtp/index.js";
+import { info } from "../Info/index.js";
+
+// Register ValidateOtp function
+app.http("ValidateOtp", {
+  methods: ["POST"],
+  authLevel: "function",
+  route: "api/v1/merchant/cgn/otp/validate",
+  handler: validateOtp,
+});
+
+// Register Info function
+app.http("Info", {
+  methods: ["GET"],
+  authLevel: "anonymous",
+  route: "api/v1/merchant/cgn/info",
+  handler: info,
+});
+
+export default app;
+```
+
+**Set main entry point in package.json:**
+
+```json
+{
+  "main": "dist/src/functions.js"
+}
+```
+
+### 8. Delete function.json Files
+
+```bash
+rm ValidateOtp/function.json
+rm Info/function.json
+```
+
+V4 uses code-based configuration - no more JSON files!
+
+### 9. Update Tests
+
+#### Test Configuration
+
+**jest.config.js:**
+
+```javascript
+module.exports = {
+  preset: "ts-jest/presets/default-esm",
+  testEnvironment: "node",
+  extensionsToTreatAsEsm: [".ts"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
+  },
+};
+```
+
+#### Test Mocks
+
+**V3:**
+
+```typescript
+const contextMock = {} as any;
+
+const handler = MyHandler();
+const response = await handler(contextMock, payload);
+expect(response.kind).toBe("IResponseSuccessJson");
+```
+
+**V4:**
+
+```typescript
+import { InvocationContext } from "@azure/functions";
+
+const mockContext = {
+  log: jest.fn(),
+} as unknown as InvocationContext;
+
+const mockRequest = {} as any;
+
+const handler = MyHandler();
+const resultTE = handler(payload, mockRequest, mockContext);
+const response = await resultTE();
+
+expect(response._tag).toBe("Right");
+if (response._tag === "Right") {
+  expect(response.right.kind).toBe("IResponseSuccessJson");
+}
+```
+
+**Key Changes:**
+
+1. Handler signature changed: `(context, payload)` → `(payload, request, context)`
+2. Handler returns `TaskEither` - must call `resultTE()` to execute
+3. Check `response._tag` ("Left" or "Right") instead of `response.kind`
+4. Access success via `response.right`, error via `response.left`
+
+### 10. Install Dependencies and Build
+
+```bash
+pnpm install
+pnpm build
+```
+
+Expected output:
+
+- TypeScript compiles to `dist/` with ES modules
+- No errors about incompatible module systems
+
+### 11. Test Locally
+
+```bash
+# Copy environment config
+cp env.example .env
+
+# Start functions runtime
+pnpm start
+```
+
+Verify:
+
+- Functions runtime starts successfully
+- Functions are discovered: `func functions list`
+- Expected output:
+  ```
+  ValidateOtp - [httpTrigger]
+  Info - [httpTrigger]
+  ```
+
+### 12. Test Endpoints
+
+**Info endpoint:**
+
+```bash
+curl http://localhost:7071/api/v1/merchant/cgn/info
+```
+
+Expected: `{"name":"merchant-func","version":"..."}`
+
+**ValidateOtp endpoint:**
+
+```bash
+curl -X POST http://localhost:7071/api/v1/merchant/cgn/otp/validate \
+  -H "Content-Type: application/json" \
+  -d '{"otp_code":"TEST123","invalidate_otp":false}'
+```
+
+## Common Gotchas
+
+### 1. ESM Import Extensions
+
+**Problem:** TypeScript errors about missing imports.
+
+**Solution:** Add `.js` extensions to local imports:
+
+```typescript
+// ❌ Wrong
+import { config } from "../utils/config";
+
+// ✅ Correct
+import { config } from "../utils/config.js";
+```
+
+Note: Use `.js` even for `.ts` files - TypeScript will resolve correctly.
+
+### 2. Handler Return Types
+
+**Problem:** `Type 'Promise<...>' is not assignable to type 'TaskEither<...>'`
+
+**Solution:** Remove `TE.toUnion()` and `()` from handler - return TaskEither directly:
+
+```typescript
+// ❌ Wrong (V3 pattern)
+return pipe(logic, TE.toUnion)();
+
+// ✅ Correct (V4 pattern)
+return pipe(logic);
+```
+
+### 3. Test Assertions
+
+**Problem:** `expect(response.kind)` fails - property doesn't exist.
+
+**Solution:** TaskEither uses `_tag` ("Left"/"Right"), not `kind`:
+
+```typescript
+// ❌ Wrong
+expect(response.kind).toBe("IResponseSuccessJson");
+
+// ✅ Correct
+expect(response._tag).toBe("Right");
+if (response._tag === "Right") {
+  expect(response.right.kind).toBe("IResponseSuccessJson");
+}
+```
+
+### 4. Function Discovery
+
+**Problem:** `func functions list` shows no functions.
+
+**Solution:** Ensure:
+
+1. `package.json` has `"main": "dist/src/functions.js"`
+2. `src/functions.ts` imports and registers all functions
+3. Build completed successfully: `pnpm build`
+
+### 5. Module Resolution
+
+**Problem:** Runtime errors: `Cannot find module '...'` or build errors about fp-ts imports.
+
+**Solution:** Check imports and `tsconfig.json`:
+
+- Ensure fp-ts imports use full paths: `fp-ts/lib/Either` not `fp-ts/Either`
+- `tsconfig.json` should have:
+  - `"module": "ES2022"` (not "commonjs")
+  - `"moduleResolution": "node16"` (not "node" - use node16 for TypeScript 4.x compatibility)
+
+## Checklist for Future Migrations
+
+Use this checklist when migrating `card-func`, `search-func`, or `support-func`:
+
+- [ ] Update `package.json` dependencies (move @azure/functions to deps, remove Express)
+- [ ] Update `tsconfig.json` for ESM (module, moduleResolution, target)
+- [ ] Remove `routePrefix` from `host.json`
+- [ ] Copy `utils/middleware.ts` from merchant-func (or create shared package)
+- [ ] For each function:
+  - [ ] Update handler signature: `(payload, request, context)` with TaskEither return
+  - [ ] Add `.js` extensions to local imports
+  - [ ] Remove `TE.toUnion()` from handler returns
+  - [ ] Update index.ts to export async function with V4 signatures
+  - [ ] Delete `function.json`
+- [ ] Create `src/functions.ts` with all function registrations
+- [ ] Update `jest.config.js` for ESM support
+- [ ] Update test mocks (InvocationContext, HttpRequest)
+- [ ] Update test assertions (check `_tag`, not `kind`)
+- [ ] Run `pnpm install && pnpm build`
+- [ ] Run `pnpm test` - all tests pass
+- [ ] Run `pnpm start` - verify function discovery
+- [ ] Test endpoints manually with curl/Postman
+
+## Additional Resources
+
+- [Azure Functions V4 Programming Model](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=typescript%2Cwindows%2Cazure-cli&pivots=nodejs-model-v4)
+- [Migrating from V3 to V4](https://learn.microsoft.com/en-us/azure/azure-functions/functions-node-upgrade-v4)
+- [fp-ts TaskEither Documentation](https://gcanti.github.io/fp-ts/modules/TaskEither.ts.html)
+
+## Questions?
+
+For questions about this migration, consult:
+
+- This guide: `docs/migration-v3-to-v4.md`
+- Reference implementation: `apps/merchant-func`
+- PagoPA IO team Slack channels
+
+---
+
+**Migration completed by**: GitHub Copilot  
+**Date**: February 2026  
+**Pilot app**: merchant-func (2 functions)  
+**Remaining apps**: card-func (~20 functions), search-func (~8 functions), support-func (~5 functions)

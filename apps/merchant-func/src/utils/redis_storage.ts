@@ -3,7 +3,7 @@ import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import { RedisClientFactory } from "./redis";
+import { RedisClientFactory } from "./redis.js";
 
 /**
  * Parse a Redis single string reply.

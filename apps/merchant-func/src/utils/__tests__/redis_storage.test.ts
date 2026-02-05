@@ -4,8 +4,8 @@ import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import { RedisClient, RedisClientFactory } from "../redis";
-import { deleteTask, existsKeyTask, getTask } from "../redis_storage";
+import { RedisClient, RedisClientFactory } from "../redis.js";
+import { deleteTask, existsKeyTask, getTask } from "../redis_storage.js";
 
 const aRedisKey = "KEY";
 const aRedisValue = "VALUE";

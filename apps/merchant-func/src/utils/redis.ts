@@ -1,6 +1,6 @@
 import * as redis from "redis";
 
-import { IConfig } from "./config";
+import { IConfig } from "./config.js";
 
 export type RedisClient = redis.RedisClientType;
 

@@ -2,7 +2,7 @@ import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
-import { IConfig, getConfig } from "./config";
+import { IConfig, getConfig } from "./config.js";
 
 type ProblemSource = "AzureCosmosDB" | "AzureStorage" | "Config" | "Url";
 export type HealthProblem<S extends ProblemSource> = {

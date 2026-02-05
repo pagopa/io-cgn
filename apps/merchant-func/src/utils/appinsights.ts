@@ -1,11 +1,11 @@
 import { IntegerFromString } from "@pagopa/ts-commons/lib/numbers";
 import { ResponseErrorInternal } from "@pagopa/ts-commons/lib/responses";
 import * as ai from "applicationinsights";
-import * as E from "fp-ts/Either";
+import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { Errors } from "io-ts";
 
-import { errorsToError } from "./conversions";
+import { errorsToError } from "./conversions.js";
 
 const samplingPercentage = pipe(
   process.env["APPINSIGHTS_SAMPLING_PERCENTAGE"],

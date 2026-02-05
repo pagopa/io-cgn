@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2022",
     "rootDir": ".",
     "outDir": "dist",
-    "module": "commonjs",
+    "module": "ES2022",
     "moduleResolution": "node",
     "strict": true,
     "sourceMap": false,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
   },
   "exclude": [
     "__mocks__",

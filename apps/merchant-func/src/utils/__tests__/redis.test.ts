@@ -1,5 +1,5 @@
-import { IConfig } from "../config";
-import { RedisClient, RedisClientFactory } from "../redis";
+import { IConfig } from "../config.js";
+import { RedisClient, RedisClientFactory } from "../redis.js";
 
 const baseConfigMockForRedisFactory = {
   REDIS_CLUSTER_ENABLED: false,

@@ -1,10 +1,4 @@
-import { Context } from "@azure/functions";
-import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
-import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
+import { HttpRequest, InvocationContext } from "@azure/functions";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 import {
   IResponseErrorForbiddenNotAuthorized,
@@ -16,7 +10,6 @@ import {
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as E from "fp-ts/lib/Either";
 import { parse } from "fp-ts/lib/Json";
 import * as O from "fp-ts/lib/Option";
@@ -24,14 +17,19 @@ import * as TE from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
 
-import { OtpCode } from "../generated/definitions/OtpCode";
-import { OtpValidationResponse } from "../generated/definitions/OtpValidationResponse";
-import { Timestamp } from "../generated/definitions/Timestamp";
-import { ValidateOtpPayload } from "../generated/definitions/ValidateOtpPayload";
-import { trackErrorToVoid } from "../utils/appinsights";
-import { errorObfuscation } from "../utils/privacy";
-import { RedisClientFactory } from "../utils/redis";
-import { deleteTask, getTask } from "../utils/redis_storage";
+import { OtpCode } from "../../../generated/definitions/OtpCode.js";
+import { OtpValidationResponse } from "../../../generated/definitions/OtpValidationResponse.js";
+import { Timestamp } from "../../../generated/definitions/Timestamp.js";
+import { ValidateOtpPayload } from "../../../generated/definitions/ValidateOtpPayload.js";
+import { trackErrorToVoid } from "../../utils/appinsights.js";
+import {
+  requireBodyPayload,
+  withMiddlewares,
+  wrapV4RequestHandler,
+} from "../../utils/middleware.js";
+import { errorObfuscation } from "../../utils/privacy.js";
+import { RedisClientFactory } from "../../utils/redis.js";
+import { deleteTask, getTask } from "../../utils/redis_storage.js";
 
 // This value is used on redis to prefix key value pair of type
 // KEY            | VALUE
@@ -47,16 +45,20 @@ export const OTP_PREFIX = "OTP_";
 // here https://github.com/pagopa/io-functions-cgn/blob/e2607c695556fecdccce8e969c5da978a641fc61/GenerateOtp/redis.ts#L22
 export const OTP_FISCAL_CODE_PREFIX = "OTP_FISCALCODE_";
 
-type ResponseTypes =
+type ValidateOtpResponseTypes =
   | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorInternal
   | IResponseErrorNotFound
   | IResponseSuccessJson<OtpValidationResponse>;
 
 type IGetValidateOtpHandler = (
-  context: Context,
   payload: ValidateOtpPayload,
-) => Promise<ResponseTypes>;
+  request: HttpRequest,
+  context: InvocationContext,
+) => TE.TaskEither<
+  ValidateOtpResponseTypes,
+  IResponseSuccessJson<OtpValidationResponse>
+>;
 
 export const CommonOtpPayload = t.interface({
   expiresAt: Timestamp,
@@ -137,7 +139,8 @@ const invalidateOtp = (
 
 export const ValidateOtpHandler =
   (redisClientFactory: RedisClientFactory): IGetValidateOtpHandler =>
-  async (context, payload): Promise<ResponseTypes> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (payload, _request, _context): ReturnType<IGetValidateOtpHandler> => {
     const obfuscate = errorObfuscation(
       payload.otp_code.toString() as NonEmptyString,
     );
@@ -175,19 +178,15 @@ export const ValidateOtpHandler =
         ),
       ),
       TE.map(ResponseSuccessJson),
-      TE.toUnion,
-    )();
+    );
   };
 
-export const ValidateOtp = (
-  redisClientFactory: RedisClientFactory,
-): express.RequestHandler => {
+export const ValidateOtp = (redisClientFactory: RedisClientFactory) => {
   const handler = ValidateOtpHandler(redisClientFactory);
 
-  const middlewaresWrap = withRequestMiddlewares(
-    ContextMiddleware(),
-    RequiredBodyPayloadMiddleware(ValidateOtpPayload),
-  );
+  const middlewareWrap = withMiddlewares(
+    requireBodyPayload(ValidateOtpPayload),
+  )(handler);
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapV4RequestHandler(middlewareWrap);
 };
