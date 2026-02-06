@@ -31,8 +31,10 @@ export const setTelemetryClient = (tc: ai.TelemetryClient) => {
 export const initTelemetryClient = () => {
   if (!telemetryClient) {
     ai.setup().start();
-    telemetryClient = ai.defaultClient;
-    telemetryClient.config.samplingPercentage = samplingPercentage;
+    if (ai.defaultClient) {
+      telemetryClient = ai.defaultClient;
+      telemetryClient.config.samplingPercentage = samplingPercentage;
+    }
   }
 };
 
