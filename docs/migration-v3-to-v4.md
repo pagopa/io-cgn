@@ -38,6 +38,7 @@ This guide documents the migration of the `merchant-func` app from Azure Functio
 
 ```json
 {
+  "type": "module",
   "main": "dist/src/functions.js",
   "files": [
     "dist",
@@ -45,12 +46,21 @@ This guide documents the migration of the `merchant-func` app from Azure Functio
     // Removed: "**/function.json"
   ],
   "dependencies": {
-    "@azure/functions": "^4.7.0"
+    "@azure/functions": "^4.7.0",
+    "@pagopa/io-functions-commons": "^28.0.0",
+    "@pagopa/ts-commons": "^11.0.0",
+    "applicationinsights": "^3.4.0",
+    "fp-ts": "^2.11.1",
+    "io-ts": "^2.2.16",
+    "redis": "^4.6.15"
     // Removed: "@pagopa/express-azure-functions"
     // Removed: "express"
-    // Keep: fp-ts, io-ts, redis, applicationinsights, etc.
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.4",
+    "typescript": "^4.3.5"
     // Removed: "@azure/functions" (moved to dependencies)
     // Removed: "@types/express"
   }
@@ -66,9 +76,8 @@ This guide documents the migration of the `merchant-func` app from Azure Functio
   "compilerOptions": {
     "target": "ES2022", // Was: "es6"
     "module": "ES2022", // Was: "commonjs"
-    "moduleResolution": "node16", // Was: "node" (use node16 for TS 4.x compatibility)
-    "esModuleInterop": true, // Added
-    "allowSyntheticDefaultImports": true // Added
+    "moduleResolution": "node", // Keep as "node" for compatibility
+    "esModuleInterop": true // Added (this implies allowSyntheticDefaultImports)
   }
 }
 ```
@@ -79,10 +88,22 @@ This guide documents the migration of the `merchant-func` app from Azure Functio
 
 ```json
 {
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Trace"
+    }
+  },
   "extensions": {
     // Removed: "http": { "routePrefix": "" }
-    // V4 handles routing in code, not host.json
-    "durableTask": { ... }
+    // V4 handles routing in code via app.http() configuration
+    "durableTask": {
+      "hubName": "FunctionsTemplateHub"
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)" // V4-compatible bundle
   }
 }
 ```
@@ -251,7 +272,7 @@ export default httpStart;
 
 ```typescript
 import { HttpRequest, InvocationContext } from "@azure/functions";
-import { HttpResponseInit } from "../utils/middleware.js";
+import { HttpResponseInit } from "../../utils/middleware.js";
 import { MyFunction } from "./handler.js";
 
 const myFunctionHandler = MyFunction();
@@ -274,23 +295,23 @@ This replaces all individual `function.json` files:
 ```typescript
 import { app } from "@azure/functions";
 
-import { validateOtp } from "../ValidateOtp/index.js";
-import { info } from "../Info/index.js";
+import { info } from "./functions/Info/index.js";
+import { validateOtp } from "./functions/ValidateOtp/index.js";
 
 // Register ValidateOtp function
 app.http("ValidateOtp", {
-  methods: ["POST"],
   authLevel: "function",
-  route: "api/v1/merchant/cgn/otp/validate",
   handler: validateOtp,
+  methods: ["POST"],
+  route: "api/v1/merchant/cgn/otp/validate",
 });
 
 // Register Info function
 app.http("Info", {
-  methods: ["GET"],
   authLevel: "anonymous",
-  route: "api/v1/merchant/cgn/info",
   handler: info,
+  methods: ["GET"],
+  route: "api/v1/merchant/cgn/info",
 });
 
 export default app;
@@ -434,17 +455,23 @@ curl -X POST http://localhost:7071/api/v1/merchant/cgn/otp/validate \
 
 **Problem:** TypeScript errors about missing imports.
 
-**Solution:** Add `.js` extensions to local imports:
+**Solution:** Add `.js` extensions to **relative imports only** (not external packages):
 
 ```typescript
-// ❌ Wrong
-import { config } from "../utils/config";
-
-// ✅ Correct
+// ✅ Correct - relative imports need .js
 import { config } from "../utils/config.js";
+import { handler } from "./handler.js";
+
+// ✅ Correct - external packages don't need extensions
+import * as TE from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
+import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
+
+// ❌ Wrong - missing .js on relative import
+import { config } from "../utils/config";
 ```
 
-Note: Use `.js` even for `.ts` files - TypeScript will resolve correctly.
+**Note:** Use `.js` even for `.ts` files - TypeScript resolves correctly to the compiled output.
 
 ### 2. Handler Return Types
 
@@ -496,7 +523,7 @@ if (response._tag === "Right") {
 - Ensure fp-ts imports use full paths: `fp-ts/lib/Either` not `fp-ts/Either`
 - `tsconfig.json` should have:
   - `"module": "ES2022"` (not "commonjs")
-  - `"moduleResolution": "node16"` (not "node" - use node16 for TypeScript 4.x compatibility)
+  - `"moduleResolution": "node"` (standard Node.js resolution)
 
 ## Checklist for Future Migrations
 
