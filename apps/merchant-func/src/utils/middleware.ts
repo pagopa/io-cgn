@@ -136,12 +136,6 @@ export const wrapV4RequestHandler =
   ): Promise<HttpResponseInit> =>
     pipe(
       handler(request, context),
-      TE.bimap(
-        // Left side: error responses
-        (errorResponse) => errorResponse,
-        // Right side: success responses
-        (successResponse) => successResponse,
-      ),
       TE.toUnion,
     )().then(toHttpResponse);
 
