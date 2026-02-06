@@ -1,4 +1,4 @@
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { NonEmptyString } from "@pagopa/ts-commons/lib/strings.js";
 
 export const errorObfuscation =
   (stringToObfuscate?: NonEmptyString) =>

@@ -1,5 +1,5 @@
 import { HttpRequest, InvocationContext } from "@azure/functions";
-import { readableReport } from "@pagopa/ts-commons/lib/reporters";
+import { readableReport } from "@pagopa/ts-commons/lib/reporters.js";
 import {
   IResponseErrorForbiddenNotAuthorized,
   IResponseErrorInternal,
@@ -8,13 +8,13 @@ import {
   ResponseErrorInternal,
   ResponseErrorNotFound,
   ResponseSuccessJson,
-} from "@pagopa/ts-commons/lib/responses";
-import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import * as E from "fp-ts/lib/Either";
-import { parse } from "fp-ts/lib/Json";
-import * as O from "fp-ts/lib/Option";
-import * as TE from "fp-ts/lib/TaskEither";
-import { flow, pipe } from "fp-ts/lib/function";
+} from "@pagopa/ts-commons/lib/responses.js";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings.js";
+import * as E from "fp-ts/lib/Either.js";
+import { parse } from "fp-ts/lib/Json.js";
+import * as O from "fp-ts/lib/Option.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { flow, pipe } from "fp-ts/lib/function.js";
 import * as t from "io-ts";
 
 import { OtpCode } from "../../../generated/definitions/OtpCode.js";

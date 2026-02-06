@@ -11,8 +11,9 @@
   ],
   "main": "dist/src/functions.js",
   "scripts": {
-    "prebuild": "shx rm -rf dist && pnpm generate:definitions",
-    "build": "tsc",
+    "build": "pnpm clean && pnpm generate:definitions && pnpm esm:generated && tsc",
+    "clean": "shx rm -rf dist",
+    "esm:generated": "ts2esm tsconfig.json",
     "start": "dotenv -e .env func start --javascript",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -33,8 +34,9 @@
     "oval": "^1.0.0",
     "prettier": "^3.4.2",
     "shx": "^0.3.2",
+    "ts2esm": "^2.2.7",
     "ts-jest": "^29.1.4",
-    "typescript": "^4.3.5"
+    "typescript": "^5.4.3"
   },
   "dependencies": {
     "@azure/functions": "^4.7.0",

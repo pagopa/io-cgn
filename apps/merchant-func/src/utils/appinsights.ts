@@ -1,8 +1,8 @@
-import { IntegerFromString } from "@pagopa/ts-commons/lib/numbers";
-import { ResponseErrorInternal } from "@pagopa/ts-commons/lib/responses";
+import { IntegerFromString } from "@pagopa/ts-commons/lib/numbers.js";
+import { ResponseErrorInternal } from "@pagopa/ts-commons/lib/responses.js";
 import * as ai from "applicationinsights";
-import * as E from "fp-ts/lib/Either";
-import { pipe } from "fp-ts/lib/function";
+import * as E from "fp-ts/lib/Either.js";
+import { pipe } from "fp-ts/lib/function.js";
 import { Errors } from "io-ts";
 
 import { errorsToError } from "./conversions.js";

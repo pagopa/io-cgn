@@ -1,5 +1,5 @@
 import { HttpRequest, InvocationContext } from "@azure/functions";
-import { readableReportSimplified } from "@pagopa/ts-commons/lib/reporters";
+import { readableReportSimplified } from "@pagopa/ts-commons/lib/reporters.js";
 import {
   IResponseErrorForbiddenNotAuthorized,
   IResponseErrorInternal,
@@ -7,10 +7,10 @@ import {
   IResponseErrorValidation,
   IResponseSuccessJson,
   ResponseErrorValidation,
-} from "@pagopa/ts-commons/lib/responses";
-import * as E from "fp-ts/lib/Either";
-import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+} from "@pagopa/ts-commons/lib/responses.js";
+import * as E from "fp-ts/lib/Either.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { pipe } from "fp-ts/lib/function.js";
 import * as t from "io-ts";
 
 /**

@@ -4,11 +4,10 @@ import {
   IResponseSuccessJson,
   ResponseErrorInternal,
   ResponseSuccessJson,
-} from "@pagopa/ts-commons/lib/responses";
-import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+} from "@pagopa/ts-commons/lib/responses.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { pipe } from "fp-ts/lib/function.js";
 
-import * as packageJson from "../../../package.json";
 import {
   HealthCheck,
   checkApplicationHealth,
@@ -35,8 +34,8 @@ export const InfoHandler =
         (problems) => ResponseErrorInternal(problems.join("\n\n")),
         () =>
           ResponseSuccessJson({
-            name: packageJson.name,
-            version: packageJson.version,
+            name: "it works!",
+            version: "0.0.1",
           }),
       ),
     );

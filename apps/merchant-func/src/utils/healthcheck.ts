@@ -1,6 +1,6 @@
-import { readableReport } from "@pagopa/ts-commons/lib/reporters";
-import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+import { readableReport } from "@pagopa/ts-commons/lib/reporters.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { pipe } from "fp-ts/lib/function.js";
 
 import { IConfig, getConfig } from "./config.js";
 
