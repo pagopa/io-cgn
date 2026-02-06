@@ -45,18 +45,17 @@ export const OTP_PREFIX = "OTP_";
 // here https://github.com/pagopa/io-functions-cgn/blob/e2607c695556fecdccce8e969c5da978a641fc61/GenerateOtp/redis.ts#L22
 export const OTP_FISCAL_CODE_PREFIX = "OTP_FISCALCODE_";
 
-type ValidateOtpResponseTypes =
+type ValidateOtpErrorResponseTypes =
   | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorInternal
-  | IResponseErrorNotFound
-  | IResponseSuccessJson<OtpValidationResponse>;
+  | IResponseErrorNotFound;
 
 type IGetValidateOtpHandler = (
   payload: ValidateOtpPayload,
   request: HttpRequest,
   context: InvocationContext,
 ) => TE.TaskEither<
-  ValidateOtpResponseTypes,
+  ValidateOtpErrorResponseTypes,
   IResponseSuccessJson<OtpValidationResponse>
 >;
 

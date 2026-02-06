@@ -26,11 +26,14 @@ export interface HttpResponseInit {
 /**
  * Standard response types from io-functions-commons
  */
-export type ResponseTypes<T = unknown> =
+export type ErrorResponseTypes =
   | IResponseErrorForbiddenNotAuthorized
   | IResponseErrorInternal
   | IResponseErrorNotFound
-  | IResponseErrorValidation
+  | IResponseErrorValidation;
+
+export type ResponseTypes<T = unknown> =
+  | ErrorResponseTypes
   | IResponseSuccessJson<T>;
 
 /**
@@ -128,23 +131,20 @@ export const wrapV4RequestHandler =
     handler: (
       request: HttpRequest,
       context: InvocationContext,
-    ) => TE.TaskEither<ResponseTypes<T>, IResponseSuccessJson<T>>,
+    ) => TE.TaskEither<ErrorResponseTypes, IResponseSuccessJson<T>>,
   ) =>
   async (
     request: HttpRequest,
     context: InvocationContext,
   ): Promise<HttpResponseInit> =>
-    pipe(
-      handler(request, context),
-      TE.toUnion,
-    )().then(toHttpResponse);
+    pipe(handler(request, context), TE.toUnion)().then(toHttpResponse);
 
 /**
  * Middleware to extract and validate request body using io-ts codec
  */
 export const requireBodyPayload =
   <T>(codec: t.Type<T, unknown, unknown>) =>
-  (request: HttpRequest): TE.TaskEither<ResponseTypes, T> =>
+  (request: HttpRequest): TE.TaskEither<ErrorResponseTypes, T> =>
     pipe(
       TE.tryCatch(
         async () => {
@@ -182,24 +182,24 @@ export const requireBodyPayload =
  *   )(handler)
  */
 export const withMiddlewares =
-  <TPayload>(
+  <TPayload, TResult = unknown>(
     middleware: (
       request: HttpRequest,
-    ) => TE.TaskEither<ResponseTypes, TPayload>,
+    ) => TE.TaskEither<ErrorResponseTypes, TPayload>,
   ) =>
-  <TResult>(
+  (
     handler: (
       payload: TPayload,
       request: HttpRequest,
       context: InvocationContext,
-    ) => TE.TaskEither<ResponseTypes<TResult>, IResponseSuccessJson<TResult>>,
+    ) => TE.TaskEither<ErrorResponseTypes, IResponseSuccessJson<TResult>>,
   ) =>
   (
     request: HttpRequest,
     context: InvocationContext,
-  ): TE.TaskEither<ResponseTypes<TResult>, IResponseSuccessJson<TResult>> =>
+  ): TE.TaskEither<ErrorResponseTypes, IResponseSuccessJson<TResult>> =>
     pipe(
-      middleware(request) as TE.TaskEither<ResponseTypes<TResult>, TPayload>,
+      middleware(request),
       TE.chain((payload) => handler(payload, request, context)),
     );
 
@@ -211,7 +211,7 @@ export const simpleHandler =
     handler: (
       request: HttpRequest,
       context: InvocationContext,
-    ) => TE.TaskEither<ResponseTypes<T>, IResponseSuccessJson<T>>,
+    ) => TE.TaskEither<ErrorResponseTypes, IResponseSuccessJson<T>>,
   ) =>
   async (
     request: HttpRequest,
