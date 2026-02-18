@@ -29,8 +29,7 @@ merchant-func/
 │       └── __tests__/
 ├── generated/                    # OpenAPI generated types
 ├── openapi/                      # OpenAPI specification
-├── __mocks__/                    # Test mocks
-└── docker/                       # Docker configs for local dev
+└── __mocks__/                    # Test mocks
 ```
 
 ## Sviluppo in locale
