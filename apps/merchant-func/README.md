@@ -37,9 +37,9 @@ merchant-func/
 ```shell
 cp env.example .env
 pnpm install
+pnpm generate
 pnpm build
-docker-compose up -d --build
-docker-compose logs -f functions
+pnpm start
 open http://localhost:7071/api/v1/merchant/cgn/info
 ```
 
