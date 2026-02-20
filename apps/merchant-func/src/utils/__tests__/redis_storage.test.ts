@@ -1,8 +1,8 @@
 // eslint-disable @typescript-eslint/no-explicit-any
 
-import * as O from "fp-ts/lib/Option";
-import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
+import * as O from "fp-ts/lib/Option.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { pipe } from "fp-ts/lib/function.js";
 
 import { RedisClient, RedisClientFactory } from "../redis.js";
 import { deleteTask, existsKeyTask, getTask } from "../redis_storage.js";

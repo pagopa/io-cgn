@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { InvocationContext } from "@azure/functions";
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
-import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
+import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers.js";
+import { FiscalCode } from "@pagopa/ts-commons/lib/strings.js";
 import * as date_fns from "date-fns";
-import * as O from "fp-ts/lib/Option";
-import * as TE from "fp-ts/lib/TaskEither";
+import * as O from "fp-ts/lib/Option.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
 
-import { telemetryClientMock } from "../../../../__mocks__/mocks";
-import { Otp } from "../../../../generated/definitions/Otp";
-import { OtpCode } from "../../../../generated/definitions/OtpCode";
-import { ValidateOtpPayload } from "../../../../generated/definitions/ValidateOtpPayload";
-import { setTelemetryClient } from "../../../utils/appinsights";
-import * as redis_storage from "../../../utils/redis_storage";
+import { telemetryClientMock } from "../../../../__mocks__/mocks.js";
+import { Otp } from "../../../../generated/definitions/Otp.js";
+import { OtpCode } from "../../../../generated/definitions/OtpCode.js";
+import { ValidateOtpPayload } from "../../../../generated/definitions/ValidateOtpPayload.js";
+import { setTelemetryClient } from "../../../utils/appinsights.js";
+import * as redis_storage from "../../../utils/redis_storage.js";
 import {
   CommonOtpPayload,
   OTP_FISCAL_CODE_PREFIX,
   OTP_PREFIX,
   ValidateOtpHandler,
-} from "../handler";
+} from "../handler.js";
 
 setTelemetryClient(telemetryClientMock);
 

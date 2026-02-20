@@ -1,8 +1,8 @@
 import { InvocationContext } from "@azure/functions";
-import * as TE from "fp-ts/lib/TaskEither";
+import * as TE from "fp-ts/lib/TaskEither.js";
 
-import { HealthCheck, HealthProblem } from "../../../utils/healthcheck";
-import { InfoHandler } from "../handler";
+import { HealthCheck, HealthProblem } from "../../../utils/healthcheck.js";
+import { InfoHandler } from "../handler.js";
 
 const mockContext = {
   log: jest.fn(),
