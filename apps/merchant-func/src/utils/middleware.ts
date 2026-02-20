@@ -1,4 +1,8 @@
-import { HttpRequest, InvocationContext } from "@azure/functions";
+import {
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
 import { readableReportSimplified } from "@pagopa/ts-commons/lib/reporters.js";
 import {
   IResponseErrorForbiddenNotAuthorized,
@@ -12,16 +16,6 @@ import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as t from "io-ts";
-
-/**
- * Azure Functions V4 HttpResponseInit-compatible response type
- */
-export interface HttpResponseInit {
-  body?: string;
-  headers?: Record<string, string>;
-  jsonBody?: unknown;
-  status: number;
-}
 
 /**
  * Standard response types from io-functions-commons
@@ -42,7 +36,7 @@ export type ResponseTypes<T = unknown> =
 export type RequestHandler<T = unknown> = (
   request: HttpRequest,
   context: InvocationContext,
-) => TE.TaskEither<ResponseTypes, IResponseSuccessJson<T>>;
+) => TE.TaskEither<ErrorResponseTypes, IResponseSuccessJson<T>>;
 
 /**
  * Converts standard response types from io-functions-commons to V4 HttpResponseInit

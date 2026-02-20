@@ -23,7 +23,7 @@ This guide documents the migration of the `merchant-func` app from Azure Functio
 | ----------------------- | -------------------------------- | ----------------------------- |
 | **SDK Package**         | `@azure/functions@^3.x` (devDep) | `@azure/functions@^4.x` (dep) |
 | **Module System**       | CommonJS                         | ES Modules (ESM)              |
-| **Function Definition** | `function.json` files            | Code-based with decorators    |
+| **Function Definition** | `function.json` files            | Code-based via `app.http()`   |
 | **HTTP Framework**      | Express via adapter              | Native or Express built-in    |
 | **Entry Point**         | Individual function exports      | Central `src/functions.ts`    |
 | **Context**             | `Context` from V3                | `InvocationContext`           |
@@ -764,7 +764,6 @@ For questions about this migration, consult:
 
 ---
 
-**Migration completed by**: GitHub Copilot  
 **Date**: February 2026  
 **Pilot app**: merchant-func (2 functions)  
 **Remaining apps**: card-func (~20 functions), search-func (~8 functions), support-func (~5 functions)

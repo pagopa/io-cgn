@@ -1,6 +1,9 @@
-import { HttpRequest, InvocationContext } from "@azure/functions";
+import {
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
 
-import { HttpResponseInit } from "../../utils/middleware.js";
 import { Info } from "./handler.js";
 
 // Create the handler

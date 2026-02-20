@@ -1,8 +1,11 @@
-import { HttpRequest, InvocationContext } from "@azure/functions";
+import {
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
 
 import initTelemetryClient from "../../utils/appinsights.js";
 import { getConfigOrThrow } from "../../utils/config.js";
-import { HttpResponseInit } from "../../utils/middleware.js";
 import { getRedisClientFactory } from "../../utils/redis.js";
 import { ValidateOtp } from "./handler.js";
 
