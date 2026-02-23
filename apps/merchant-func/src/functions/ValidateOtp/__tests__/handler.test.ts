@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { InvocationContext } from "@azure/functions";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers.js";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings.js";
 import * as date_fns from "date-fns";
@@ -21,12 +20,6 @@ import {
 } from "../handler.js";
 
 setTelemetryClient(telemetryClientMock);
-
-const mockContext = {
-  log: jest.fn(),
-} as unknown as InvocationContext;
-
-const mockRequest = {} as any;
 
 const now = new Date();
 const anOtpCode = "AAAAAAAA123" as OtpCode;
@@ -70,22 +63,14 @@ describe("ValidateOtpHandler", () => {
       TE.left(new Error("Cannot read from Redis")),
     );
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(aValidationPayload, mockRequest, mockContext);
-    const response = await resultTE();
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    const response = await handler(aValidationPayload);
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
   it("should return an internal error if Otp payload cannot be parsed", async () => {
     getTaskMock.mockImplementationOnce(() => TE.of(O.some("")));
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(aValidationPayload, mockRequest, mockContext);
-    const response = await resultTE();
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    const response = await handler(aValidationPayload);
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
 
   it("should return an internal error if Redis delete fails", async () => {
@@ -93,86 +78,49 @@ describe("ValidateOtpHandler", () => {
       TE.left("Cannot delete from Redis"),
     );
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(
-      aValidationPayloadWithInvalidation,
-      mockRequest,
-      mockContext,
-    );
-    const response = await resultTE();
+    const response = await handler(aValidationPayloadWithInvalidation);
     expect(deleteTaskMock).toBeCalledTimes(1);
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
 
   it("should return an internal error if OTP delete fails", async () => {
     deleteTaskMock.mockImplementationOnce(() => TE.of(false));
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(
-      aValidationPayloadWithInvalidation,
-      mockRequest,
-      mockContext,
-    );
-    const response = await resultTE();
+    const response = await handler(aValidationPayloadWithInvalidation);
     expect(deleteTaskMock).toBeCalledTimes(1);
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
 
   it("should return an internal error if fiscalCode-OTP delete fails", async () => {
     deleteTaskMock.mockImplementationOnce(() => TE.of(true));
     deleteTaskMock.mockImplementationOnce(() => TE.of(false));
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(
-      aValidationPayloadWithInvalidation,
-      mockRequest,
-      mockContext,
-    );
-    const response = await resultTE();
+    const response = await handler(aValidationPayloadWithInvalidation);
     expect(deleteTaskMock).toBeCalledTimes(2);
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
 
   it("should return Not found if Otp code doesn't match on Redis", async () => {
     getTaskMock.mockImplementationOnce(() => TE.of(O.none));
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(aValidationPayload, mockRequest, mockContext);
-    const response = await resultTE();
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorNotFound");
-    }
+    const response = await handler(aValidationPayload);
+    expect(response.kind).toBe("IResponseErrorNotFound");
   });
 
   it("should return success if otp validation succeed", async () => {
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(aValidationPayload, mockRequest, mockContext);
-    const response = await resultTE();
-    expect(response._tag).toBe("Right");
-    if (response._tag === "Right") {
-      expect(response.right.kind).toBe("IResponseSuccessJson");
-      if (response.right.kind === "IResponseSuccessJson") {
-        expect(response.right.value).toEqual({
-          expires_at: anOtp.expires_at,
-        });
-      }
+    const response = await handler(aValidationPayload);
+    expect(response.kind).toBe("IResponseSuccessJson");
+    if (response.kind === "IResponseSuccessJson") {
+      expect(response.value).toEqual({
+        expires_at: anOtp.expires_at,
+      });
     }
   });
 
   it("should return success if otp validation and delete succeed", async () => {
     const handler = ValidateOtpHandler({} as any);
-    const resultTE = handler(
-      aValidationPayloadWithInvalidation,
-      mockRequest,
-      mockContext,
-    );
-    const response = await resultTE();
+    const response = await handler(aValidationPayloadWithInvalidation);
     expect(deleteTaskMock).toBeCalledTimes(2);
     expect(deleteTaskMock).toHaveBeenNthCalledWith(
       1,
@@ -184,14 +132,12 @@ describe("ValidateOtpHandler", () => {
       expect.any(Object),
       `${OTP_FISCAL_CODE_PREFIX}${anOtpPayload.fiscalCode}`,
     );
-    expect(response._tag).toBe("Right");
-    if (response._tag === "Right") {
-      expect(response.right.kind).toBe("IResponseSuccessJson");
-      if (response.right.kind === "IResponseSuccessJson") {
-        expect(
-          date_fns.isBefore(response.right.value.expires_at, anOtp.expires_at),
-        ).toBeTruthy();
-      }
+    expect(response.kind).toBe("IResponseSuccessJson");
+    if (response.kind === "IResponseSuccessJson") {
+      expect(
+        date_fns.isBefore(response.value.expires_at, anOtp.expires_at),
+      ).toBeTruthy();
     }
   });
 });
+

@@ -1,4 +1,5 @@
-import { HttpRequest, InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter/index.js";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload.js";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters.js";
 import {
   IResponseErrorForbiddenNotAuthorized,
@@ -22,11 +23,6 @@ import { OtpValidationResponse } from "../../../generated/definitions/OtpValidat
 import { Timestamp } from "../../../generated/definitions/Timestamp.js";
 import { ValidateOtpPayload } from "../../../generated/definitions/ValidateOtpPayload.js";
 import { trackErrorToVoid } from "../../utils/appinsights.js";
-import {
-  requireBodyPayload,
-  withMiddlewares,
-  wrapV4RequestHandler,
-} from "../../utils/middleware.js";
 import { errorObfuscation } from "../../utils/privacy.js";
 import { RedisClientFactory } from "../../utils/redis.js";
 import { deleteTask, getTask } from "../../utils/redis_storage.js";
@@ -52,11 +48,8 @@ type ValidateOtpErrorResponseTypes =
 
 type IGetValidateOtpHandler = (
   payload: ValidateOtpPayload,
-  request: HttpRequest,
-  context: InvocationContext,
-) => TE.TaskEither<
-  ValidateOtpErrorResponseTypes,
-  IResponseSuccessJson<OtpValidationResponse>
+) => Promise<
+  IResponseSuccessJson<OtpValidationResponse> | ValidateOtpErrorResponseTypes
 >;
 
 export const CommonOtpPayload = t.interface({
@@ -138,8 +131,7 @@ const invalidateOtp = (
 
 export const ValidateOtpHandler =
   (redisClientFactory: RedisClientFactory): IGetValidateOtpHandler =>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (payload, _request, _context): ReturnType<IGetValidateOtpHandler> => {
+  async (payload): ReturnType<IGetValidateOtpHandler> => {
     const obfuscate = errorObfuscation(
       payload.otp_code.toString() as NonEmptyString,
     );
@@ -177,15 +169,14 @@ export const ValidateOtpHandler =
         ),
       ),
       TE.map(ResponseSuccessJson),
-    );
+      TE.toUnion,
+    )();
   };
 
 export const ValidateOtp = (redisClientFactory: RedisClientFactory) => {
   const handler = ValidateOtpHandler(redisClientFactory);
-
-  const middlewareWrap = withMiddlewares(
-    requireBodyPayload(ValidateOtpPayload),
-  )(handler);
-
-  return wrapV4RequestHandler(middlewareWrap);
+  const middlewares = [
+    RequiredBodyPayloadMiddleware(ValidateOtpPayload),
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
 };

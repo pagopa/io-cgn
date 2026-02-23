@@ -1,14 +1,7 @@
-import { InvocationContext } from "@azure/functions";
 import * as TE from "fp-ts/lib/TaskEither.js";
 
 import { HealthCheck, HealthProblem } from "../../../utils/healthcheck.js";
 import { InfoHandler } from "../handler.js";
-
-const mockContext = {
-  log: jest.fn(),
-} as unknown as InvocationContext;
-
-const mockRequest = {} as any;
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -22,25 +15,17 @@ describe("InfoHandler", () => {
     ]);
     const handler = InfoHandler(healthCheck);
 
-    const resultTE = handler(mockRequest, mockContext);
-    const response = await resultTE();
+    const response = await handler();
 
-    expect(response._tag).toBe("Left");
-    if (response._tag === "Left") {
-      expect(response.left.kind).toBe("IResponseErrorInternal");
-    }
+    expect(response.kind).toBe("IResponseErrorInternal");
   });
 
   it("should return a success if the application is healthy", async () => {
     const healthCheck: HealthCheck = TE.of(true);
     const handler = InfoHandler(healthCheck);
 
-    const resultTE = handler(mockRequest, mockContext);
-    const response = await resultTE();
+    const response = await handler();
 
-    expect(response._tag).toBe("Right");
-    if (response._tag === "Right") {
-      expect(response.right.kind).toBe("IResponseSuccessJson");
-    }
+    expect(response.kind).toBe("IResponseSuccessJson");
   });
 });
