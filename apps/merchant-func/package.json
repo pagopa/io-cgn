@@ -13,7 +13,7 @@
   "scripts": {
     "build": "pnpm clean && pnpm generate:definitions && pnpm esm:generated && tsc",
     "clean": "shx rm -rf dist",
-    "esm:generated": "ts2esm generated/**/*.ts",
+    "esm:generated": "ts2esm",
     "start": "dotenv -e .env func start --javascript",
     "test": "jest",
     "test:coverage": "jest --coverage",
