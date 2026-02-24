@@ -6,12 +6,7 @@
     }
   },
   "extensions": {
-    "http": {
-      "routePrefix": ""
-    },
-    "durableTask": {
-      "hubName": "FunctionsTemplateHub"
-    }
+    "http": { "routePrefix": "" }
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
