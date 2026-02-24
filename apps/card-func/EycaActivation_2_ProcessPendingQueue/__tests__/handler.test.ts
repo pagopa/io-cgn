@@ -33,7 +33,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos EYCA")
@@ -56,7 +56,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot upsert cosmos EYCA")
@@ -79,7 +79,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -102,7 +102,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -125,7 +125,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Error")
@@ -144,7 +144,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -163,7 +163,7 @@ describe("ProcessPendingEycaQueue", () => {
       storeCardExpirationMock,
       preIssueEycaCardMock,
       queueStorageMock
-    )(context, cardPendingMessageMock);
+    )(cardPendingMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 

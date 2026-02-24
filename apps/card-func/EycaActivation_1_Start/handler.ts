@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
   IResponseErrorConflict,
@@ -17,7 +14,6 @@ import {
   ResponseSuccessRedirectToResource,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -37,7 +33,7 @@ import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
 
 type IStartEycaActivationHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
 ) => Promise<
   | IResponseErrorConflict
@@ -53,7 +49,7 @@ type IStartEycaActivationHandler = (
  * @returns
  */
 const shouldActivateNewEyca = (
-  context: Context,
+  context: InvocationContext,
   userEycaCardModel: UserEycaCardModel,
   fiscalCode: FiscalCode,
 ): TE.TaskEither<IResponseErrorConflict | IResponseErrorInternal, boolean> =>
@@ -109,7 +105,7 @@ export const StartEycaActivationHandler =
     eycaUpperBoundAge: NonNegativeInteger,
     queueStorage: QueueStorage,
   ): IStartEycaActivationHandler =>
-  async (context: Context, fiscalCode: FiscalCode) =>
+  async (context: InvocationContext, fiscalCode: FiscalCode) =>
     pipe(
       shouldActivateNewEyca(context, userEycaCardModel, fiscalCode),
       TE.chainW(() =>
@@ -152,15 +148,15 @@ export const StartEycaActivation = (
   userEycaCardModel: UserEycaCardModel,
   eycaUpperBoundAge: NonNegativeInteger,
   queueStorage: QueueStorage,
-): express.RequestHandler => {
+) => {
   const handler = StartEycaActivationHandler(
     userEycaCardModel,
     eycaUpperBoundAge,
     queueStorage,
   );
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("fiscalcode", FiscalCode),
-  );
-  return wrapRequestHandler(middlewaresWrap(handler));
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
 };

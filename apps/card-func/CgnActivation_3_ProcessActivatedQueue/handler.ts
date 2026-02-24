@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
@@ -151,8 +151,8 @@ export const handler =
     eycaUpperBoundAge: NonNegativeInteger,
   ) =>
   (
-    context: Context,
     activatedCgnMessage: CardActivatedMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       // get the card

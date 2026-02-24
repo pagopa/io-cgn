@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as AR from "fp-ts/ReadonlyArray";
@@ -169,8 +169,8 @@ export const handler =
     deleteCgnExpiration: DeleteCardExpirationFunction,
   ) =>
   (
-    context: Context,
     pendingDeleteCgnMessage: CardPendingDeleteMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       // create or get a pending delete card

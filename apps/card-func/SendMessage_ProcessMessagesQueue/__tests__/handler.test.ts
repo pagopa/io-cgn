@@ -35,8 +35,8 @@ describe("SendMessageHandler", () => {
     );
 
     const promised = handler(mockGetProfile, mockSendMessage)(
+      aMessageToSendMessageMock,
       context,
-      aMessageToSendMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -53,8 +53,8 @@ describe("SendMessageHandler", () => {
     );
 
     const promised = handler(mockGetProfile, mockSendMessage)(
+      aMessageToSendMessageMock,
       context,
-      aMessageToSendMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -71,8 +71,8 @@ describe("SendMessageHandler", () => {
     );
 
     const promised = handler(mockGetProfile, mockSendMessage)(
+      aMessageToSendMessageMock,
       context,
-      aMessageToSendMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);
@@ -83,8 +83,8 @@ describe("SendMessageHandler", () => {
 
   it("should succeeed when profile is found and message is sent", async () => {
     const promised = handler(mockGetProfile, mockSendMessage)(
+      aMessageToSendMessageMock,
       context,
-      aMessageToSendMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);

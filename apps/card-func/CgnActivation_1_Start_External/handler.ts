@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import {
@@ -20,7 +17,6 @@ import {
   ResponseSuccessAccepted,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -44,7 +40,7 @@ import { trackError } from "../utils/errors";
 import { QueueStorage } from "../utils/queue";
 
 type IStartCgnActivationHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCodePayload: FiscalCodePayload,
 ) => Promise<
   | IResponseErrorConflict
@@ -62,7 +58,7 @@ type IStartCgnActivationHandler = (
  * @param fiscalCode: the citizen's fiscalCode
  */
 const getCgnExpirationDataTask = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
   cgnUpperBoundAge: NonNegativeInteger,
 ): TE.TaskEither<
@@ -147,7 +143,7 @@ const getProfile = (
  * @returns
  */
 const shouldActivateNewCGN = (
-  context: Context,
+  context: InvocationContext,
   servicesClient: ServicesAPIClient,
   userCgnModel: UserCgnModel,
   fiscalCode: FiscalCode,
@@ -210,7 +206,7 @@ export const StartCgnActivationHandler =
     cgnUpperBoundAge: NonNegativeInteger,
     queueStorage: QueueStorage,
   ): IStartCgnActivationHandler =>
-  async (context: Context, fiscalCodePayload: FiscalCodePayload) =>
+  async (context: InvocationContext, fiscalCodePayload: FiscalCodePayload) =>
     pipe(
       shouldActivateNewCGN(
         context,
@@ -251,16 +247,16 @@ export const StartCgnActivation = (
   userCgnModel: UserCgnModel,
   cgnUpperBoundAge: NonNegativeInteger,
   queueStorage: QueueStorage,
-): express.RequestHandler => {
+) => {
   const handler = StartCgnActivationHandler(
     servicesClient,
     userCgnModel,
     cgnUpperBoundAge,
     queueStorage,
   );
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredBodyPayloadMiddleware(FiscalCodePayload),
-  );
-  return wrapRequestHandler(middlewaresWrap(handler));
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
 };

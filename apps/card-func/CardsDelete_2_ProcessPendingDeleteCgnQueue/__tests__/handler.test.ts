@@ -59,7 +59,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
@@ -80,7 +80,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot upsert cosmos CGN")
@@ -103,7 +103,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -124,7 +124,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot upsert service with response code 500")
@@ -145,7 +145,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -164,7 +164,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -181,7 +181,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -207,7 +207,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -233,7 +233,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -259,7 +259,7 @@ describe("ProcessPendingDeleteCgnQueue", () => {
       userCgnModelMock,
       servicesClientMock,
       deleteCardExpirationMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 

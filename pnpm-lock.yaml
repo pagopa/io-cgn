@@ -115,12 +115,12 @@ importers:
       '@azure/cosmos':
         specifier: ^4.2.0
         version: 4.5.1
-      '@pagopa/express-azure-functions':
-        specifier: ^4.0.1
-        version: 4.0.1(express@4.21.2)
+      '@azure/functions':
+        specifier: ^4.11.2
+        version: 4.11.2
       '@pagopa/io-functions-commons':
-        specifier: ^29.1.1
-        version: 29.3.1(@azure/functions@3.5.1)(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
+        specifier: ^30.0.0
+        version: 30.0.0(@azure/functions@4.11.2)(@pagopa/ts-commons@13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11)))(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
       '@pagopa/ts-commons':
         specifier: ^13.1.2
         version: 13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
@@ -133,9 +133,6 @@ importers:
       date-fns:
         specifier: ^2.16.1
         version: 2.30.0
-      express:
-        specifier: ^4.15.3
-        version: 4.21.2
       fp-ts:
         specifier: ^2.11.1
         version: 2.16.11
@@ -152,18 +149,12 @@ importers:
         specifier: ^2.3.0
         version: 2.4.0
     devDependencies:
-      '@azure/functions':
-        specifier: ^3.2.0
-        version: 3.5.1
       '@pagopa/eslint-config':
         specifier: ^4.0.1
         version: 4.0.6(eslint@8.57.0)(prettier@3.6.2)
       '@pagopa/openapi-codegen-ts':
         specifier: ^12.0.3
         version: 12.2.1(chokidar@3.6.0)
-      '@types/express':
-        specifier: ^4.17.9
-        version: 4.17.23
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
@@ -548,8 +539,16 @@ packages:
     resolution: {integrity: sha512-jGk1s1SbAfy39zxArNn4HAmycmHF/+XtYYRZ6kakayxJNQeeuacSkLUioezOZIVI01i3Yvr4xzTMuKZpdKXf1Q==}
     engines: {node: '>=18.0.0'}
 
+  '@azure/functions-extensions-base@0.2.0':
+    resolution: {integrity: sha512-ncCkHBNQYJa93dBIh+toH0v1iSgCzSo9tr94s6SMBe7DPWREkaWh8cq33A5P4rPSFX1g5W+3SPvIzDr/6/VOWQ==}
+    engines: {node: '>=18.0'}
+
   '@azure/functions@3.5.1':
     resolution: {integrity: sha512-6UltvJiuVpvHSwLcK/Zc6NfUwlkDLOFFx97BHCJzlWNsfiWwzwmTsxJXg4kE/LemKTHxPpfoPE+kOJ8hAdiKFQ==}
+
+  '@azure/functions@4.11.2':
+    resolution: {integrity: sha512-U7qpPo0pUxDfdP3Q8gO5GLtust94nh8+RtIUvEKE4qU9yuDhL2vU1zzanuzkaV2j/TFv+EEmN8QDtchAgpeffw==}
+    engines: {node: '>=20.0'}
 
   '@azure/functions@4.8.0':
     resolution: {integrity: sha512-LNtl3xZNE40vE7+SIST+GYQX5cnnI1M65fXPi26l9XCdPakuQrz54lHv+qQQt1GG5JbqLfQk75iM7A6Y9O+2dQ==}
@@ -6284,11 +6283,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@azure/functions-extensions-base@0.2.0': {}
+
   '@azure/functions@3.5.1':
     dependencies:
       iconv-lite: 0.6.3
       long: 4.0.0
       uuid: 8.3.2
+
+  '@azure/functions@4.11.2':
+    dependencies:
+      '@azure/functions-extensions-base': 0.2.0
+      cookie: 0.7.2
 
   '@azure/functions@4.8.0':
     dependencies:
@@ -7736,6 +7742,37 @@ snapshots:
       - encoding
       - supports-color
 
+  '@pagopa/io-functions-commons@30.0.0(@azure/functions@4.11.2)(@pagopa/ts-commons@13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11)))(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))':
+    dependencies:
+      '@azure/cosmos': 4.5.1
+      '@azure/data-tables': 13.3.1
+      '@azure/functions': 4.11.2
+      '@pagopa/ts-commons': 13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
+      applicationinsights: 2.9.8
+      azure-storage: 2.10.7
+      cidr-matcher: 2.1.1
+      express: 4.21.2
+      fp-ts: 2.16.11
+      helmet: 4.6.0
+      helmet-csp: 2.10.0
+      io-ts: 2.2.22(fp-ts@2.16.11)
+      node-fetch: 2.7.0
+      nodemailer: 6.10.1
+      nodemailer-sendgrid: 1.0.3
+      referrer-policy: 1.2.0
+      rehype-stringify: 3.0.0
+      remark-frontmatter: 2.0.0
+      remark-parse: 5.0.0
+      remark-rehype: 3.0.2
+      request-ip: 3.3.0
+      ulid: 2.4.0
+      unified: 9.2.2
+      winston: 3.17.0
+    transitivePeerDependencies:
+      - applicationinsights-native-metrics
+      - encoding
+      - supports-color
+
   '@pagopa/io-functions-commons@30.0.0(@azure/functions@4.8.0)(@pagopa/ts-commons@11.0.0)(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))':
     dependencies:
       '@azure/cosmos': 4.5.1
@@ -8419,7 +8456,7 @@ snapshots:
   applicationinsights@3.10.0:
     dependencies:
       '@azure/core-auth': 1.10.1
-      '@azure/functions': 4.8.0
+      '@azure/functions': 4.11.2
       '@azure/functions-old': '@azure/functions@3.5.1'
       '@azure/identity': 4.12.0
       '@azure/monitor-opentelemetry': 1.14.0

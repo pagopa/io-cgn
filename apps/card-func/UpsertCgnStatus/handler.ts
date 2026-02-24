@@ -1,11 +1,8 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorConflict,
   IResponseErrorInternal,
@@ -17,7 +14,6 @@ import {
   ResponseSuccessAccepted,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
@@ -36,7 +32,7 @@ type ErrorTypes =
 type ReturnTypes = ErrorTypes | IResponseSuccessAccepted<void>;
 
 type IUpsertCgnStatusHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
   cgnStatusUpsertRequest: CgnStatusUpsertRequest,
 ) => Promise<ReturnTypes>;
@@ -118,20 +114,18 @@ export const UpsertCgnStatusHandler =
         ),
       ),
       // eslint-disable-next-line
-      TE.map(() => ResponseSuccessAccepted<void>("Revoke request accepted")),
+        TE.map(() => ResponseSuccessAccepted<void>("Revoke request accepted")),
       TE.toUnion,
     )();
 
-export const UpsertCgnStatus = (
-  userCgnModel: UserCgnModel,
-): express.RequestHandler => {
+export const UpsertCgnStatus = (userCgnModel: UserCgnModel) => {
   const handler = UpsertCgnStatusHandler(userCgnModel);
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("fiscalcode", FiscalCode),
     RequiredBodyPayloadMiddleware(CgnStatusUpsertRequest),
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 };

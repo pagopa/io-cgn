@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -70,8 +70,8 @@ export const handler =
     queueStorage: QueueStorage,
   ) =>
   (
-    context: Context,
     pendingEycaMessage: CardPendingMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       // create or get a pending card

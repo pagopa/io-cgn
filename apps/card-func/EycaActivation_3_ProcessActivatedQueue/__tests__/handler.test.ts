@@ -34,7 +34,7 @@ describe("ProcessActivatedEycaQueue", () => {
       userEycaCardModelMock,
       updateCcdbEycaCardMock,
       queueStorageMock
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos EYCA")
@@ -52,7 +52,7 @@ describe("ProcessActivatedEycaQueue", () => {
       userEycaCardModelMock,
       updateCcdbEycaCardMock,
       queueStorageMock
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -68,7 +68,7 @@ describe("ProcessActivatedEycaQueue", () => {
       userEycaCardModelMock,
       updateCcdbEycaCardMock,
       queueStorageMock
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot update cosmos EYCA")
@@ -86,7 +86,7 @@ describe("ProcessActivatedEycaQueue", () => {
       userEycaCardModelMock,
       updateCcdbEycaCardMock,
       queueStorageMock
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("error")
@@ -102,7 +102,7 @@ describe("ProcessActivatedEycaQueue", () => {
       userEycaCardModelMock,
       updateCcdbEycaCardMock,
       queueStorageMock
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 

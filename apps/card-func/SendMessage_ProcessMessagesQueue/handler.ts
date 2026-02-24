@@ -1,4 +1,4 @@
-﻿import { Context } from "@azure/functions";
+﻿import { InvocationContext } from "@azure/functions";
 import { MessageContent } from "@pagopa/io-functions-commons/dist/generated/definitions/MessageContent";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/lib/Either";
@@ -53,8 +53,8 @@ const checkSendMessageStatus = (
 export const handler =
   (getProfile: GetProfile, sendMessage: SendMessage) =>
   (
-    context: Context,
     messageToSendMessage: MessageToSendMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       TE.tryCatch(

@@ -39,8 +39,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
     );
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -56,8 +56,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
     eycaUpsertModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -73,8 +73,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
     enqueueMessageMock.mockReturnValueOnce(TE.left(new Error("error")));
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
@@ -88,8 +88,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
     eycaFindLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);
@@ -110,8 +110,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
     );
 
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);
@@ -123,8 +123,8 @@ describe("EycaExpired_2_ProcessExpiredEycaQueue", () => {
 
   it("should succeed when eyca expires successfully", async () => {
     const promised = handler(userEycaCardModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);

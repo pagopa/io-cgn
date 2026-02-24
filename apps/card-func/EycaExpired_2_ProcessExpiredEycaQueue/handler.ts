@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -94,8 +94,8 @@ const expireCardIfNotExpired = (
 export const handler =
   (userEycaCardModel: UserEycaCardModel, queueStorage: QueueStorage) =>
   (
-    context: Context,
     expiredEycaMessage: CardExpiredMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       // create or get a pending card

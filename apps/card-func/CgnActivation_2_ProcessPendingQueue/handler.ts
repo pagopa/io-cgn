@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { IResponseType } from "@pagopa/ts-commons/lib/requests";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
@@ -123,7 +123,10 @@ export const handler =
     storeCgnExpiration: StoreCardExpirationFunction,
     queueStorage: QueueStorage,
   ) =>
-  (context: Context, pendingCgnMessage: CardPendingMessage): Promise<boolean> =>
+  (
+    pendingCgnMessage: CardPendingMessage,
+    context: InvocationContext,
+  ): Promise<boolean> =>
     pipe(
       // create or get a pending card
       createOrGetCgnCard(userCgnModel, pendingCgnMessage.fiscal_code),
