@@ -1,0 +1,182 @@
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter/index.js";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload.js";
+import { readableReport } from "@pagopa/ts-commons/lib/reporters.js";
+import {
+  IResponseErrorForbiddenNotAuthorized,
+  IResponseErrorInternal,
+  IResponseErrorNotFound,
+  IResponseSuccessJson,
+  ResponseErrorInternal,
+  ResponseErrorNotFound,
+  ResponseSuccessJson,
+} from "@pagopa/ts-commons/lib/responses.js";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings.js";
+import * as E from "fp-ts/lib/Either.js";
+import { parse } from "fp-ts/lib/Json.js";
+import * as O from "fp-ts/lib/Option.js";
+import * as TE from "fp-ts/lib/TaskEither.js";
+import { flow, pipe } from "fp-ts/lib/function.js";
+import * as t from "io-ts";
+
+import { OtpCode } from "../../../generated/definitions/OtpCode.js";
+import { OtpValidationResponse } from "../../../generated/definitions/OtpValidationResponse.js";
+import { Timestamp } from "../../../generated/definitions/Timestamp.js";
+import { ValidateOtpPayload } from "../../../generated/definitions/ValidateOtpPayload.js";
+import { trackErrorToVoid } from "../../utils/appinsights.js";
+import { errorObfuscation } from "../../utils/privacy.js";
+import { RedisClientFactory } from "../../utils/redis.js";
+import { deleteTask, getTask } from "../../utils/redis_storage.js";
+
+// This value is used on redis to prefix key value pair of type
+// KEY            | VALUE
+// OTP_${otp_code}| {fiscalCode: "...", expires_at: "...", ttl: "..."}
+// This prefix must be the same used by io-functions-cgn
+// here https://github.com/pagopa/io-functions-cgn/blob/e2607c695556fecdccce8e969c5da978a641fc61/GenerateOtp/redis.ts#L23
+export const OTP_PREFIX = "OTP_";
+
+// This value is used on redis to prefix key value pair of type
+// KEY                          | VALUE
+// OTP_FISCALCODE_${fiscalCode} | otp_code
+// This prefix must be the same used by io-functions-cgn
+// here https://github.com/pagopa/io-functions-cgn/blob/e2607c695556fecdccce8e969c5da978a641fc61/GenerateOtp/redis.ts#L22
+export const OTP_FISCAL_CODE_PREFIX = "OTP_FISCALCODE_";
+
+type ValidateOtpErrorResponseTypes =
+  | IResponseErrorForbiddenNotAuthorized
+  | IResponseErrorInternal
+  | IResponseErrorNotFound;
+
+type IGetValidateOtpHandler = (
+  payload: ValidateOtpPayload,
+) => Promise<
+  IResponseSuccessJson<OtpValidationResponse> | ValidateOtpErrorResponseTypes
+>;
+
+export const CommonOtpPayload = t.interface({
+  expiresAt: Timestamp,
+  fiscalCode: FiscalCode,
+});
+
+export type CommonOtpPayload = t.TypeOf<typeof CommonOtpPayload>;
+
+export const OtpResponseAndFiscalCode = t.interface({
+  fiscalCode: FiscalCode,
+  otpResponse: OtpValidationResponse,
+});
+
+export type OtpResponseAndFiscalCode = t.TypeOf<
+  typeof OtpResponseAndFiscalCode
+>;
+
+const retrieveOtp = (
+  redisClientFactory: RedisClientFactory,
+  otpCode: OtpCode,
+): TE.TaskEither<Error, O.Option<OtpResponseAndFiscalCode>> =>
+  pipe(
+    getTask(redisClientFactory, `${OTP_PREFIX}${otpCode}`),
+    TE.chain(
+      O.fold(
+        () => TE.of(O.none),
+        flow(
+          parse,
+          E.mapLeft(E.toError),
+          TE.fromEither,
+          TE.chain(
+            flow(
+              CommonOtpPayload.decode,
+              TE.fromEither,
+              TE.mapLeft(
+                (e) =>
+                  new Error(`Cannot decode Otp Payload [${readableReport(e)}]`),
+              ),
+            ),
+          ),
+          TE.map((otpPayload) =>
+            O.some({
+              fiscalCode: otpPayload.fiscalCode,
+              otpResponse: {
+                expires_at: otpPayload.expiresAt,
+              },
+            }),
+          ),
+        ),
+      ),
+    ),
+  );
+
+const invalidateOtp = (
+  redisClientFactory: RedisClientFactory,
+  otpCode: OtpCode,
+  fiscalCode: FiscalCode,
+): TE.TaskEither<Error, true> =>
+  pipe(
+    deleteTask(redisClientFactory, `${OTP_PREFIX}${otpCode}`),
+    TE.chain(
+      TE.fromPredicate(
+        (result) => result,
+        () => new Error("Unexpected delete OTP operation"),
+      ),
+    ),
+    TE.chain(() =>
+      deleteTask(redisClientFactory, `${OTP_FISCAL_CODE_PREFIX}${fiscalCode}`),
+    ),
+    TE.chain(
+      TE.fromPredicate(
+        (result) => result,
+        () => new Error("Unexpected delete fiscalCode operation"),
+      ),
+    ),
+    TE.map(() => true),
+  );
+
+export const ValidateOtpHandler =
+  (redisClientFactory: RedisClientFactory): IGetValidateOtpHandler =>
+  async (payload): ReturnType<IGetValidateOtpHandler> => {
+    const obfuscate = errorObfuscation(
+      payload.otp_code.toString() as NonEmptyString,
+    );
+    return pipe(
+      retrieveOtp(redisClientFactory, payload.otp_code),
+      TE.mapLeft(
+        flow(obfuscate, trackErrorToVoid, () =>
+          ResponseErrorInternal("Cannot validate OTP"),
+        ),
+      ),
+      TE.chain(
+        O.fold(
+          () =>
+            TE.left<IResponseErrorInternal | IResponseErrorNotFound>(
+              ResponseErrorNotFound("Not Found", "OTP Not Found or invalid"),
+            ),
+          (otpResponseAndFiscalCode) =>
+            payload.invalidate_otp
+              ? pipe(
+                  invalidateOtp(
+                    redisClientFactory,
+                    payload.otp_code,
+                    otpResponseAndFiscalCode.fiscalCode,
+                  ),
+                  TE.bimap(
+                    flow(obfuscate, trackErrorToVoid, () =>
+                      ResponseErrorInternal("Cannot invalidate OTP"),
+                    ),
+                    () => ({
+                      expires_at: new Date(),
+                    }),
+                  ),
+                )
+              : TE.of(otpResponseAndFiscalCode.otpResponse),
+        ),
+      ),
+      TE.map(ResponseSuccessJson),
+      TE.toUnion,
+    )();
+  };
+
+export const ValidateOtp = (redisClientFactory: RedisClientFactory) => {
+  const handler = ValidateOtpHandler(redisClientFactory);
+  const middlewares = [
+    RequiredBodyPayloadMiddleware(ValidateOtpPayload),
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
+};

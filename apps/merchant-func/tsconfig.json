@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "rootDir": ".",
+    "module": "nodenext",
+    "target": "es2022",
+    "moduleResolution": "node16",
     "outDir": "dist",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "strict": true,
-    "sourceMap": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "sourceMap": true,
+    "inlineSources": true
   },
   "exclude": [
     "__mocks__",
     "dist",
     "node_modules",
-    "**/__tests__/*"
+    "*/**/**.test.ts"
   ]
 }
