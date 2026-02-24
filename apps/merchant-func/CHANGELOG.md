@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.0.6
+
+### Patch Changes
+
+- 3aab0ba: moved to PMv4 and ESM
+
 ## 4.0.5
 
 ### Patch Changes
