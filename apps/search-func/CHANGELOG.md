@@ -1,5 +1,11 @@
 ### Changelog
 
+## 3.5.3
+
+### Patch Changes
+
+- 6dfae11: Migrated to PMv4
+
 ## 3.5.2
 
 ### Patch Changes
