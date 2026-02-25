@@ -1,11 +1,11 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { IResponse } from "@pagopa/ts-commons/lib/responses";
 import { pipe } from "fp-ts/lib/function";
 
 import { trackErrorToVoid } from "./appinsights";
 
 export const trackError =
-  (context: Context, logPrefix: string) =>
+  (context: InvocationContext, logPrefix: string) =>
   (error: Error): Error => {
     trackErrorToVoid(error, {
       detail: error.message,
@@ -16,7 +16,7 @@ export const trackError =
   };
 
 export const trackErrorAndReturnResponse = <T>(
-  context: Context,
+  context: InvocationContext,
   logPrefix: string,
   error: string,
   response: IResponse<T>,

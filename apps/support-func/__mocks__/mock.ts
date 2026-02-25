@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { TelemetryClient } from "applicationinsights";
@@ -88,13 +88,15 @@ export const anEYCAUneligibleFiscalCode =
 export const ccdbNumberMock = "A111-B222-C333-D444" as CcdbNumber;
 
 export const context = {
-  log: {
-    error: jest.fn().mockImplementation((e) => {
-      // eslint-disable-next-line
-      console.log(e);
-    }),
-  },
-} as unknown as Context;
+  // eslint-disable-next-line no-console
+  debug: jest.fn().mockImplementation(console.log),
+  // eslint-disable-next-line no-console
+  error: jest.fn().mockImplementation(console.error),
+  // eslint-disable-next-line no-console
+  log: jest.fn().mockImplementation(console.log),
+  // eslint-disable-next-line no-console
+  warn: jest.fn().mockImplementation(console.warn),
+} as unknown as InvocationContext;
 
 // mock some cgn entities
 export const aUserCardPending: CardPending = {

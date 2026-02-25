@@ -385,12 +385,12 @@ importers:
       '@azure/cosmos':
         specifier: ^4.2.0
         version: 4.5.1
-      '@pagopa/express-azure-functions':
-        specifier: ^4.0.1
-        version: 4.0.1(express@4.21.2)
+      '@azure/functions':
+        specifier: ^4.0.0
+        version: 4.8.0
       '@pagopa/io-functions-commons':
-        specifier: ^29.1.1
-        version: 29.3.1(@azure/functions@3.5.1)(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
+        specifier: ^30.0.0
+        version: 30.0.0(@azure/functions@4.8.0)(@pagopa/ts-commons@13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11)))(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
       '@pagopa/ts-commons':
         specifier: ^13.1.2
         version: 13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
@@ -403,9 +403,6 @@ importers:
       date-fns:
         specifier: ^2.16.1
         version: 2.30.0
-      express:
-        specifier: ^4.15.3
-        version: 4.21.2
       fp-ts:
         specifier: ^2.11.1
         version: 2.16.11
@@ -416,18 +413,12 @@ importers:
         specifier: ^2.6.1
         version: 2.7.0
     devDependencies:
-      '@azure/functions':
-        specifier: ^3.2.0
-        version: 3.5.1
       '@pagopa/eslint-config':
         specifier: ^4.0.1
         version: 4.0.6(eslint@8.57.0)(prettier@3.6.2)
       '@pagopa/openapi-codegen-ts':
         specifier: ^12.0.3
         version: 12.2.1(chokidar@3.6.0)
-      '@types/express':
-        specifier: ^4.17.9
-        version: 4.17.23
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
@@ -7742,6 +7733,37 @@ snapshots:
       '@azure/data-tables': 13.3.1
       '@azure/functions': 4.8.0
       '@pagopa/ts-commons': 11.0.0
+      applicationinsights: 2.9.8
+      azure-storage: 2.10.7
+      cidr-matcher: 2.1.1
+      express: 4.21.2
+      fp-ts: 2.16.11
+      helmet: 4.6.0
+      helmet-csp: 2.10.0
+      io-ts: 2.2.22(fp-ts@2.16.11)
+      node-fetch: 2.7.0
+      nodemailer: 6.10.1
+      nodemailer-sendgrid: 1.0.3
+      referrer-policy: 1.2.0
+      rehype-stringify: 3.0.0
+      remark-frontmatter: 2.0.0
+      remark-parse: 5.0.0
+      remark-rehype: 3.0.2
+      request-ip: 3.3.0
+      ulid: 2.4.0
+      unified: 9.2.2
+      winston: 3.17.0
+    transitivePeerDependencies:
+      - applicationinsights-native-metrics
+      - encoding
+      - supports-color
+
+  '@pagopa/io-functions-commons@30.0.0(@azure/functions@4.8.0)(@pagopa/ts-commons@13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11)))(express@4.21.2)(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))':
+    dependencies:
+      '@azure/cosmos': 4.5.1
+      '@azure/data-tables': 13.3.1
+      '@azure/functions': 4.8.0
+      '@pagopa/ts-commons': 13.1.2(fp-ts@2.16.11)(io-ts@2.2.22(fp-ts@2.16.11))
       applicationinsights: 2.9.8
       azure-storage: 2.10.7
       cidr-matcher: 2.1.1
