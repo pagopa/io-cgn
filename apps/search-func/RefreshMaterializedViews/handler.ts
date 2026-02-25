@@ -1,4 +1,4 @@
-import { AzureFunction, Context } from "@azure/functions";
+import { InvocationContext, Timer } from "@azure/functions";
 import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
@@ -7,9 +7,9 @@ import { QueryTypes, Sequelize } from "sequelize";
 import { trackErrorToVoid, trackEventToVoid } from "../utils/appinsights";
 
 export const getMaterializedViewRefreshHandler =
-  (cgnOperatorDb: Sequelize): AzureFunction =>
+  (cgnOperatorDb: Sequelize) =>
   // eslint-disable-next-line
-  async (_: Context): Promise<boolean> =>
+    async (_timer: Timer, _context: InvocationContext): Promise<boolean> =>
     pipe(
       TE.tryCatch(
         () =>

@@ -1,6 +1,6 @@
-import { getMaterializedViewRefreshHandler } from "../handler";
-import { setTelemetryClient } from "../../utils/appinsights";
 import { telemetryClientMock } from "../../__mocks__/mocks";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { getMaterializedViewRefreshHandler } from "../handler";
 
 setTelemetryClient(telemetryClientMock);
 
@@ -24,7 +24,7 @@ describe("getMaterializedViewRefreshHandler", () => {
   it("should refresh the materialized views", async () => {
     const response = await getMaterializedViewRefreshHandler(
       cgnOperatorDbMock as any
-    )({} as any);
+    )({} as any, {} as any);
 
     expect(queryMock).toBeCalledTimes(1);
     expect(response).toEqual(true);
@@ -35,7 +35,7 @@ describe("getMaterializedViewRefreshHandler", () => {
 
     const response = await getMaterializedViewRefreshHandler(
       cgnOperatorDbMock as any
-    )({} as any);
+    )({} as any, {} as any);
 
     expect(queryMock).toBeCalledTimes(1);
     expect(response).toEqual(false);

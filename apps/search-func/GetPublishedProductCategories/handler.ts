@@ -1,14 +1,10 @@
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { BooleanFromString } from "@pagopa/ts-commons/lib/booleans";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
-import * as express from "express";
 import * as AR from "fp-ts/lib/Array";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
@@ -77,12 +73,10 @@ export const GetPublishedProductCategoriesHandler =
       TE.toUnion,
     )();
 
-export const GetPublishedProductCategories = (
-  cgnOperatorDb: Sequelize,
-): express.RequestHandler => {
+export const GetPublishedProductCategories = (cgnOperatorDb: Sequelize) => {
   const handler = GetPublishedProductCategoriesHandler(cgnOperatorDb);
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     OptionalQueryParamMiddleware("count_new_discounts", BooleanFromString),
-  );
-  return wrapRequestHandler(middlewaresWrap(handler));
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
 };
