@@ -2,7 +2,7 @@
   "name": "support-func",
   "description": "Functions exposed to user support",
   "author": "IO CGN",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "main": "dist/src/main.js",
   "files": [
