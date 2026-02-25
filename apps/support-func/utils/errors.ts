@@ -6,14 +6,14 @@ import { trackErrorToVoid } from "./appinsights";
 
 export const trackError =
   (context: InvocationContext, logPrefix: string) =>
-    (error: Error): Error => {
-      trackErrorToVoid(error, {
-        detail: error.message,
-        isSuccess: "false",
-        name: `cgn.exception.${logPrefix}.failure`,
-      });
-      return error;
-    };
+  (error: Error): Error => {
+    trackErrorToVoid(error, {
+      detail: error.message,
+      isSuccess: "false",
+      name: `cgn.exception.${logPrefix}.failure`,
+    });
+    return error;
+  };
 
 export const trackErrorAndReturnResponse = <T>(
   context: InvocationContext,
