@@ -1,17 +1,13 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorInternal,
   IResponseSuccessJson,
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { withoutUndefinedValues } from "@pagopa/ts-commons/lib/types";
-import * as express from "express";
 import * as AR from "fp-ts/lib/Array";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
@@ -34,7 +30,7 @@ type ResponseTypes =
   | IResponseSuccessJson<OnlineMerchants>;
 
 type IGetOnlineMerchantsHandler = (
-  context: Context,
+  context: InvocationContext,
   searchRequest: OnlineMerchantSearchRequest,
 ) => Promise<ResponseTypes>;
 
@@ -115,15 +111,13 @@ export const GetOnlineMerchantsHandler =
       TE.toUnion,
     )();
 
-export const GetOnlineMerchants = (
-  cgnOperatorDb: Sequelize,
-): express.RequestHandler => {
+export const GetOnlineMerchants = (cgnOperatorDb: Sequelize) => {
   const handler = GetOnlineMerchantsHandler(cgnOperatorDb);
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredBodyPayloadMiddleware(OnlineMerchantSearchRequest),
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 };

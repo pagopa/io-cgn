@@ -1,9 +1,9 @@
-import { Context } from "@azure/functions";
-import { CountHandler } from "../handler";
-import { setTelemetryClient } from "../../utils/appinsights";
+import { InvocationContext } from "@azure/functions";
 import { telemetryClientMock } from "../../__mocks__/mocks";
+import { setTelemetryClient } from "../../utils/appinsights";
+import { CountHandler } from "../handler";
 
-const contextMock = {} as Context;
+const contextMock = {} as InvocationContext;
 
 const aCountMock = { count: 10 };
 

@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
   IResponseErrorInternal,
@@ -14,7 +11,6 @@ import {
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as AR from "fp-ts/lib/Array";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
@@ -41,7 +37,7 @@ type ResponseTypes =
   | IResponseSuccessJson<DiscountBucketCode>;
 
 type IGetDiscountBucketCodeHandler = (
-  context: Context,
+  context: InvocationContext,
   discountId: string,
 ) => Promise<ResponseTypes>;
 
@@ -195,17 +191,17 @@ export const GetDiscountBucketCode = (
   cgnOperatorDb: Sequelize,
   redisClientFactory: RedisClientFactory,
   bucketCodeLockLimit: NonNegativeInteger,
-): express.RequestHandler => {
+) => {
   const handler = GetDiscountBucketCodeHandler(
     cgnOperatorDb,
     redisClientFactory,
     bucketCodeLockLimit,
   );
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("discountId", NonEmptyString),
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 };

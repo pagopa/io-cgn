@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorInternal,
   IResponseErrorNotFound,
@@ -14,7 +11,6 @@ import {
 } from "@pagopa/ts-commons/lib/responses";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { withoutUndefinedValues } from "@pagopa/ts-commons/lib/types";
-import * as express from "express";
 import * as AP from "fp-ts/lib/Apply";
 import * as AR from "fp-ts/lib/Array";
 import * as E from "fp-ts/lib/Either";
@@ -46,7 +42,7 @@ type ResponseTypes =
   | IResponseSuccessJson<Merchant>;
 
 type IGetMerchantHandler = (
-  context: Context,
+  context: InvocationContext,
   merchantId: string,
   maybeFromExternalHeader: O.Option<NonEmptyString>,
 ) => Promise<ResponseTypes>;
@@ -223,14 +219,14 @@ export const GetMerchant = (
   cgnOperatorDb: Sequelize,
   cdnBaseUrl: NonEmptyString,
   fromExternalHeaderName: NonEmptyString,
-): express.RequestHandler => {
+) => {
   const handler = GetMerchantHandler(cgnOperatorDb, cdnBaseUrl);
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("merchantId", NonEmptyString),
     OptionalHeaderParamMiddleware(fromExternalHeaderName, NonEmptyString),
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 };
