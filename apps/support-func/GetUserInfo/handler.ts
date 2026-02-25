@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
-import {
-  IRequestMiddleware,
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
+import { IRequestMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorInternal,
   IResponseErrorNotFound,
@@ -15,7 +12,6 @@ import {
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -33,7 +29,7 @@ type ResponseTypes =
   | IResponseSuccessJson<UserInfo>;
 
 type IGetUserInfoHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
 ) => Promise<ResponseTypes>;
 
@@ -107,13 +103,13 @@ export function GetUserInfoHandler(
 export function GetUserInfo(
   userCgnModel: UserCgnModel,
   userEycaModel: UserEycaCardModel,
-): express.RequestHandler {
+) {
   const handler = GetUserInfoHandler(userCgnModel, userEycaModel);
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     FiscalCodePayloadMiddleware,
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 }
