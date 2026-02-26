@@ -39,8 +39,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
     );
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -56,8 +56,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
     cgnUpsertModelMock.mockReturnValueOnce(TE.left({ kind: "COSMOS_ERROR" }));
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(
@@ -73,8 +73,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
     enqueueMessageMock.mockReturnValueOnce(TE.left(new Error("error")));
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
@@ -88,8 +88,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
     cgnFindLastVersionByModelIdMock.mockReturnValueOnce(TE.right(O.none));
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);
@@ -110,8 +110,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
     );
 
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);
@@ -123,8 +123,8 @@ describe("CgnExpired_2_ProcessExpiredCgnQueue", () => {
 
   it("should succeed when cgn expires successfully", async () => {
     const promised = handler(userCgnModelMock, queueStorageMock)(
+      cardExpiredMessageMock,
       context,
-      cardExpiredMessageMock
     );
 
     await expect(promised).resolves.toStrictEqual(true);

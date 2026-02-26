@@ -1,12 +1,14 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
 import { Card } from "../generated/definitions/Card";
-import { StatusEnum as ExpiredStatusEnum } from "../generated/definitions/CardExpired";
-import { CardExpired } from "../generated/definitions/CardExpired";
+import {
+  CardExpired,
+  StatusEnum as ExpiredStatusEnum,
+} from "../generated/definitions/CardExpired";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
 import { CardExpiredMessage } from "../types/queue-message";
 import { throwError, trackError } from "../utils/errors";
@@ -78,7 +80,10 @@ const expireCardIfNotExpired = (
 
 export const handler =
   (userCgnModel: UserCgnModel, queueStorage: QueueStorage) =>
-  (context: Context, expiredCgnMessage: CardExpiredMessage): Promise<boolean> =>
+  (
+    expiredCgnMessage: CardExpiredMessage,
+    context: InvocationContext,
+  ): Promise<boolean> =>
     pipe(
       expireCardIfNotExpired(userCgnModel, expiredCgnMessage),
       TE.chain(

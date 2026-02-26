@@ -52,7 +52,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos EYCA")
@@ -73,7 +73,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot upsert cosmos EYCA")
@@ -94,7 +94,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -113,7 +113,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -132,7 +132,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -149,7 +149,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -175,7 +175,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -201,7 +201,7 @@ describe("ProcessActivation", () => {
       userEycaCardModelMock,
       deleteCardExpirationMock,
       deleteCcdbEycaCardMock
-    )(context, cardPendingDeleteMessageMock);
+    )(cardPendingDeleteMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 

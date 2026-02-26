@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
@@ -64,8 +64,8 @@ export const handler =
     queueStorage: QueueStorage,
   ) =>
   (
-    context: Context,
     activatedEycaMessage: CardActivatedMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       TE.Do,

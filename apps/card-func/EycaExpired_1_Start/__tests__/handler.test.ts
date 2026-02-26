@@ -26,7 +26,7 @@ describe("EycaExpired_1_Start", () => {
     const promised = getUpdateExpiredEycaHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
     expect(enqueueMessageMock).not.toBeCalled();
@@ -38,7 +38,7 @@ describe("EycaExpired_1_Start", () => {
     const promised = getUpdateExpiredEycaHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
     expect(enqueueMessageMock).toBeCalledTimes(aSetOfExpiredRows.length);
@@ -48,7 +48,7 @@ describe("EycaExpired_1_Start", () => {
     const promised = getUpdateExpiredEycaHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).resolves.toBe(true);
     expect(enqueueMessageMock).toBeCalledTimes(aSetOfExpiredRows.length);

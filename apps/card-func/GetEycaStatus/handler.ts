@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
   IResponseErrorConflict,
@@ -19,7 +16,6 @@ import {
   ResponseSuccessJson,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as TE from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 
@@ -41,7 +37,7 @@ type ErrorTypes =
 type ResponseTypes = ErrorTypes | IResponseSuccessJson<EycaCard>;
 
 type IGetEycaStatusHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
 ) => Promise<ResponseTypes>;
 
@@ -140,17 +136,17 @@ export const GetEycaStatus = (
   userEycaCardModel: UserEycaCardModel,
   userCgnModel: UserCgnModel,
   eycaUpperBoundAge: NonNegativeInteger,
-): express.RequestHandler => {
+) => {
   const handler = GetEycaStatusHandler(
     userEycaCardModel,
     userCgnModel,
     eycaUpperBoundAge,
   );
 
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("fiscalcode", FiscalCode),
-  );
+  ] as const;
 
-  return wrapRequestHandler(middlewaresWrap(handler));
+  return wrapHandlerV4(middlewares, handler);
 };

@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import { HttpStatusCodeEnum } from "@pagopa/ts-commons/lib/responses";
 import {
@@ -137,13 +137,14 @@ export const cardExpiredMessageMock: CardExpiredMessage = {
 };
 
 export const context = {
-  log: {
-    error: jest.fn().mockImplementation((e) => {
-      // eslint-disable-next-line
-      console.log(e);
-    }),
-  },
-} as unknown as Context;
+  debug: jest.fn(),
+  error: jest.fn().mockImplementation((e) => {
+    // eslint-disable-next-line
+    console.log(e);
+  }),
+  log: jest.fn(),
+  warn: jest.fn(),
+} as unknown as InvocationContext;
 
 export const makeServiceResponse = (
   status: HttpStatusCodeEnum,

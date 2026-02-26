@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
 import * as AR from "fp-ts/ReadonlyArray";
 import * as O from "fp-ts/lib/Option";
@@ -113,8 +113,8 @@ export const handler =
     deleteEycaCard: DeleteEycaCard,
   ) =>
   (
-    context: Context,
     pendingDeleteEycaMessage: CardPendingDeleteMessage,
+    context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
       // create or get a pending card

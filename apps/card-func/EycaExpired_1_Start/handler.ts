@@ -1,4 +1,4 @@
-﻿import { Context } from "@azure/functions";
+﻿import { InvocationContext, Timer } from "@azure/functions";
 import * as date_fns from "date-fns";
 import * as RA from "fp-ts/lib/ReadonlyArray";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -16,7 +16,7 @@ export const getUpdateExpiredEycaHandler =
     getExpiredCardUsers: GetExpiredCardUserFunction,
     queueStorage: QueueStorage,
   ) =>
-  async (context: Context): Promise<boolean> =>
+  async (_timer: Timer, context: InvocationContext): Promise<boolean> =>
     pipe(
       date_fns.format(Date.now(), "yyyy-MM-dd"),
       getExpiredCardUsers,

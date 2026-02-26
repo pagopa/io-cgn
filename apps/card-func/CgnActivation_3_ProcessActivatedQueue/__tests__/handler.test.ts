@@ -15,13 +15,13 @@ import {
   makeServiceResponse,
   queueStorageMock,
   servicesClientMock,
+  telemetryClientMock,
   upsertServiceActivationMock,
   userCgnModelMock
 } from "../../__mocks__/mock";
+import { setTelemetryClient } from "../../utils/appinsights";
 import { DEFAULT_EYCA_UPPER_BOUND_AGE } from "../../utils/config";
 import { handler } from "../handler";
-import { setTelemetryClient } from "../../utils/appinsights";
-import { telemetryClientMock } from "../../__mocks__/mock";
 
 setTelemetryClient(telemetryClientMock);
 
@@ -44,7 +44,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot query cosmos CGN")
@@ -64,7 +64,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot find requested CGN")
@@ -86,7 +86,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -106,7 +106,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("Cannot upsert service activation with response code 500")
@@ -126,7 +126,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(
       new Error("COSMOS_ERROR|Cannot update cosmos CGN")
@@ -146,7 +146,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).rejects.toStrictEqual(new Error("Error"));
 
@@ -162,7 +162,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -185,10 +185,10 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, {
+    )({
       ...cardActivatedMessageMock,
       fiscal_code: anEYCAUneligibleFiscalCode
-    });
+    }, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 
@@ -217,7 +217,7 @@ describe("ProcessActivatedCgnQueue", () => {
       servicesClientMock,
       queueStorageMock,
       DEFAULT_EYCA_UPPER_BOUND_AGE
-    )(context, cardActivatedMessageMock);
+    )(cardActivatedMessageMock, context);
 
     await expect(promised).resolves.toStrictEqual(true);
 

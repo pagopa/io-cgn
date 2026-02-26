@@ -1,10 +1,7 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
+import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
 import { RequiredParamMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_param";
-import {
-  withRequestMiddlewares,
-  wrapRequestHandler,
-} from "@pagopa/io-functions-commons/dist/src/utils/request_middleware";
 import {
   IResponseErrorInternal,
   IResponseSuccessRedirectToResource,
@@ -16,7 +13,6 @@ import {
   NonEmptyString,
   Ulid,
 } from "@pagopa/ts-commons/lib/strings";
-import * as express from "express";
 import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
@@ -31,7 +27,7 @@ import { UserEycaCardModel } from "../models/user_eyca_card";
 import { QueueStorage } from "../utils/queue";
 
 type IStartCgnActivationHandler = (
-  context: Context,
+  context: InvocationContext,
   fiscalCode: FiscalCode,
 ) => Promise<
   | IResponseErrorInternal
@@ -174,7 +170,7 @@ export const StartCardsDeleteHandler =
     userEycaCardModel: UserEycaCardModel,
     queueStorage: QueueStorage,
   ): IStartCgnActivationHandler =>
-  async (context: Context, fiscalCode: FiscalCode) =>
+  async (context: InvocationContext, fiscalCode: FiscalCode) =>
     pipe(
       findLastCommonCards(userCgnModel, userEycaCardModel, fiscalCode),
       TE.bind("requestId", () => TE.of(ulid() as Ulid)),
@@ -222,15 +218,15 @@ export const StartCardsDelete = (
   userCgnModel: UserCgnModel,
   userEycaCardModel: UserEycaCardModel,
   queueStorage: QueueStorage,
-): express.RequestHandler => {
+) => {
   const handler = StartCardsDeleteHandler(
     userCgnModel,
     userEycaCardModel,
     queueStorage,
   );
-  const middlewaresWrap = withRequestMiddlewares(
+  const middlewares = [
     ContextMiddleware(),
     RequiredParamMiddleware("fiscalcode", FiscalCode),
-  );
-  return wrapRequestHandler(middlewaresWrap(handler));
+  ] as const;
+  return wrapHandlerV4(middlewares, handler);
 };

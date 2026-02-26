@@ -25,7 +25,7 @@ describe("CgnExpired_1_Start", () => {
     const promised = getUpdateExpiredCgnHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
     expect(enqueueMessageMock).not.toBeCalled();
@@ -37,7 +37,7 @@ describe("CgnExpired_1_Start", () => {
     const promised = getUpdateExpiredCgnHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).rejects.toStrictEqual(new Error("error"));
     expect(enqueueMessageMock).toBeCalledTimes(aSetOfExpiredRows.length);
@@ -47,7 +47,7 @@ describe("CgnExpired_1_Start", () => {
     const promised = getUpdateExpiredCgnHandler(
       getExpiredCardUsersFunctionMock,
       queueStorageMock
-    )(context);
+    )(expect.anything(), context);
 
     await expect(promised).resolves.toBe(true);
     expect(enqueueMessageMock).toBeCalledTimes(aSetOfExpiredRows.length);
