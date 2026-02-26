@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.1.2
+
+### Patch Changes
+
+- e44ad4d: Migrated card-func to PMv4
+
 ## 4.1.1
 
 ### Patch Changes
