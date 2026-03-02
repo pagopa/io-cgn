@@ -15,6 +15,8 @@ Container_Boundary(cgnfunc, "Card Functions",""){
 }
 System_Ext(services, "Services")
 System_Ext(eyca, "Eyca")
+System(apim, "API Manager")
+System_Ext(dol, "DOL")
 
 Rel(backend, cardfunc, "Invoca", "Avvia e controlla attivazione carte")
 Rel(cit,backend, "Richiede servizi CGN")
@@ -24,5 +26,7 @@ Rel(cardfunc,cosmos, "Inserisce dati CGN/EYCA")
 Rel(cardfunc,redis, "Cacha la sessione CCDB Eyca")
 Rel(cardfunc,queue, "Inseriscono stato da processare in coda")
 Rel(queue,cardfunc, "Avviano processing stato CGN/EYCA")
+Rel(dol,apim, "Richiede attivazione CGN dall'esterno","Auth via api key")
+Rel(apim,cardfunc, "Invoca", "Avvia e controlla attivazione carte")
 
 @enduml

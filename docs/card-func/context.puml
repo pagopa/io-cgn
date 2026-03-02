@@ -12,9 +12,13 @@ Boundary(boundary, "IO Backend"){
 }
 System_Ext(services, "Services")
 System_Ext(eyca, "Eyca")
+System(apim, "API Manager")
+System_Ext(dol, "DOL")
 
 Rel(cit,backend, "Richiede servizi CGN")
 Rel(cardfunc,services, "Richiede attivazione servizio speciale")
 Rel(cardfunc,eyca, "Richiede attivazione carta EYCA")
+Rel(dol,apim, "Richiede attivazione CGN dall'esterno","Auth via api key")
+Rel(apim,cardfunc, "Invoca", "Avvia e controlla attivazione carte")
 
 @enduml
