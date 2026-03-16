@@ -9,7 +9,6 @@ Monorepo for **CGN (Carta Giovani Nazionale)** - Italian National Youth Card sys
 ### Core Components
 
 - **card-func**: Azure Functions for citizen card lifecycle (activation, revocation, expiration) + EYCA integration
-- **attribute-authority-ms**: Fastify microservice for organization attribute management (PostgreSQL)
 - **merchant-func**: Azure Functions for merchant/operator operations
 - **search-func**: Azure Functions for operator search and discount lookup
 - **support-func**: Azure Functions for customer support operations
@@ -33,7 +32,7 @@ Merchant → portal-backend → PostgreSQL (agreements/discounts)
 ### Key Technologies
 
 - **Functions**: TypeScript + Azure Functions v3 + Express
-- **Backend**: Spring Boot 2.7.18 + Java 21 + Sequelize (attribute-authority-ms)
+- **Backend**: Spring Boot 2.7.18 + Java 21
 - **Frontend**: React + Parcel + Bootstrap Italia
 - **Data**: CosmosDB (NoSQL), PostgreSQL, Azure Table Storage, Redis
 - **Queues**: Azure Storage Queues for async workflows
