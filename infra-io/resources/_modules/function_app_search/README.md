@@ -25,10 +25,7 @@ No requirements.
 | [azurerm_api_management_api_policy.cgn_search_platform_v1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_policy) | resource |
 | [azurerm_api_management_api_tag.io_cgn_search_api_tag](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_tag) | resource |
 | [azurerm_api_management_api_version_set.cgn_search_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_api_version_set) | resource |
-| [azurerm_api_management_named_value.app_backend_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_named_value) | resource |
-| [azurerm_api_management_product.cgn_search_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product) | resource |
 | [azurerm_api_management_product_api.cgn_search_platform_v1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product_api) | resource |
-| [azurerm_api_management_product_policy.cgn_search_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product_policy) | resource |
 
 ## Inputs
 
@@ -37,9 +34,9 @@ No requirements.
 | <a name="input_ai_connection_string"></a> [ai\_connection\_string](#input\_ai\_connection\_string) | The connection string to connect to application insights | `string` | n/a | yes |
 | <a name="input_ai_instrumentation_key"></a> [ai\_instrumentation\_key](#input\_ai\_instrumentation\_key) | The key to connect to application insights | `string` | n/a | yes |
 | <a name="input_ai_sampling_percentage"></a> [ai\_sampling\_percentage](#input\_ai\_sampling\_percentage) | The sampling percentage for application insights | `string` | n/a | yes |
+| <a name="input_apim_cgn_product_id"></a> [apim\_cgn\_product\_id](#input\_apim\_cgn\_product\_id) | The product ID of the CGN API Management product | `string` | n/a | yes |
 | <a name="input_apim_platform_name"></a> [apim\_platform\_name](#input\_apim\_platform\_name) | The name of the API Management platform | `string` | n/a | yes |
 | <a name="input_apim_platform_resource_group_name"></a> [apim\_platform\_resource\_group\_name](#input\_apim\_platform\_resource\_group\_name) | The resource group name of the API Management platform | `string` | n/a | yes |
-| <a name="input_app_backend_api_key_secret"></a> [app\_backend\_api\_key\_secret](#input\_app\_backend\_api\_key\_secret) | API key secret for the app backend | `string` | n/a | yes |
 | <a name="input_app_service_plan_id"></a> [app\_service\_plan\_id](#input\_app\_service\_plan\_id) | The app service plan where you want to host the functions | `string` | `null` | no |
 | <a name="input_cgn_cdn_endpoint_base_url"></a> [cgn\_cdn\_endpoint\_base\_url](#input\_cgn\_cdn\_endpoint\_base\_url) | CDN endpoint base url | `string` | n/a | yes |
 | <a name="input_cgn_postgres_db_admin_connection_string"></a> [cgn\_postgres\_db\_admin\_connection\_string](#input\_cgn\_postgres\_db\_admin\_connection\_string) | Postgres admin connection string | `string` | n/a | yes |

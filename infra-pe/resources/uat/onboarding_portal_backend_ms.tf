@@ -118,11 +118,6 @@ data "azurerm_key_vault_secret" "cgn_geolocation_secret_token" {
   key_vault_id = module.key_vaults.key_vault_cgn_pe.id
 }
 
-data "azurerm_key_vault_secret" "cgn_attribute_authority_base_url" {
-  name         = "cgn-attribute-authority-base-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
 data "azurerm_key_vault_secret" "cgn_portal_base_url" {
   name         = "cgn-portal-base-url"
   key_vault_id = module.key_vaults.key_vault_cgn_pe.id
@@ -220,7 +215,6 @@ module "app_service_onboarding_portal_backend" {
   azure_subscription_id              = data.azurerm_key_vault_secret.azure_subscription_id.value
   cgn_recaptcha_secret_key           = data.azurerm_key_vault_secret.cgn_recaptcha_secret_key.value
   cgn_geolocation_secret_token       = data.azurerm_key_vault_secret.cgn_geolocation_secret_token.value
-  cgn_attribute_authority_base_url   = data.azurerm_key_vault_secret.cgn_attribute_authority_base_url.value
   spring_quartz_autostartup          = false
   cgn_portal_base_url                = data.azurerm_key_vault_secret.cgn_portal_base_url.value
   one_identity_base_url              = data.azurerm_key_vault_secret.cgn_one_identity_base_url.value

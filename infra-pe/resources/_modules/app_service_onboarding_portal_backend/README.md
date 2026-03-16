@@ -37,7 +37,6 @@ No requirements.
 | <a name="input_cgn_apim_productid"></a> [cgn\_apim\_productid](#input\_cgn\_apim\_productid) | CGN APIM product id | `string` | n/a | yes |
 | <a name="input_cgn_apim_resource"></a> [cgn\_apim\_resource](#input\_cgn\_apim\_resource) | CGN APIM resource name | `string` | n/a | yes |
 | <a name="input_cgn_apim_resourcegroup"></a> [cgn\_apim\_resourcegroup](#input\_cgn\_apim\_resourcegroup) | CGN APIM resource group name | `string` | n/a | yes |
-| <a name="input_cgn_attribute_authority_base_url"></a> [cgn\_attribute\_authority\_base\_url](#input\_cgn\_attribute\_authority\_base\_url) | Attribute Authority base url | `string` | n/a | yes |
 | <a name="input_cgn_email_department_email"></a> [cgn\_email\_department\_email](#input\_cgn\_email\_department\_email) | Department email address | `string` | n/a | yes |
 | <a name="input_cgn_email_portal_base_url"></a> [cgn\_email\_portal\_base\_url](#input\_cgn\_email\_portal\_base\_url) | Redirect url inside email | `string` | n/a | yes |
 | <a name="input_cgn_geolocation_secret_token"></a> [cgn\_geolocation\_secret\_token](#input\_cgn\_geolocation\_secret\_token) | Geolocation secret token | `string` | n/a | yes |
