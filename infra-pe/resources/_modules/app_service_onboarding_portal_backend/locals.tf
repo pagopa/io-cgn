@@ -73,9 +73,6 @@ locals {
       # GEOLOCATION
       CGN_GEOLOCATION_SECRET_TOKEN = var.cgn_geolocation_secret_token
 
-      # ATTRIBUTE AUTHORITY
-      CGN_ATTRIBUTE_AUTHORITY_BASE_URL = var.cgn_attribute_authority_base_url
-
       # CRONS
       SEND_DISCOUNTS_TO_EYCA_JOB_CRON = "0 0 2 * * ? *"
 

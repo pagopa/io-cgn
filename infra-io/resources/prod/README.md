@@ -32,6 +32,7 @@
 
 | Name | Type |
 |------|------|
+| [azurerm_api_management_product.cgn_platform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_product) | resource |
 | [azurerm_api_management_tag.io_cgn_tag](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_tag) | resource |
 | [azurerm_monitor_action_group.io_p_itn_cgn_error_action_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_action_group) | resource |
 | [azurerm_monitor_diagnostic_setting.itn_queue_diagnostic_setting](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |

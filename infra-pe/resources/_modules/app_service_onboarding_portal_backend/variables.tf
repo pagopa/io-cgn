@@ -232,12 +232,6 @@ variable "cgn_geolocation_secret_token" {
   sensitive   = true
 }
 
-variable "cgn_attribute_authority_base_url" {
-  type        = string
-  description = "Attribute Authority base url"
-  sensitive   = true
-}
-
 variable "spring_quartz_autostartup" {
   type        = bool
   description = "Is quartz scheduled enabled?"
