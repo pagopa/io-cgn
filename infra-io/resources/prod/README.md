@@ -18,6 +18,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_appsvc_principal_role_assignments"></a> [appsvc\_principal\_role\_assignments](#module\_appsvc\_principal\_role\_assignments) | pagopa-dx/azure-role-assignments/azurerm | ~> 1.3 |
 | <a name="module_cgn_func_asp_01_autoscaler"></a> [cgn\_func\_asp\_01\_autoscaler](#module\_cgn\_func\_asp\_01\_autoscaler) | ../_modules/function_app_autoscaler | n/a |
 | <a name="module_cgn_storage"></a> [cgn\_storage](#module\_cgn\_storage) | ../_modules/storage | n/a |
 | <a name="module_functions_cgn_card_02"></a> [functions\_cgn\_card\_02](#module\_functions\_cgn\_card\_02) | ../_modules/function_app_card | n/a |
@@ -72,18 +73,8 @@
 | [azurerm_cosmosdb_account.cosmos_api](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/cosmosdb_account) | data source |
 | [azurerm_key_vault_secret.alert_error_notification_email](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
 | [azurerm_key_vault_secret.alert_error_notification_slack](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.app_backend_api_key_secret](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.cgn_cdn_endpoint_base_url](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.cgn_legal_backup_storage_connection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.cgn_postgres_db_admin_connection_string](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.cgn_service_id](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
 | [azurerm_key_vault_secret.cosmosdb_cgn_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
 | [azurerm_key_vault_secret.cosmosdb_cgn_uri](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.eyca_api_base_url](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.eyca_api_password](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.eyca_api_username](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.services_api_key](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
-| [azurerm_key_vault_secret.services_api_url](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
 | [azurerm_key_vault_secret.storage_cgn_connection_string](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/key_vault_secret) | data source |
 | [azurerm_nat_gateway.itn_ng](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/nat_gateway) | data source |
 | [azurerm_private_dns_zone.privatelink_redis_cache](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/private_dns_zone) | data source |

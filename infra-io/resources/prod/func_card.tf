@@ -1,38 +1,3 @@
-data "azurerm_key_vault_secret" "eyca_api_base_url" {
-  name         = "EYCA-API-BASE-URL"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "eyca_api_username" {
-  name         = "EYCA-API-USERNAME"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "eyca_api_password" {
-  name         = "EYCA-API-PASSWORD"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "services_api_url" {
-  name         = "SERVICES-API-URL"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "services_api_key" {
-  name         = "SERVICES-API-KEY"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "cgn_service_id" {
-  name         = "CGN-SERVICE-ID"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
-data "azurerm_key_vault_secret" "cgn_legal_backup_storage_connection" {
-  name         = "CGN-LEGAL-BACKUP-STORAGE-CONNECTION"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
 module "functions_cgn_card_02" {
   source = "../_modules/function_app_card"
 
@@ -82,15 +47,15 @@ module "functions_cgn_card_02" {
   expired_eyca_queue_name        = "expiredeyca"
   messages_queue_name            = "messages"
 
-  eyca_api_base_url = data.azurerm_key_vault_secret.eyca_api_base_url.value
-  eyca_api_username = data.azurerm_key_vault_secret.eyca_api_username.value
-  eyca_api_password = data.azurerm_key_vault_secret.eyca_api_password.value
+  eyca_api_base_url = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=EYCA-API-BASE-URL)"
+  eyca_api_username = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=EYCA-API-USERNAME)"
+  eyca_api_password = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=EYCA-API-PASSWORD)"
 
-  services_api_url = data.azurerm_key_vault_secret.services_api_url.value
-  services_api_key = data.azurerm_key_vault_secret.services_api_key.value
-  cgn_service_id   = data.azurerm_key_vault_secret.cgn_service_id.value
+  services_api_url = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=SERVICES-API-URL)"
+  services_api_key = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=SERVICES-API-KEY)"
+  cgn_service_id   = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=CGN-SERVICE-ID)"
 
-  cgn_legal_backup_storage_connection = data.azurerm_key_vault_secret.cgn_legal_backup_storage_connection.value
+  cgn_legal_backup_storage_connection = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=CGN-LEGAL-BACKUP-STORAGE-CONNECTION)"
   cgn_legal_backup_container_name     = "cgn-legalbackup-blob"
   cgn_legal_backup_folder_name        = "cgn"
 

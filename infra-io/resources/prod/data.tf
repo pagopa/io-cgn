@@ -83,8 +83,3 @@ data "azurerm_api_management" "apim_platform" {
   name                = "io-p-itn-platform-api-gateway-apim-01"
   resource_group_name = "io-p-itn-common-rg-01"
 }
-
-data "azurerm_key_vault_secret" "app_backend_api_key_secret" {
-  name         = "appbackend-APP-BACKEND-PRIMARY-KEY"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
