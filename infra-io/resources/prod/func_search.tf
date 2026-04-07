@@ -1,12 +1,3 @@
-data "azurerm_key_vault_secret" "cgn_postgres_db_admin_connection_string" {
-  name         = "POSTGRES-DB-ADMIN-CONNECTION-STRING"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-data "azurerm_key_vault_secret" "cgn_cdn_endpoint_base_url" {
-  name         = "CDN-ENDPOINT-BASE-URL"
-  key_vault_id = module.key_vaults.key_vault_cgn.id
-}
-
 module "functions_cgn_search_02" {
   source = "../_modules/function_app_search"
 
@@ -33,13 +24,13 @@ module "functions_cgn_search_02" {
     name                = data.azurerm_virtual_network.vnet_common_itn.name
   }
 
-  cgn_postgres_db_admin_connection_string = data.azurerm_key_vault_secret.cgn_postgres_db_admin_connection_string.value
+  cgn_postgres_db_admin_connection_string = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=POSTGRES-DB-ADMIN-CONNECTION-STRING)"
 
   redis_url      = module.redis_cgn_02.hostname
   redis_port     = module.redis_cgn_02.ssl_port
   redis_password = module.redis_cgn_02.primary_access_key
 
-  cgn_cdn_endpoint_base_url = data.azurerm_key_vault_secret.cgn_cdn_endpoint_base_url.value
+  cgn_cdn_endpoint_base_url = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=CDN-ENDPOINT-BASE-URL)"
 
   apim_cgn_product_id               = azurerm_api_management_product.cgn_platform.product_id
   apim_platform_name                = data.azurerm_api_management.apim_platform.name

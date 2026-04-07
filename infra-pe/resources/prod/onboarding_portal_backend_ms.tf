@@ -1,168 +1,3 @@
-data "azurerm_key_vault_secret" "appinsights_instrumentationkey" {
-  name         = "appinsights-instrumentationkey"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "docker_registry_server_url" {
-  name         = "docker-registry-server-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "docker_registry_server_username" {
-  name         = "docker-registry-server-username"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "docker_registry_server_password" {
-  name         = "docker-registry-server-password"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_datasource_url" {
-  name         = "spring-datasource-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_datasource_username" {
-  name         = "spring-datasource-username"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_datasource_password" {
-  name         = "spring-datasource-password"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_pe_storage_azure_account_name" {
-  name         = "cgn-pe-storage-azure-account-name"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_pe_storage_azure_account_key" {
-  name         = "cgn-pe-storage-azure-account-key"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_pe_storage_azure_blob_endpoint" {
-  name         = "cgn-pe-storage-azure-blob-endpoint"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_mail_host" {
-  name         = "spring-mail-host"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_mail_port" {
-  name         = "spring-mail-port"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_mail_username" {
-  name         = "spring-mail-username"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "spring_mail_password" {
-  name         = "spring-mail-password"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_email_department_email" {
-  name         = "cgn-email-department-email"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_email_portal_base_url" {
-  name         = "cgn-email-portal-base-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "eyca_export_username" {
-  name         = "eyca-export-username"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "eyca_export_password" {
-  name         = "eyca-export-password"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_apim_resourcegroup" {
-  name         = "cgn-apim-resourcegroup"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_apim_resource" {
-  name         = "cgn-apim-resource"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_apim_productid" {
-  name         = "cgn-apim-productid"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "azure_subscription_id" {
-  name         = "azure-subscription-id"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_recaptcha_secret_key" {
-  name         = "cgn-recaptcha-secret-key"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_geolocation_secret_token" {
-  name         = "cgn-geolocation-secret-token"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_portal_base_url" {
-  name         = "cgn-portal-base-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_one_identity_base_url" {
-  name         = "cgn-one-identity-base-url"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_one_identity_id" {
-  name         = "cgn-one-identity-id"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_one_identity_secret" {
-  name         = "cgn-one-identity-secret"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_one_identity_well_known" {
-  name         = "cgn-one-identity-well-known"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_active_directory_id" {
-  name         = "cgn-active-directory-id"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_active_directory_well_known" {
-  name         = "cgn-active-directory-well-known"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_jwt_private_key" {
-  name         = "cgn-jwt-private-key"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
-data "azurerm_key_vault_secret" "cgn_jwt_public_key" {
-  name         = "cgn-jwt-public-key"
-  key_vault_id = module.key_vaults.key_vault_cgn_pe.id
-}
-
 module "app_service_onboarding_portal_backend" {
   source = "../_modules/app_service_onboarding_portal_backend"
 
@@ -189,42 +24,42 @@ module "app_service_onboarding_portal_backend" {
     name                = module.networking.vnet_common.name
   }
 
-  appinsights_instrumentationkey     = data.azurerm_key_vault_secret.appinsights_instrumentationkey.value
-  docker_registry_server_url         = data.azurerm_key_vault_secret.docker_registry_server_url.value
-  docker_registry_server_username    = data.azurerm_key_vault_secret.docker_registry_server_username.value
-  docker_registry_server_password    = data.azurerm_key_vault_secret.docker_registry_server_password.value
+  appinsights_instrumentationkey     = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=appinsights-instrumentationkey)"
+  docker_registry_server_url         = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=docker-registry-server-url)"
+  docker_registry_server_username    = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=docker-registry-server-username)"
+  docker_registry_server_password    = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=docker-registry-server-password)"
   environment                        = "prod"
-  spring_datasource_url              = data.azurerm_key_vault_secret.spring_datasource_url.value
-  spring_datasource_username         = data.azurerm_key_vault_secret.spring_datasource_username.value
-  spring_datasource_password         = data.azurerm_key_vault_secret.spring_datasource_password.value
-  cgn_pe_storage_azure_account_name  = data.azurerm_key_vault_secret.cgn_pe_storage_azure_account_name.value
-  cgn_pe_storage_azure_account_key   = data.azurerm_key_vault_secret.cgn_pe_storage_azure_account_key.value
-  cgn_pe_storage_azure_blob_endpoint = data.azurerm_key_vault_secret.cgn_pe_storage_azure_blob_endpoint.value
-  spring_mail_host                   = data.azurerm_key_vault_secret.spring_mail_host.value
-  spring_mail_port                   = data.azurerm_key_vault_secret.spring_mail_port.value
-  spring_mail_username               = data.azurerm_key_vault_secret.spring_mail_username.value
-  spring_mail_password               = data.azurerm_key_vault_secret.spring_mail_password.value
-  cgn_email_department_email         = data.azurerm_key_vault_secret.cgn_email_department_email.value
-  cgn_email_portal_base_url          = data.azurerm_key_vault_secret.cgn_email_portal_base_url.value
+  spring_datasource_url              = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-datasource-url)"
+  spring_datasource_username         = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-datasource-username)"
+  spring_datasource_password         = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-datasource-password)"
+  cgn_pe_storage_azure_account_name  = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-pe-storage-azure-account-name)"
+  cgn_pe_storage_azure_account_key   = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-pe-storage-azure-account-key)"
+  cgn_pe_storage_azure_blob_endpoint = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-pe-storage-azure-blob-endpoint)"
+  spring_mail_host                   = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-mail-host)"
+  spring_mail_port                   = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-mail-port)"
+  spring_mail_username               = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-mail-username)"
+  spring_mail_password               = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=spring-mail-password)"
+  cgn_email_department_email         = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-email-department-email)"
+  cgn_email_portal_base_url          = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-email-portal-base-url)"
   eyca_export_enabled                = true
-  eyca_export_username               = data.azurerm_key_vault_secret.eyca_export_username.value
-  eyca_export_password               = data.azurerm_key_vault_secret.eyca_export_password.value
-  cgn_apim_resourcegroup             = data.azurerm_key_vault_secret.cgn_apim_resourcegroup.value
-  cgn_apim_resource                  = data.azurerm_key_vault_secret.cgn_apim_resource.value
-  cgn_apim_productid                 = data.azurerm_key_vault_secret.cgn_apim_productid.value
-  azure_subscription_id              = data.azurerm_key_vault_secret.azure_subscription_id.value
-  cgn_recaptcha_secret_key           = data.azurerm_key_vault_secret.cgn_recaptcha_secret_key.value
-  cgn_geolocation_secret_token       = data.azurerm_key_vault_secret.cgn_geolocation_secret_token.value
+  eyca_export_username               = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=eyca-export-username)"
+  eyca_export_password               = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=eyca-export-password)"
+  cgn_apim_resourcegroup             = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-apim-resourcegroup)"
+  cgn_apim_resource                  = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-apim-resource)"
+  cgn_apim_productid                 = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-apim-productid)"
+  azure_subscription_id              = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=azure-subscription-id)"
+  cgn_recaptcha_secret_key           = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-recaptcha-secret-key)"
+  cgn_geolocation_secret_token       = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-geolocation-secret-token)"
   spring_quartz_autostartup          = true
-  cgn_portal_base_url                = data.azurerm_key_vault_secret.cgn_portal_base_url.value
-  one_identity_base_url              = data.azurerm_key_vault_secret.cgn_one_identity_base_url.value
-  one_identity_id                    = data.azurerm_key_vault_secret.cgn_one_identity_id.value
-  one_identity_secret                = data.azurerm_key_vault_secret.cgn_one_identity_secret.value
-  one_identity_well_known            = data.azurerm_key_vault_secret.cgn_one_identity_well_known.value
-  active_directory_id                = data.azurerm_key_vault_secret.cgn_active_directory_id.value
-  active_directory_well_known        = data.azurerm_key_vault_secret.cgn_active_directory_well_known.value
-  jwt_private_key                    = data.azurerm_key_vault_secret.cgn_jwt_private_key.value
-  jwt_public_key                     = data.azurerm_key_vault_secret.cgn_jwt_public_key.value
+  cgn_portal_base_url                = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-portal-base-url)"
+  one_identity_base_url              = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-one-identity-base-url)"
+  one_identity_id                    = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-one-identity-id)"
+  one_identity_secret                = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-one-identity-secret)"
+  one_identity_well_known            = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-one-identity-well-known)"
+  active_directory_id                = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-active-directory-id)"
+  active_directory_well_known        = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-active-directory-well-known)"
+  jwt_private_key                    = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-jwt-private-key)"
+  jwt_public_key                     = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn_pe.name};SecretName=cgn-jwt-public-key)"
 
   tags = local.tags
 
