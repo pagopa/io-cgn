@@ -24,6 +24,13 @@ provider "azurerm" {
   features {}
 }
 
+# Provider for PROD-IO subscription (where CosmosDB io-p-cosmos-cgn lives)
+provider "azurerm" {
+  features {}
+  alias           = "io"
+  subscription_id = "ec285037-c673-4f58-b594-d7c480da4e8b"
+}
+
 provider "dx" {}
 
 resource "azurerm_resource_group" "itn_cgn_pe" {
