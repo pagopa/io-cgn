@@ -41,3 +41,25 @@ module "appsvc_principal_role_assignments" {
     }
   ]
 }
+
+resource "azurerm_role_assignment" "card_func_storage_queue_contributor" {
+  for_each = toset([
+    module.functions_cgn_card_02.function_app_cgn_card.principal_id,
+    module.functions_cgn_card_02.function_app_cgn_card.staging_principal_id,
+  ])
+
+  scope                = data.azurerm_storage_account.storage_cgn_itn.id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = each.value
+}
+
+resource "azurerm_role_assignment" "card_func_storage_table_contributor" {
+  for_each = toset([
+    module.functions_cgn_card_02.function_app_cgn_card.principal_id,
+    module.functions_cgn_card_02.function_app_cgn_card.staging_principal_id,
+  ])
+
+  scope                = data.azurerm_storage_account.storage_cgn_itn.id
+  role_definition_name = "Storage Table Data Contributor"
+  principal_id         = each.value
+}
