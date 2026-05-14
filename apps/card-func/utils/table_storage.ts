@@ -1,15 +1,13 @@
-import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { DefaultAzureCredential } from "@azure/identity";
+import { RestError } from "@azure/data-tables";
 import {
-  ServiceResponse,
-  TableQuery,
-  TableService,
-  TableUtilities,
-} from "azure-storage";
+  TableClient,
+  TableEntityResult,
+} from "@azure/data-tables";
+import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import * as date_fns from "date-fns";
 import * as E from "fp-ts/lib/Either";
-import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
 
 import { Timestamp } from "../generated/definitions/Timestamp";
 
@@ -17,88 +15,57 @@ import { Timestamp } from "../generated/definitions/Timestamp";
  * A minimal Youth Card storage table Entry
  */
 export type TableEntry = Readonly<{
-  readonly ActivationDate: Readonly<{
-    readonly _: Timestamp;
-  }>;
-  readonly ExpirationDate: Readonly<{
-    readonly _: Timestamp;
-  }>;
-  readonly RowKey: Readonly<{
-    readonly _: FiscalCode;
-  }>;
+  readonly ActivationDate: Date;
+  readonly ExpirationDate: Date;
+  readonly rowKey: FiscalCode;
 }>;
 
-/**
- * A function that returns a page of query results given a pagination token
- *
- * @see https://docs.microsoft.com/en-us/rest/api/storageservices/query-timeout-and-pagination
- */
-export type PagedQuery = (
-  currentToken: TableService.TableContinuationToken,
-) => Promise<E.Either<Error, TableService.QueryEntitiesResult<TableEntry>>>;
+export type PagedQuery = () => AsyncIterableIterator<readonly TableEntry[]>;
 
 /**
- * Returns a paged query function for a certain query on a storage table
+ * Returns a TableClient using managed identity for the given storage account and table.
+ */
+export const getTableClient = (
+  accountName: string,
+  tableName: string,
+): TableClient =>
+  new TableClient(
+    `https://${accountName}.table.core.windows.net`,
+    tableName,
+    new DefaultAzureCredential(),
+    { retryOptions: { maxRetries: 5 } },
+  );
+
+/**
+ * Returns a paged query function that iterates over all entities matching the filter.
  */
 export const getPagedQuery =
-  (tableService: TableService, table: string) =>
-  (tableQuery: TableQuery): PagedQuery =>
-  (
-    currentToken,
-  ): Promise<E.Either<Error, TableService.QueryEntitiesResult<TableEntry>>> =>
-    new Promise((resolve) =>
-      tableService.queryEntities(
-        table,
-        tableQuery,
-        currentToken,
-        (
-          error: Error,
-          result: TableService.QueryEntitiesResult<TableEntry>,
-          response: ServiceResponse,
-        ) => resolve(response.isSuccessful ? E.right(result) : E.left(error)),
-      ),
-    );
+  (tableClient: TableClient) =>
+  (filter: string): PagedQuery =>
+    async function* (): AsyncIterableIterator<readonly TableEntry[]> {
+      for await (const page of tableClient
+        .listEntities<TableEntry>({ queryOptions: { filter } })
+        .byPage()) {
+        yield page as readonly TableEntry[];
+      }
+    };
 
 /**
- * Iterates over all pages of entries returned by the provided paged query
- * function.
+ * Iterates over all pages of entries returned by the provided paged query function.
  *
  * @throws Exception on query failure
  */
 export async function* iterateOnPages(
   pagedQuery: PagedQuery,
 ): AsyncIterableIterator<readonly TableEntry[]> {
-  let token = undefined as unknown as TableService.TableContinuationToken;
-  do {
-    // query for a page of entries
-    const errorOrResults = await pagedQuery(token);
-    if (E.isLeft(errorOrResults)) {
-      // throw an exception in case of error
-      throw errorOrResults.left;
-    }
-    // call the async callback with the current page of entries
-    const results = errorOrResults.right;
-    yield results.entries;
-    // update the continuation token, the loop will continue until
-    // the token is defined
-    token = pipe(
-      results.continuationToken,
-      O.fromNullable,
-      O.getOrElse(
-        () => undefined as unknown as TableService.TableContinuationToken,
-      ),
-    );
-  } while (token !== undefined && token !== null);
+  yield* pagedQuery();
 }
 
 /**
- * Returns a query filter to get the RowKey(s) for all entries that have the
- * provided partition key
+ * Returns an OData filter expression to select all entries for the provided partition key.
  */
-export const queryFilterForKey = (partitionKey: string): TableQuery =>
-  new TableQuery()
-    .select("RowKey", "ActivationDate", "ExpirationDate")
-    .where("PartitionKey == ?", partitionKey);
+export const queryFilterForKey = (partitionKey: string): string =>
+  `PartitionKey eq '${partitionKey}'`;
 
 /**
  * Store a card expiration into `cardExpirationTableName` table
@@ -107,70 +74,56 @@ export type StoreCardExpirationFunction = (
   fiscalCode: FiscalCode,
   activationDate: Date,
   expirationDate: Date,
-) => TE.TaskEither<Error, TableService.EntityMetadata>;
+) => TE.TaskEither<Error, void>;
 
 export const insertCardExpiration =
-  (
-    tableService: TableService,
-    cardExpirationTableName: NonEmptyString,
-  ): StoreCardExpirationFunction =>
+  (tableClient: TableClient): StoreCardExpirationFunction =>
   (
     fiscalCode: FiscalCode,
     activationDate: Date,
     expirationDate: Date,
-  ): TE.TaskEither<Error, TableService.EntityMetadata> => {
-    const eg = TableUtilities.entityGenerator;
-    return TE.taskify<Error, TableService.EntityMetadata>((cb) =>
-      tableService.insertOrReplaceEntity(
-        cardExpirationTableName,
-        {
-          ActivationDate: eg.DateTime(activationDate),
-          ExpirationDate: eg.DateTime(expirationDate),
-          PartitionKey: eg.String(
-            date_fns.format(expirationDate, "yyyy-MM-dd"),
-          ),
-          RowKey: eg.String(fiscalCode),
-        },
-        cb,
-      ),
-    )();
-  };
+  ): TE.TaskEither<Error, void> =>
+    TE.tryCatch(
+      async () => {
+        await tableClient.upsertEntity(
+          {
+            partitionKey: date_fns.format(expirationDate, "yyyy-MM-dd"),
+            rowKey: fiscalCode,
+            ActivationDate: activationDate,
+            ExpirationDate: expirationDate,
+          },
+          "Replace",
+        );
+      },
+      E.toError,
+    );
 
 /**
- * Delete a card expiration into `cardExpirationTableName` table
+ * Delete a card expiration from `cardExpirationTableName` table
  */
 export type DeleteCardExpirationFunction = (
   fiscalCode: FiscalCode,
   expirationDate: Date,
-) => TE.TaskEither<Error, ServiceResponse>;
+) => TE.TaskEither<Error, void>;
 
 export const deleteCardExpiration =
-  (
-    tableService: TableService,
-    cardExpirationTableName: NonEmptyString,
-  ): DeleteCardExpirationFunction =>
+  (tableClient: TableClient): DeleteCardExpirationFunction =>
   (
     fiscalCode: FiscalCode,
     expirationDate: Date,
-  ): TE.TaskEither<Error, ServiceResponse> => {
-    const eg = TableUtilities.entityGenerator;
-    return TE.tryCatch(
-      () =>
-        new Promise((resolve, reject) =>
-          tableService.deleteEntity(
-            cardExpirationTableName,
-            {
-              PartitionKey: eg.String(
-                date_fns.format(expirationDate, "yyyy-MM-dd"),
-              ),
-              RowKey: eg.String(fiscalCode),
-            },
-            (error: Error | null, response: ServiceResponse | null) =>
-              (error || !response?.isSuccessful) && response?.statusCode !== 404
-                ? reject(error?.message || "Unsuccessful response from storage")
-                : resolve(response),
-          ),
-        ),
+  ): TE.TaskEither<Error, void> =>
+    TE.tryCatch(
+      async () => {
+        try {
+          await tableClient.deleteEntity(
+            date_fns.format(expirationDate, "yyyy-MM-dd"),
+            fiscalCode,
+          );
+        } catch (e) {
+          // 404 is acceptable — entity may not exist
+          if (e instanceof RestError && e.statusCode === 404) return;
+          throw e;
+        }
+      },
       E.toError,
     );
-  };

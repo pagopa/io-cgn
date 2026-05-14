@@ -6,10 +6,8 @@
  */
 
 import { app } from "@azure/functions";
-import {
-  ExponentialRetryPolicyFilter,
-  createTableService,
-} from "azure-storage";
+import { TableClient } from "@azure/data-tables";
+import { DefaultAzureCredential } from "@azure/identity";
 
 import { EycaAPIClient } from "../clients/eyca";
 import { ServicesAPIClient } from "../clients/services";
@@ -93,27 +91,30 @@ const userEycaCardModel = new UserEycaCardModel(userEycaCardsContainer);
 const queueStorage: QueueStorage = new QueueStorage(config);
 
 // Table Storage
-const tableService = createTableService(config.CGN_STORAGE_CONNECTION_STRING);
+const tableStorageBaseUrl = `https://${config.CGN_STORAGE_ACCOUNT_NAME}.table.core.windows.net`;
+const credential = new DefaultAzureCredential();
 
-const storeCgnExpiration = insertCardExpiration(
-  tableService,
+const cgnExpirationTableClient = new TableClient(
+  tableStorageBaseUrl,
   config.CGN_EXPIRATION_TABLE_NAME,
+  credential,
+  { retryOptions: { maxRetries: 5 } },
 );
 
-const storeEycaExpiration = insertCardExpiration(
-  tableService,
+const eycaExpirationTableClient = new TableClient(
+  tableStorageBaseUrl,
   config.EYCA_EXPIRATION_TABLE_NAME,
+  credential,
+  { retryOptions: { maxRetries: 5 } },
 );
 
-const deleteCgnExpiration = deleteCardExpiration(
-  tableService,
-  config.CGN_EXPIRATION_TABLE_NAME,
-);
+const storeCgnExpiration = insertCardExpiration(cgnExpirationTableClient);
 
-const deleteEycaExpiration = deleteCardExpiration(
-  tableService,
-  config.EYCA_EXPIRATION_TABLE_NAME,
-);
+const storeEycaExpiration = insertCardExpiration(eycaExpirationTableClient);
+
+const deleteCgnExpiration = deleteCardExpiration(cgnExpirationTableClient);
+
+const deleteEycaExpiration = deleteCardExpiration(eycaExpirationTableClient);
 
 // Redis
 const redisClientFactory = getRedisClientFactory(config);
@@ -142,15 +143,13 @@ const deleteEycaCard: DeleteEycaCard = deleteCard(
   config.EYCA_API_PASSWORD,
 );
 
-// Expired card queries (with exponential retry)
+// Expired card queries (with exponential retry configured on TableClient)
 const getExpiredCgnCardUsersFunction = getExpiredCardUsers(
-  tableService.withFilter(new ExponentialRetryPolicyFilter(5)),
-  config.CGN_EXPIRATION_TABLE_NAME,
+  cgnExpirationTableClient,
 );
 
 const getExpiredEycaCardUsersFunction = getExpiredCardUsers(
-  tableService.withFilter(new ExponentialRetryPolicyFilter(5)),
-  config.EYCA_EXPIRATION_TABLE_NAME,
+  eycaExpirationTableClient,
 );
 
 // ---------------------------------------------------------------------------
@@ -260,7 +259,7 @@ app.http("UpsertCgnStatus", {
 // ---------------------------------------------------------------------------
 
 app.storageQueue("CardsDelete_2_ProcessPendingDeleteCgnQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processDeleteCgnHandler(
     userCgnModel,
     ServicesAPIClient,
@@ -270,7 +269,7 @@ app.storageQueue("CardsDelete_2_ProcessPendingDeleteCgnQueue", {
 });
 
 app.storageQueue("CardsDelete_3_ProcessPendingDeleteEycaQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processDeleteEycaHandler(
     userEycaCardModel,
     deleteEycaExpiration,
@@ -280,7 +279,7 @@ app.storageQueue("CardsDelete_3_ProcessPendingDeleteEycaQueue", {
 });
 
 app.storageQueue("CgnActivation_2_ProcessPendingQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processPendingCgnHandler(
     userCgnModel,
     ServicesAPIClient,
@@ -291,7 +290,7 @@ app.storageQueue("CgnActivation_2_ProcessPendingQueue", {
 });
 
 app.storageQueue("CgnActivation_3_ProcessActivatedQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processActivatedCgnHandler(
     userCgnModel,
     ServicesAPIClient,
@@ -302,13 +301,13 @@ app.storageQueue("CgnActivation_3_ProcessActivatedQueue", {
 });
 
 app.storageQueue("CgnExpired_2_ProcessExpiredCgnQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processExpiredCgnHandler(userCgnModel, queueStorage),
   queueName: "%EXPIRED_CGN_QUEUE_NAME%",
 });
 
 app.storageQueue("EycaActivation_2_ProcessPendingQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processPendingEycaHandler(
     userEycaCardModel,
     storeEycaExpiration,
@@ -319,7 +318,7 @@ app.storageQueue("EycaActivation_2_ProcessPendingQueue", {
 });
 
 app.storageQueue("EycaActivation_3_ProcessActivatedQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processActivatedEycaHandler(
     userEycaCardModel,
     updateCcdbEycaCard,
@@ -329,13 +328,13 @@ app.storageQueue("EycaActivation_3_ProcessActivatedQueue", {
 });
 
 app.storageQueue("EycaExpired_2_ProcessExpiredEycaQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: processExpiredEycaHandler(userEycaCardModel, queueStorage),
   queueName: "%EXPIRED_EYCA_QUEUE_NAME%",
 });
 
 app.storageQueue("SendMessage_ProcessMessagesQueue", {
-  connection: "CGN_STORAGE_CONNECTION_STRING",
+  connection: "CGN_STORAGE",
   handler: sendMessageHandler(
     GetProfile(ServicesAPIClient),
     SendMessage(MessagesAPIClient),
