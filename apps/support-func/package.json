@@ -41,6 +41,7 @@
   "dependencies": {
     "@azure/cosmos": "^4.2.0",
     "@azure/functions": "^4.0.0",
+    "@azure/identity": "^4.13.1",
     "@pagopa/io-functions-commons": "^30.0.0",
     "@pagopa/ts-commons": "^13.1.2",
     "applicationinsights": "^3.4.0",

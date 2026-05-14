@@ -1,5 +1,5 @@
+import { TableClient } from "@azure/data-tables";
 import { FiscalCode } from "@pagopa/ts-commons/lib/strings";
-import { TableService } from "azure-storage";
 import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
@@ -29,9 +29,9 @@ const withExpiredCardRowFromEntry =
   (f: (s: ExpiredCardRowKey) => void) =>
   (e: TableEntry): void =>
     f({
-      activationDate: e.ActivationDate._,
-      expirationDate: e.ExpirationDate._,
-      fiscalCode: e.RowKey._,
+      activationDate: e.ActivationDate as unknown as Timestamp,
+      expirationDate: e.ExpirationDate as unknown as Timestamp,
+      fiscalCode: e.rowKey as FiscalCode,
     });
 
 /**
@@ -52,16 +52,14 @@ export type GetExpiredCardUserFunction = ReturnType<typeof getExpiredCardUsers>;
 
 export const getExpiredCardUsers =
   (
-    tableService: TableService,
-    expiredCardTableName: string,
+    tableClient: TableClient,
   ): ((
     refDate: string,
   ) => TE.TaskEither<Error, readonly ExpiredCardRowKey[]>) =>
   (refDate: string) =>
-    // get a function that can query the expired cgns table
+    // get a function that can query the expired cards table
     pipe(
-      TE.of(getPagedQuery(tableService, expiredCardTableName)),
-      TE.map((pagedQuery) => pagedQuery(queryFilterForKey(`${refDate}`))),
+      TE.of(getPagedQuery(tableClient)(queryFilterForKey(refDate))),
       TE.chain((cgnExpirationQuery) =>
         pipe(
           TE.tryCatch(() => queryUsers(cgnExpirationQuery), E.toError),

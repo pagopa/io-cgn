@@ -1,135 +1,81 @@
 // eslint-disable @typescript-eslint/no-explicit-any
 
-import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { RestError } from "@azure/data-tables";
 import { pipe } from "fp-ts/lib/function";
+import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import { deleteCardExpiration, insertCardExpiration } from "../table_storage";
 import { aFiscalCode, now } from "../../__mocks__/mock";
 
-const aCardExpirationTableName = "TableName" as NonEmptyString;
+const deleteEntityMock = jest.fn().mockResolvedValue(undefined);
+const upsertEntityMock = jest.fn().mockResolvedValue(undefined);
 
-const aSuccessfulServiceResponse = {
-  isSuccessful: true,
-  statusCode: 200
-};
-
-const aNotFoundServiceResponse = {
-  isSuccessful: false,
-  statusCode: 404
-};
-
-const anErrorServiceResponse = {
-  isSuccessful: false,
-  statusCode: 500
-};
-const deleteEntityMock = jest
-  .fn()
-  .mockImplementation((_, __, cb) => cb(null, aSuccessfulServiceResponse));
-
-const insertOrReplaceEntityMock = jest
-  .fn()
-  .mockImplementation((_, __, cb) => cb(null, {}));
-const tableStorageMock = {
+const tableClientMock = {
   deleteEntity: deleteEntityMock,
-  insertOrReplaceEntity: insertOrReplaceEntityMock
+  upsertEntity: upsertEntityMock,
 } as any;
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  deleteEntityMock.mockResolvedValue(undefined);
+  upsertEntityMock.mockResolvedValue(undefined);
+});
+
 describe("deleteCardExpiration", () => {
-  it("should return a success response if delete succeed", async () => {
-    const deleteExpirationTask = deleteCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      deleteExpirationTask(aFiscalCode, now),
-      TE.bimap(
-        _ => fail(),
-        value => expect(value).toEqual(aSuccessfulServiceResponse)
-      )
+  it("should succeed if deleteEntity resolves", async () => {
+    const result = await deleteCardExpiration(tableClientMock)(
+      aFiscalCode,
+      now,
     )();
+    expect(E.isRight(result)).toBe(true);
   });
 
-  it("should return a response if target tuple is not found", async () => {
-    deleteEntityMock.mockImplementationOnce((_, __, cb) =>
-      cb(null, aNotFoundServiceResponse)
-    );
-    const deleteExpirationTask = deleteCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      deleteExpirationTask(aFiscalCode, now),
-      TE.bimap(
-        _ => fail(),
-        value => expect(value).toEqual(aNotFoundServiceResponse)
-      )
+  it("should succeed (not error) if entity is not found (404)", async () => {
+    const notFoundError = new RestError("Not Found", {
+      statusCode: 404,
+      code: "ResourceNotFound",
+    });
+    deleteEntityMock.mockRejectedValueOnce(notFoundError);
+    const result = await deleteCardExpiration(tableClientMock)(
+      aFiscalCode,
+      now,
     )();
+    expect(E.isRight(result)).toBe(true);
   });
 
-  it("should return an error if something else fails during delete operation", async () => {
-    deleteEntityMock.mockImplementationOnce((_, __, cb) =>
-      cb(null, anErrorServiceResponse)
-    );
-    const deleteExpirationTask = deleteCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      deleteExpirationTask(aFiscalCode, now),
-      TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
+  it("should return an error if deleteEntity throws a non-404 error", async () => {
+    deleteEntityMock.mockRejectedValueOnce(new Error("Cannot delete tuple"));
+    const result = await deleteCardExpiration(tableClientMock)(
+      aFiscalCode,
+      now,
     )();
-  });
-
-  it("should return an error if delete operation raise an error", async () => {
-    deleteEntityMock.mockImplementationOnce((_, __, cb) =>
-      cb(new Error("Cannot delete tuple"), null)
-    );
-    const deleteExpirationTask = deleteCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      deleteExpirationTask(aFiscalCode, now),
-      TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
-    )();
+    expect(E.isLeft(result)).toBe(true);
+    if (E.isLeft(result)) {
+      expect(result.left).toBeDefined();
+    }
   });
 });
 
 describe("insertCardExpiration", () => {
-  it("should return a success response if insert succeed", async () => {
-    const insertExpirationTask = insertCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      insertExpirationTask(aFiscalCode, now, now),
-      TE.bimap(
-        _ => fail(),
-        value => expect(value).toEqual({})
-      )
+  it("should succeed if upsertEntity resolves", async () => {
+    const result = await insertCardExpiration(tableClientMock)(
+      aFiscalCode,
+      now,
+      now,
     )();
+    expect(E.isRight(result)).toBe(true);
   });
 
-  it("should return an error if insert fails", async () => {
-    insertOrReplaceEntityMock.mockImplementationOnce((_, __, cb) =>
-      cb(new Error("Cannot insert entity"), null)
-    );
-    const insertExpirationTask = insertCardExpiration(
-      tableStorageMock,
-      aCardExpirationTableName
-    );
-    await pipe(
-      insertExpirationTask(aFiscalCode, now, now),
-      TE.bimap(
-        _ => expect(_).toBeDefined(),
-        () => fail()
-      )
+  it("should return an error if upsertEntity throws", async () => {
+    upsertEntityMock.mockRejectedValueOnce(new Error("Cannot insert entity"));
+    const result = await insertCardExpiration(tableClientMock)(
+      aFiscalCode,
+      now,
+      now,
     )();
+    expect(E.isLeft(result)).toBe(true);
+    if (E.isLeft(result)) {
+      expect(result.left).toBeDefined();
+    }
   });
 });

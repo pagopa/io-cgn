@@ -1,4 +1,5 @@
-import { QueueService } from "azure-storage";
+import { QueueClient, QueueServiceClient } from "@azure/storage-queue";
+import { DefaultAzureCredential } from "@azure/identity";
 import * as E from "fp-ts/lib/Either";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
@@ -13,81 +14,67 @@ import {
 import { toBase64 } from "./base64";
 import { IConfig } from "./config";
 
+const getQueueServiceClient = (accountName: string): QueueServiceClient =>
+  new QueueServiceClient(
+    `https://${accountName}.queue.core.windows.net`,
+    new DefaultAzureCredential(),
+  );
+
 export class QueueStorage {
   config: IConfig;
-  createMessage = (queueName: string, message: string) =>
-    TE.tryCatch(
-      async () =>
-        new Promise<boolean>((resolve, reject) =>
-          this.queueService.createMessage(queueName, message, (error: Error) =>
-            error ? reject(error) : resolve(true),
-          ),
-        ),
-      E.toError,
-    );
+  queueServiceClient: QueueServiceClient;
 
-  createQueue = (queueName: string) =>
-    TE.tryCatch(
-      () =>
-        new Promise<boolean>((resolve, reject) =>
-          this.queueService.createQueueIfNotExists(queueName, (error: Error) =>
-            error ? reject(error) : resolve(true),
-          ),
-        ),
-      E.toError,
+  constructor(config: IConfig) {
+    this.config = config;
+    this.queueServiceClient = getQueueServiceClient(
+      config.CGN_STORAGE_ACCOUNT_NAME,
     );
+  }
+
+  private getQueueClient = (queueName: string): QueueClient =>
+    this.queueServiceClient.getQueueClient(queueName);
+
+  createMessage = (queueName: string, message: string) =>
+    TE.tryCatch(async () => {
+      const queueClient = this.getQueueClient(queueName);
+      await queueClient.createIfNotExists();
+      await queueClient.sendMessage(message);
+      return true;
+    }, E.toError);
 
   enqueueActivatedCGNMessage = (message: CardActivatedMessage) =>
-    this.enqueueMessage(
-      this.config.ACTIVATED_CGN_QUEUE_NAME,
-      toBase64(message),
-    );
+    this.createMessage(this.config.ACTIVATED_CGN_QUEUE_NAME, toBase64(message));
 
   enqueueActivatedEYCAMessage = (message: CardActivatedMessage) =>
-    this.enqueueMessage(
+    this.createMessage(
       this.config.ACTIVATED_EYCA_QUEUE_NAME,
       toBase64(message),
     );
 
   enqueueExpiredCGNMessage = (message: CardExpiredMessage) =>
-    this.enqueueMessage(this.config.EXPIRED_CGN_QUEUE_NAME, toBase64(message));
+    this.createMessage(this.config.EXPIRED_CGN_QUEUE_NAME, toBase64(message));
 
   enqueueExpiredEYCAMessage = (message: CardExpiredMessage) =>
-    this.enqueueMessage(this.config.EXPIRED_EYCA_QUEUE_NAME, toBase64(message));
-
-  enqueueMessage = (queueName: string, message: string) =>
-    pipe(
-      this.createQueue(queueName),
-      TE.chain(() => this.createMessage(queueName, message)),
-    );
+    this.createMessage(this.config.EXPIRED_EYCA_QUEUE_NAME, toBase64(message));
 
   enqueueMessageToSendMessage = (message: MessageToSendMessage) =>
-    this.enqueueMessage(this.config.MESSAGES_QUEUE_NAME, toBase64(message));
+    this.createMessage(this.config.MESSAGES_QUEUE_NAME, toBase64(message));
 
   enqueuePendingCGNMessage = (message: CardPendingMessage) =>
-    this.enqueueMessage(this.config.PENDING_CGN_QUEUE_NAME, toBase64(message));
+    this.createMessage(this.config.PENDING_CGN_QUEUE_NAME, toBase64(message));
 
   enqueuePendingDeleteCGNMessage = (message: CardPendingDeleteMessage) =>
-    this.enqueueMessage(
+    this.createMessage(
       this.config.PENDING_DELETE_CGN_QUEUE_NAME,
       toBase64(message),
     );
 
   enqueuePendingDeleteEYCAMessage = (message: CardPendingDeleteMessage) =>
-    this.enqueueMessage(
+    this.createMessage(
       this.config.PENDING_DELETE_EYCA_QUEUE_NAME,
       toBase64(message),
     );
 
   enqueuePendingEYCAMessage = (message: CardPendingMessage) =>
-    this.enqueueMessage(this.config.PENDING_EYCA_QUEUE_NAME, toBase64(message));
-
-  queueService: QueueService;
-
-  constructor(config: IConfig) {
-    this.config = config;
-    this.queueService = new QueueService(
-      this.config.CGN_STORAGE_CONNECTION_STRING,
-    );
-  }
+    this.createMessage(this.config.PENDING_EYCA_QUEUE_NAME, toBase64(message));
 }

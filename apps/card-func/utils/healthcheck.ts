@@ -1,12 +1,8 @@
+import { QueueServiceClient } from "@azure/storage-queue";
+import { TableServiceClient } from "@azure/data-tables";
+import { DefaultAzureCredential } from "@azure/identity";
 import { CosmosClient } from "@azure/cosmos";
 import { readableReport } from "@pagopa/ts-commons/lib/reporters";
-import {
-  common as azurestorageCommon,
-  createBlobService,
-  createFileService,
-  createQueueService,
-  createTableService,
-} from "azure-storage";
 import { sequenceT } from "fp-ts/lib/Apply";
 import * as A from "fp-ts/lib/Array";
 import * as E from "fp-ts/lib/Either";
@@ -96,46 +92,42 @@ export const checkAzureCosmosDbHealth = (
   );
 
 /**
- * Check the application can connect to an Azure Storage
+ * Check the application can connect to Azure Storage using identity-based access.
  *
- * @param connStr connection string for the storage
+ * @param accountName storage account name
  *
  * @returns either true or an array of error messages
  */
 export const checkAzureStorageHealth = (
-  connStr: string,
+  accountName: string,
 ): HealthCheck<"AzureStorage"> => {
+  const credential = new DefaultAzureCredential();
   const applicativeValidation = TE.getApplicativeTaskValidation(
     T.ApplicativePar,
     RA.getSemigroup<HealthProblem<"AzureStorage">>(),
   );
 
-  // try to instantiate a client for each product of azure storage
+  const checkQueue = TE.tryCatch(async () => {
+    const client = new QueueServiceClient(
+      `https://${accountName}.queue.core.windows.net`,
+      credential,
+    );
+    await client.getProperties();
+  }, toHealthProblems("AzureStorage"));
+
+  const checkTable = TE.tryCatch(async () => {
+    const client = new TableServiceClient(
+      `https://${accountName}.table.core.windows.net`,
+      credential,
+    );
+    // list one table to verify connectivity
+    for await (const _ of client.listTables()) {
+      break;
+    }
+  }, toHealthProblems("AzureStorage"));
+
   return pipe(
-    [
-      createBlobService,
-      createFileService,
-      createQueueService,
-      createTableService,
-    ]
-      // for each, create a task that wraps getServiceProperties
-      .map((createService) =>
-        TE.tryCatch(
-          () =>
-            new Promise<azurestorageCommon.models.ServicePropertiesResult.ServiceProperties>(
-              (resolve, reject) =>
-                createService(connStr).getServiceProperties((err, result) => {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                  err
-                    ? reject(err.message.replace(/\n/gim, " ")) // avoid newlines
-                    : resolve(result);
-                }),
-            ),
-          toHealthProblems("AzureStorage"),
-        ),
-      ),
-    // run each taskEither and gather validation errors from each one of them, if any
-    A.sequence(applicativeValidation),
+    sequenceT(applicativeValidation)(checkQueue, checkTable),
     TE.map(() => true),
   );
 };
@@ -185,7 +177,7 @@ export const checkApplicationHealth = (): HealthCheck<ProblemSource, true> => {
     TE.chain((config) =>
       // run each taskEither and collect validation errors from each one of them, if any
       sequenceT(applicativeValidation)(
-        checkAzureStorageHealth(config.CGN_STORAGE_CONNECTION_STRING),
+        checkAzureStorageHealth(config.CGN_STORAGE_ACCOUNT_NAME),
         checkRedisConnection(config),
       ),
     ),

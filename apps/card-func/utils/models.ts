@@ -5,7 +5,7 @@ import {
   ResponseErrorNotFound,
 } from "@pagopa/ts-commons/lib/responses";
 import { FiscalCode, NonEmptyString } from "@pagopa/ts-commons/lib/strings";
-import { QueueService } from "azure-storage";
+import { QueueClient } from "@azure/storage-queue";
 import * as TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 
@@ -51,20 +51,16 @@ export const retrieveUserEycaCard = (
  * Enqueue an EYCA activation's process
  */
 export const getEnqueueEycaActivation = (
-  queueService: QueueService,
-  queueName: NonEmptyString,
-): ((
-  input: Record<string, string>,
-) => TE.TaskEither<Error, QueueService.QueueMessageResult>) => {
-  const createMessage = TE.taskify(
-    queueService.createMessage.bind(queueService),
-  );
-  return (
-    input: Record<string, string>,
-  ): TE.TaskEither<Error, QueueService.QueueMessageResult> => {
+  queueClient: QueueClient,
+): ((input: Record<string, string>) => TE.TaskEither<Error, boolean>) => {
+  return (input: Record<string, string>): TE.TaskEither<Error, boolean> => {
     // see https://github.com/Azure/Azure-Functions/issues/1091
     const message = Buffer.from(JSON.stringify(input)).toString("base64");
-    return createMessage(queueName, message);
+    return TE.tryCatch(async () => {
+      await queueClient.createIfNotExists();
+      await queueClient.sendMessage(message);
+      return true;
+    }, (e) => e instanceof Error ? e : new Error(String(e)));
   };
 };
 
