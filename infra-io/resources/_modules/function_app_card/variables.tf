@@ -131,11 +131,6 @@ variable "storage_cgn_account_name" {
   description = "CGN storage account name (used for identity-based RBAC connections)"
 }
 
-variable "storage_cgn_connection_string" {
-  type        = string
-  description = "CGN storage connection key"
-}
-
 variable "table_cgn_expiration" {
   type        = string
   description = "CGN expiration table name"

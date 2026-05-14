@@ -105,18 +105,3 @@ variable "cosmosdb_cgn_database_name" {
   type        = string
   description = "Database name for CGN cosmosdb"
 }
-
-variable "storage_cgn_connection_string" {
-  type        = string
-  description = "CGN storage connection key"
-}
-
-variable "table_cgn_expiration" {
-  type        = string
-  description = "CGN expiration table name"
-}
-
-variable "table_eyca_expiration" {
-  type        = string
-  description = "EYCA expiration table name"
-}
