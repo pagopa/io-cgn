@@ -20,9 +20,6 @@ locals {
       CGN_STORAGE__serviceUri  = "https://${var.storage_cgn_account_name}.queue.core.windows.net"
       CGN_STORAGE_ACCOUNT_NAME = var.storage_cgn_account_name
 
-      // STORAGE (legacy connection string - kept for backward compat, removed in a following PR)
-      CGN_STORAGE_CONNECTION_STRING = var.storage_cgn_connection_string
-
       // TABLE STORAGE
       CGN_EXPIRATION_TABLE_NAME  = var.table_cgn_expiration
       EYCA_EXPIRATION_TABLE_NAME = var.table_eyca_expiration
