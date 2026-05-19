@@ -66,6 +66,7 @@ export const IConfig = t.intersection([
     COSMOSDB_CGN_KEY: NonEmptyString,
 
     COSMOSDB_CGN_URI: NonEmptyString,
+    EXPIRATION_REMEDIATION_QUEUE_NAME: NonEmptyString,
     EXPIRED_CGN_QUEUE_NAME: NonEmptyString,
 
     EXPIRED_EYCA_QUEUE_NAME: NonEmptyString,

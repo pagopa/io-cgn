@@ -8,6 +8,7 @@ import {
   CardExpiredMessage,
   CardPendingDeleteMessage,
   CardPendingMessage,
+  ExpirationRemediationMessage,
   MessageToSendMessage,
 } from "../types/queue-message";
 import { toBase64 } from "./base64";
@@ -54,6 +55,14 @@ export class QueueStorage {
 
   enqueueExpiredEYCAMessage = (message: CardExpiredMessage) =>
     this.enqueueMessage(this.config.EXPIRED_EYCA_QUEUE_NAME, toBase64(message));
+
+  enqueueExpirationRemediationMessage = (
+    message: ExpirationRemediationMessage,
+  ) =>
+    this.enqueueMessage(
+      this.config.EXPIRATION_REMEDIATION_QUEUE_NAME,
+      toBase64(message),
+    );
 
   enqueueMessage = (queueName: string, message: string) =>
     pipe(
