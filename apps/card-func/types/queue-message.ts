@@ -44,7 +44,7 @@ export interface CardExpiredMessage {
   status: ExpiredStatusEnum.EXPIRED;
 }
 
-export interface ExpirationRemediationMessage {
+export interface RecoveryMessage {
   fiscal_code: FiscalCode;
   request_id: Ulid;
 }

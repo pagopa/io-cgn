@@ -31,7 +31,7 @@ const DEFAULT_EYCA_UPPER_BOUND_AGE = 31 as NonNegativeInteger;
 
 setTelemetryClient(telemetryClientMock);
 
-describe("CardsExpirationRemediation_2_ProcessQueue", () => {
+describe("CardsRecovery_2_ProcessQueue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     cgnFindLastVersionByModelIdMock.mockReset();
@@ -69,14 +69,14 @@ describe("CardsExpirationRemediation_2_ProcessQueue", () => {
       ),
     );
 
-    const processExpirationRemediation = handler(
+    const processRecovery = handler(
       userCgnModelMock,
       userEycaCardModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
       DEFAULT_EYCA_UPPER_BOUND_AGE,
     );
 
-    const result = await processExpirationRemediation(
+    const result = await processRecovery(
       {
         fiscal_code: aCGNUneligibleFiscalCode,
         request_id: ulid() as Ulid,
@@ -123,14 +123,14 @@ describe("CardsExpirationRemediation_2_ProcessQueue", () => {
       ),
     );
 
-    const processExpirationRemediation = handler(
+    const processRecovery = handler(
       userCgnModelMock,
       userEycaCardModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
       DEFAULT_EYCA_UPPER_BOUND_AGE,
     );
 
-    const result = await processExpirationRemediation(
+    const result = await processRecovery(
       {
         fiscal_code: aFiscalCode,
         request_id: ulid() as Ulid,
@@ -164,14 +164,14 @@ describe("CardsExpirationRemediation_2_ProcessQueue", () => {
       ),
     );
 
-    const processExpirationRemediation = handler(
+    const processRecovery = handler(
       userCgnModelMock,
       userEycaCardModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
       DEFAULT_EYCA_UPPER_BOUND_AGE,
     );
 
-    const result = await processExpirationRemediation(
+    const result = await processRecovery(
       {
         fiscal_code: aCGNUneligibleFiscalCode,
         request_id: ulid() as Ulid,
@@ -189,7 +189,7 @@ describe("CardsExpirationRemediation_2_ProcessQueue", () => {
       TE.left({ kind: "COSMOS_ERROR" }),
     );
 
-    const processExpirationRemediation = handler(
+    const processRecovery = handler(
       userCgnModelMock,
       userEycaCardModelMock,
       DEFAULT_CGN_UPPER_BOUND_AGE,
@@ -197,7 +197,7 @@ describe("CardsExpirationRemediation_2_ProcessQueue", () => {
     );
 
     await expect(
-      processExpirationRemediation(
+      processRecovery(
         {
           fiscal_code: aCGNUneligibleFiscalCode,
           request_id: ulid() as Ulid,

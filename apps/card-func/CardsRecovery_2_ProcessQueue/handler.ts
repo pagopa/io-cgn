@@ -13,7 +13,7 @@ import {
 import { EycaCardActivated } from "../generated/definitions/EycaCardActivated";
 import { UserCgn, UserCgnModel } from "../models/user_cgn";
 import { UserEycaCard, UserEycaCardModel } from "../models/user_eyca_card";
-import { ExpirationRemediationMessage } from "../types/queue-message";
+import { RecoveryMessage } from "../types/queue-message";
 import {
   checkCgnRequirements,
   extractCgnExpirationDate,
@@ -130,26 +130,23 @@ const expireEycaCardIfActivated = (
 
 const expireCgnIfNeeded = (
   userCgnModel: UserCgnModel,
-  expirationRemediationMessage: ExpirationRemediationMessage,
+  recoveryMessage: RecoveryMessage,
   cgnUpperBoundAge: NonNegativeInteger,
 ) =>
   pipe(
-    checkCgnRequirements(
-      expirationRemediationMessage.fiscal_code,
-      cgnUpperBoundAge,
-    ),
+    checkCgnRequirements(recoveryMessage.fiscal_code, cgnUpperBoundAge),
     TE.chain((isCgnEligible) =>
       isCgnEligible
         ? TE.of(false)
         : pipe(
             extractCgnExpirationDate(
-              expirationRemediationMessage.fiscal_code,
+              recoveryMessage.fiscal_code,
               cgnUpperBoundAge,
             ),
             TE.chain((expirationDate) =>
               pipe(
                 userCgnModel.findLastVersionByModelId([
-                  expirationRemediationMessage.fiscal_code,
+                  recoveryMessage.fiscal_code,
                 ]),
                 TE.mapLeft(
                   (cosmosErrors) =>
@@ -174,15 +171,12 @@ const expireCgnIfNeeded = (
 
 const expireEycaIfNeeded = (
   userEycaCardModel: UserEycaCardModel,
-  expirationRemediationMessage: ExpirationRemediationMessage,
+  recoveryMessage: RecoveryMessage,
   eycaUpperBoundAge: NonNegativeInteger,
 ) =>
   pipe(
     TE.fromEither(
-      isEycaEligible(
-        expirationRemediationMessage.fiscal_code,
-        eycaUpperBoundAge,
-      ),
+      isEycaEligible(recoveryMessage.fiscal_code, eycaUpperBoundAge),
     ),
     TE.chain((isEligibleForEyca) =>
       isEligibleForEyca
@@ -190,14 +184,14 @@ const expireEycaIfNeeded = (
         : pipe(
             TE.fromEither(
               extractEycaExpirationDate(
-                expirationRemediationMessage.fiscal_code,
+                recoveryMessage.fiscal_code,
                 eycaUpperBoundAge,
               ),
             ),
             TE.chain((expirationDate) =>
               pipe(
                 userEycaCardModel.findLastVersionByModelId([
-                  expirationRemediationMessage.fiscal_code,
+                  recoveryMessage.fiscal_code,
                 ]),
                 TE.mapLeft(
                   (cosmosErrors) =>
@@ -228,19 +222,15 @@ export const handler =
     eycaUpperBoundAge: NonNegativeInteger,
   ) =>
   (
-    expirationRemediationMessage: ExpirationRemediationMessage,
+    recoveryMessage: RecoveryMessage,
     context: InvocationContext,
   ): Promise<boolean> =>
     pipe(
-      expireCgnIfNeeded(
-        userCgnModel,
-        expirationRemediationMessage,
-        cgnUpperBoundAge,
-      ),
+      expireCgnIfNeeded(userCgnModel, recoveryMessage, cgnUpperBoundAge),
       TE.chain(() =>
         expireEycaIfNeeded(
           userEycaCardModel,
-          expirationRemediationMessage,
+          recoveryMessage,
           eycaUpperBoundAge,
         ),
       ),
@@ -248,7 +238,7 @@ export const handler =
       TE.mapLeft(
         trackError(
           context,
-          `[${expirationRemediationMessage.request_id}] CardsExpirationRemediation_2_ProcessQueue`,
+          `[${recoveryMessage.request_id}] CardsRecovery_2_ProcessQueue`,
         ),
       ),
       TE.mapLeft(throwError),

@@ -7,24 +7,22 @@ import {
   queueStorageMock,
   telemetryClientMock,
 } from "../../__mocks__/mock";
-import { StartCardsExpirationRemediationHandler } from "../handler";
+import { StartCardsRecoveryHandler } from "../handler";
 import { setTelemetryClient } from "../../utils/appinsights";
 
 setTelemetryClient(telemetryClientMock);
 
-describe("StartCardsExpirationRemediation", () => {
+describe("StartCardsRecovery", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("should return Accepted if the expiration remediation message is enqueued", async () => {
-    const startCardsExpirationRemediationHandler =
-      StartCardsExpirationRemediationHandler(queueStorageMock);
+  it("should return Accepted if the recovery message is enqueued", async () => {
+    const startCardsRecoveryHandler = StartCardsRecoveryHandler(queueStorageMock);
 
-    const response = await startCardsExpirationRemediationHandler(
-      context,
-      aFiscalCode,
-    );
+    const response = await startCardsRecoveryHandler(context, {
+      fiscal_code: aFiscalCode,
+    });
 
     expect(response.kind).toBe("IResponseSuccessAccepted");
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);
@@ -39,13 +37,11 @@ describe("StartCardsExpirationRemediation", () => {
   it("should return Internal Error if the remediation queue is not reachable", async () => {
     enqueueMessageMock.mockImplementationOnce(() => TE.left(new Error("any error")));
 
-    const startCardsExpirationRemediationHandler =
-      StartCardsExpirationRemediationHandler(queueStorageMock);
+    const startCardsRecoveryHandler = StartCardsRecoveryHandler(queueStorageMock);
 
-    const response = await startCardsExpirationRemediationHandler(
-      context,
-      aFiscalCode,
-    );
+    const response = await startCardsRecoveryHandler(context, {
+      fiscal_code: aFiscalCode,
+    });
 
     expect(response.kind).toBe("IResponseErrorInternal");
     expect(enqueueMessageMock).toHaveBeenCalledTimes(1);

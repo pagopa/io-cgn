@@ -350,7 +350,6 @@ export const enqueueMessageMock = jest
 export const queueStorageMock = {
   enqueueActivatedCGNMessage: enqueueMessageMock,
   enqueueActivatedEYCAMessage: enqueueMessageMock,
-  enqueueExpirationRemediationMessage: enqueueMessageMock,
   enqueueExpiredCGNMessage: enqueueMessageMock,
   enqueueExpiredEYCAMessage: enqueueMessageMock,
   enqueueMessageToSendMessage: enqueueMessageMock,
@@ -358,6 +357,7 @@ export const queueStorageMock = {
   enqueuePendingDeleteCGNMessage: enqueueMessageMock,
   enqueuePendingDeleteEYCAMessage: enqueueMessageMock,
   enqueuePendingEYCAMessage: enqueueMessageMock,
+  enqueueRecoveryMessage: enqueueMessageMock,
 } as unknown as QueueStorage;
 
 // expirations
