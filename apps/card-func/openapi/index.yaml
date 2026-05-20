@@ -268,6 +268,26 @@ paths:
           schema:
             $ref: "#/definitions/ProblemJson"
 
+  "/{fiscalcode}/expiration-remediation":
+    post:
+      operationId: startCardsExpirationRemediation
+      summary: |
+        Start a cards expiration remediation process
+      description: |
+        Enqueue a remediation request that checks and expires CGN and EYCA cards
+        related to the provided fiscal code, without notifying the user.
+      parameters:
+        - $ref: "#/parameters/FiscalCode"
+      responses:
+        "202":
+          description: Expiration remediation request accepted.
+        "401":
+          description: Wrong or missing function key.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
   "/otp/{fiscalcode}":
     post:
       operationId: generateOtp

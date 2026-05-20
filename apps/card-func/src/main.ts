@@ -43,6 +43,8 @@ import {
 // IMPORT HANDLERS
 // ---------------------------------------------------------------------------
 import { StartCardsDelete } from "../CardsDelete_1_Start/handler";
+import { StartCardsExpirationRemediation } from "../CardsExpirationRemediation_1_Start/handler";
+import { handler as processExpirationRemediationHandler } from "../CardsExpirationRemediation_2_ProcessQueue/handler";
 import { handler as processDeleteCgnHandler } from "../CardsDelete_2_ProcessPendingDeleteCgnQueue/handler";
 import { handler as processDeleteEycaHandler } from "../CardsDelete_3_ProcessPendingDeleteEycaQueue/handler";
 import { StartCgnActivation } from "../CgnActivation_1_Start/handler";
@@ -171,6 +173,13 @@ app.http("CardsDelete_1_Start", {
   route: "api/v1/cgn/{fiscalcode}/delete",
 });
 
+app.http("CardsExpirationRemediation_1_Start", {
+  authLevel: "function",
+  handler: StartCardsExpirationRemediation(queueStorage),
+  methods: ["POST"],
+  route: "api/v1/cgn/{fiscalcode}/expiration-remediation",
+});
+
 app.http("CgnActivation_1_Start", {
   authLevel: "function",
   handler: StartCgnActivation(
@@ -267,6 +276,17 @@ app.storageQueue("CardsDelete_2_ProcessPendingDeleteCgnQueue", {
     deleteCgnExpiration,
   ),
   queueName: "%PENDING_DELETE_CGN_QUEUE_NAME%",
+});
+
+app.storageQueue("CardsExpirationRemediation_2_ProcessQueue", {
+  connection: "CGN_STORAGE_CONNECTION_STRING",
+  handler: processExpirationRemediationHandler(
+    userCgnModel,
+    userEycaCardModel,
+    config.CGN_UPPER_BOUND_AGE,
+    config.EYCA_UPPER_BOUND_AGE,
+  ),
+  queueName: "%EXPIRATION_REMEDIATION_QUEUE_NAME%",
 });
 
 app.storageQueue("CardsDelete_3_ProcessPendingDeleteEycaQueue", {
