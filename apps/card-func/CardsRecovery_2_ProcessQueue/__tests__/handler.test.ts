@@ -104,7 +104,7 @@ describe("CardsRecovery_2_ProcessQueue", () => {
     expect(enqueueMessageMock).not.toHaveBeenCalled();
   });
 
-  it("should ignore eligible citizens even if cards are activated", async () => {
+  it("should ignore eligible citizens", async () => {
     cgnFindLastVersionByModelIdMock.mockImplementationOnce(() =>
       TE.right(
         O.some({
