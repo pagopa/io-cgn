@@ -268,6 +268,29 @@ paths:
           schema:
             $ref: "#/definitions/ProblemJson"
 
+  "/recovery":
+    post:
+      operationId: startCardsRecovery
+      summary: |
+        Start a cards recovery process
+      description: |
+        Enqueue a recovery request that checks and expires CGN and EYCA cards
+        related to the provided fiscal code, without notifying the user.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/FiscalCodePayload"
+      responses:
+        "202":
+          description: Recovery request accepted.
+        "401":
+          description: Wrong or missing function key.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
   "/otp/{fiscalcode}":
     post:
       operationId: generateOtp
@@ -319,6 +342,13 @@ definitions:
     $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v21.0.1/openapi/definitions.yaml#/Timestamp"
   FiscalCode:
     $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v21.0.1/openapi/definitions.yaml#/FiscalCode"
+  FiscalCodePayload:
+    type: object
+    properties:
+      fiscal_code:
+        $ref: "#/definitions/FiscalCode"
+    required:
+      - fiscal_code
   ProblemJson:
     $ref: "https://raw.githubusercontent.com/pagopa/io-functions-commons/v21.0.1/openapi/definitions.yaml#/ProblemJson"
 

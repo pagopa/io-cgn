@@ -44,6 +44,11 @@ export interface CardExpiredMessage {
   status: ExpiredStatusEnum.EXPIRED;
 }
 
+export interface RecoveryMessage {
+  fiscal_code: FiscalCode;
+  request_id: Ulid;
+}
+
 export interface MessageToSendMessage {
   card: Card | EycaCard;
   fiscal_code: FiscalCode;

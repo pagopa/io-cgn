@@ -107,3 +107,13 @@ resource "azurerm_storage_queue" "pendingeyca-poison" {
   name                 = "pendingeyca-poison"
   storage_account_name = azurerm_storage_account.cgn_storage.name
 }
+
+resource "azurerm_storage_queue" "recovery" {
+  name                 = "recovery"
+  storage_account_name = azurerm_storage_account.cgn_storage.name
+}
+
+resource "azurerm_storage_queue" "recovery-poison" {
+  name                 = "recovery-poison"
+  storage_account_name = azurerm_storage_account.cgn_storage.name
+}

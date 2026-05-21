@@ -357,6 +357,7 @@ export const queueStorageMock = {
   enqueuePendingDeleteCGNMessage: enqueueMessageMock,
   enqueuePendingDeleteEYCAMessage: enqueueMessageMock,
   enqueuePendingEYCAMessage: enqueueMessageMock,
+  enqueueRecoveryMessage: enqueueMessageMock,
 } as unknown as QueueStorage;
 
 // expirations

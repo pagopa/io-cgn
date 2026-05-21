@@ -46,6 +46,7 @@ module "functions_cgn_card_02" {
   expired_cgn_queue_name         = "expiredcgn"
   expired_eyca_queue_name        = "expiredeyca"
   messages_queue_name            = "messages"
+  recovery_queue_name            = "recovery"
 
   eyca_api_base_url = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=EYCA-API-BASE-URL)"
   eyca_api_username = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=EYCA-API-USERNAME)"
