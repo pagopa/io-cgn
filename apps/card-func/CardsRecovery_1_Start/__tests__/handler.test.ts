@@ -34,7 +34,7 @@ describe("StartCardsRecovery", () => {
     );
   });
 
-  it("should return Internal Error if the remediation queue is not reachable", async () => {
+  it("should return Internal Error if the recovery queue is not reachable", async () => {
     enqueueMessageMock.mockImplementationOnce(() => TE.left(new Error("any error")));
 
     const startCardsRecoveryHandler = StartCardsRecoveryHandler(queueStorageMock);
