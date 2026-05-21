@@ -191,6 +191,11 @@ variable "messages_queue_name" {
   description = "Messages queue name"
 }
 
+variable "recovery_queue_name" {
+  type        = string
+  description = "Recovery queue name"
+}
+
 variable "eyca_api_base_url" {
   type        = string
   description = "EYCA API base url"

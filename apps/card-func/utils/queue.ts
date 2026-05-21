@@ -9,6 +9,7 @@ import {
   CardPendingDeleteMessage,
   CardPendingMessage,
   MessageToSendMessage,
+  RecoveryMessage,
 } from "../types/queue-message";
 import { toBase64 } from "./base64";
 import { IConfig } from "./config";
@@ -81,6 +82,9 @@ export class QueueStorage {
 
   enqueuePendingEYCAMessage = (message: CardPendingMessage) =>
     this.enqueueMessage(this.config.PENDING_EYCA_QUEUE_NAME, toBase64(message));
+
+  enqueueRecoveryMessage = (message: RecoveryMessage) =>
+    this.enqueueMessage(this.config.RECOVERY_QUEUE_NAME, toBase64(message));
 
   queueService: QueueService;
 

@@ -82,6 +82,7 @@ export const IConfig = t.intersection([
 
     PENDING_DELETE_EYCA_QUEUE_NAME: NonEmptyString,
     PENDING_EYCA_QUEUE_NAME: NonEmptyString,
+    RECOVERY_QUEUE_NAME: NonEmptyString,
 
     isProduction: t.boolean,
   }),

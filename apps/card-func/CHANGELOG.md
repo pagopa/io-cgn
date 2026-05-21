@@ -1,5 +1,11 @@
 ### Changelog
 
+## 4.2.0
+
+### Minor Changes
+
+- edcf9ef: Added recovery flow
+
 ## 4.1.2
 
 ### Patch Changes

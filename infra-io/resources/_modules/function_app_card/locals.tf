@@ -37,6 +37,7 @@ locals {
       EXPIRED_CGN_QUEUE_NAME         = var.expired_cgn_queue_name
       EXPIRED_EYCA_QUEUE_NAME        = var.expired_eyca_queue_name
       MESSAGES_QUEUE_NAME            = var.messages_queue_name
+      RECOVERY_QUEUE_NAME            = var.recovery_queue_name
 
       // EYCA CCDB
       EYCA_API_BASE_URL = var.eyca_api_base_url
