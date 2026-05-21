@@ -1,7 +1,7 @@
 import { InvocationContext } from "@azure/functions";
 import { wrapHandlerV4 } from "@pagopa/io-functions-commons/dist/src/utils/azure-functions-v4-express-adapter";
-import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
 import { ContextMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/context_middleware";
+import { RequiredBodyPayloadMiddleware } from "@pagopa/io-functions-commons/dist/src/utils/middlewares/required_body_payload";
 import {
   IResponseErrorInternal,
   IResponseSuccessAccepted,
@@ -26,9 +26,7 @@ type IStartCardsRecoveryHandler = (
 ) => Promise<ReturnTypes>;
 
 export const StartCardsRecoveryHandler =
-  (
-    queueStorage: QueueStorage,
-  ): IStartCardsRecoveryHandler =>
+  (queueStorage: QueueStorage): IStartCardsRecoveryHandler =>
   async (context: InvocationContext, fiscalCodePayload: FiscalCodePayload) =>
     pipe(
       {
@@ -43,7 +41,9 @@ export const StartCardsRecoveryHandler =
           TE.mapLeft((e) => ResponseErrorInternal(e.message)),
         ),
       ),
-      TE.map(() => ResponseSuccessAccepted<undefined>("Recovery request accepted")),
+      TE.map(() =>
+        ResponseSuccessAccepted<undefined>("Recovery request accepted"),
+      ),
       TE.toUnion,
     )();
 

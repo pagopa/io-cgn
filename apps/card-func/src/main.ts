@@ -43,10 +43,10 @@ import {
 // IMPORT HANDLERS
 // ---------------------------------------------------------------------------
 import { StartCardsDelete } from "../CardsDelete_1_Start/handler";
-import { StartCardsRecovery } from "../CardsRecovery_1_Start/handler";
-import { handler as processRecoveryHandler } from "../CardsRecovery_2_ProcessQueue/handler";
 import { handler as processDeleteCgnHandler } from "../CardsDelete_2_ProcessPendingDeleteCgnQueue/handler";
 import { handler as processDeleteEycaHandler } from "../CardsDelete_3_ProcessPendingDeleteEycaQueue/handler";
+import { StartCardsRecovery } from "../CardsRecovery_1_Start/handler";
+import { handler as processRecoveryHandler } from "../CardsRecovery_2_ProcessQueue/handler";
 import { StartCgnActivation } from "../CgnActivation_1_Start/handler";
 import { StartCgnActivation as StartCgnActivationExternal } from "../CgnActivation_1_Start_External/handler";
 import { handler as processPendingCgnHandler } from "../CgnActivation_2_ProcessPendingQueue/handler";
