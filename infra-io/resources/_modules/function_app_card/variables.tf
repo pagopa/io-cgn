@@ -126,6 +126,11 @@ variable "cosmosdb_cgn_database_name" {
   description = "Database name for CGN cosmosdb"
 }
 
+variable "storage_cgn_account_name" {
+  type        = string
+  description = "CGN storage account name (used for identity-based RBAC connections)"
+}
+
 variable "storage_cgn_connection_string" {
   type        = string
   description = "CGN storage connection key"

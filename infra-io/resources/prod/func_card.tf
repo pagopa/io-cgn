@@ -32,6 +32,7 @@ module "functions_cgn_card_02" {
   cosmosdb_cgn_key           = data.azurerm_key_vault_secret.cosmosdb_cgn_key.value
   cosmosdb_cgn_database_name = "db"
 
+  storage_cgn_account_name      = data.azurerm_storage_account.storage_cgn_itn.name
   storage_cgn_connection_string = data.azurerm_key_vault_secret.storage_cgn_connection_string.value
 
   table_cgn_expiration  = "cardexpiration"
