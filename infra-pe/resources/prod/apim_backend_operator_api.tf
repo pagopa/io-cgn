@@ -25,7 +25,7 @@ resource "azurerm_api_management_api" "operator_api" {
 
   import {
     content_format = "openapi-link"
-    content_value  = "https://raw.githubusercontent.com/pagopa/cgn-onboarding-portal-backend/refs/tags/v2.1.5/openapi/openapi.yaml"
+    content_value  = "https://raw.githubusercontent.com/pagopa/cgn-onboarding-portal-backend/8aac44523db4fa342b17d015fb78ba32c4abb6e5/openapi/openapi.yaml"
   }
 }
 
