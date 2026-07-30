@@ -3,31 +3,36 @@ name: Renew AGW Certs Portale Esercenti
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '0 2 1 * *'  # At 02:00 on day-of-month 1
+    - cron: "0 2 1 * *" # At 02:00 on day-of-month 1
 
 jobs:
   renew_uat:
     uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@main
     name: Renew PE UAT certificate
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
-        csr_common_name: api.cgnonboardingportal-uat.pagopa.it
-        dns_zone_resource_group: cgnonboardingportal-u-public-rg
-        dns_zone: cgnonboardingportal-uat.pagopa.it
-        key_vault_name: io-u-itn-cgn-pe-kv-01
-        force_renewal: true
-        environment: pe-uat        
+      csr_common_name: api.cgnonboardingportal-uat.pagopa.it
+      dns_zone_resource_group: cgnonboardingportal-u-public-rg
+      dns_zone: cgnonboardingportal-uat.pagopa.it
+      key_vault_name: io-u-itn-cgn-pe-kv-01
+      force_renewal: true
+      environment: pe-uat
 
   renew_prod:
     uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@main
     name: Renew PE PROD certificate
     secrets: inherit
     needs: [renew_uat]
+    permissions:
+      id-token: write
+      contents: read
     with:
-        csr_common_name: api.cgnonboardingportal.pagopa.it
-        dns_zone_resource_group: cgnonboardingportal-p-public-rg
-        dns_zone: cgnonboardingportal.pagopa.it
-        key_vault_name: io-p-itn-cgn-pe-kv-01
-        force_renewal: true
-        environment: pe-prod        
-      
+      csr_common_name: api.cgnonboardingportal.pagopa.it
+      dns_zone_resource_group: cgnonboardingportal-p-public-rg
+      dns_zone: cgnonboardingportal.pagopa.it
+      key_vault_name: io-p-itn-cgn-pe-kv-01
+      force_renewal: true
+      environment: pe-prod
