@@ -10,12 +10,6 @@ resource "azurerm_logic_app_workflow" "smart_agent_export" {
   tags = local.tags
 }
 
-resource "azuread_application" "smart_agent_export_google_federation" {
-  display_name = "${local.project}-${local.domain}-smart-agent-export-google"
-
-  identifier_uris = ["https://iam.googleapis.com/projects/715959788121/locations/global/workloadIdentityPools/test-cgn-azure/providers/azure-cgn-provider"]
-}
-
 resource "azurerm_logic_app_trigger_recurrence" "smart_agent_export_schedule" {
   name         = "schedule"
   logic_app_id = azurerm_logic_app_workflow.smart_agent_export.id
