@@ -7,7 +7,7 @@ on:
 
 jobs:
   renew_uat:
-    uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@main
+    uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@625f02f382c33eb449cd94facb8e426bf7ae37ea # main
     name: Renew PE UAT certificate
     secrets: inherit
     permissions:
@@ -22,7 +22,7 @@ jobs:
       environment: pe-uat
 
   renew_prod:
-    uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@main
+    uses: pagopa/dx/.github/workflows/release-certificate-v1.yaml@625f02f382c33eb449cd94facb8e426bf7ae37ea # main
     name: Renew PE PROD certificate
     secrets: inherit
     needs: [renew_uat]
