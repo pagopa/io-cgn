@@ -17,7 +17,7 @@ resource "azurerm_logic_app_trigger_recurrence" "smart_agent_export_schedule" {
   interval     = 1
   time_zone    = "W. Europe Standard Time"
   schedule {
-    at_these_hours   = [5]
+    at_these_hours   = [4]
     at_these_minutes = [0]
   }
 }
