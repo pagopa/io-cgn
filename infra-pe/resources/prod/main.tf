@@ -65,6 +65,8 @@ module "vpn" {
   prefix              = local.prefix
   env_short           = local.env_short
 
+  vpn_sku = "VpnGw1AZ"
+
   subscription_current     = data.azurerm_subscription.current
   virtual_network          = module.networking.vnet_common
   vpn_cidr_subnet          = ["10.26.133.0/24"]
