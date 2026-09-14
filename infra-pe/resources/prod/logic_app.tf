@@ -10,18 +10,6 @@ resource "azurerm_logic_app_workflow" "smart_agent_export" {
   tags = local.tags
 }
 
-resource "azurerm_logic_app_trigger_recurrence" "smart_agent_export_schedule" {
-  name         = "schedule"
-  logic_app_id = azurerm_logic_app_workflow.smart_agent_export.id
-  frequency    = "Day"
-  interval     = 1
-  time_zone    = "W. Europe Standard Time"
-  schedule {
-    at_these_hours   = [4]
-    at_these_minutes = [0]
-  }
-}
-
 module "smart_agent_export_kv_role_assignment" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
   version = "~> 1.3"
