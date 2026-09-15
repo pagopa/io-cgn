@@ -10,7 +10,7 @@ on:
 
 jobs:
   infra_release_uat:
-    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@a18d71062ddaaa09f8e145835a05aefd7701935e # main
     name: Release Infrastructure PE UAT
     secrets: inherit
     with:
@@ -22,7 +22,7 @@ jobs:
 
   infra_release_prod:
     needs: infra_release_uat
-    uses: pagopa/dx/.github/workflows/infra_apply.yaml@main
+    uses: pagopa/dx/.github/workflows/infra_apply.yaml@a18d71062ddaaa09f8e145835a05aefd7701935e # main
     name: Release Infrastructure PE PROD
     secrets: inherit
     with:
