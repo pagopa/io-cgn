@@ -79,7 +79,7 @@ module "app_gw" {
       fqdns                       = [var.apim_hostname]
       probe_name                  = "probe-apim"
       probe                       = "/status-0123456789abcdef"
-      request_timeout             = 2
+      request_timeout             = 180
       pick_host_name_from_backend = false
     }
   }
