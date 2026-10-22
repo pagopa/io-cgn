@@ -17,10 +17,10 @@ Replace in .env file the envs with the proper values.
 ```shell
 pnpm install
 pnpm build
-docker-compose up -d --build
-docker-compose logs -f functions
-open http://localhost/some/path/test
+pnpm start
 ```
+
+Azurite and the Cosmos DB emulator are provided by the devcontainer (hosts `azurite`, `cosmosdb`).
 
 ## Deploy
 
