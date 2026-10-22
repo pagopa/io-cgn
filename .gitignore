@@ -99,6 +99,9 @@ helm/charts/*
 
 docker-compose.override.yml
 
+# Host CA certificates exported for the devcontainer
+.devcontainer/certs/*.crt
+
 # Local .terraform directories
 **/.terraform/*
 

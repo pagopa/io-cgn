@@ -1,0 +1,42 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspaces/io-cgn:cached
+    command: sleep infinity
+    environment:
+      AZURITE_HOST: azurite
+      AZURITE_BLOB_PORT: "10000"
+      AZURITE_QUEUE_PORT: "10001"
+      AZURITE_TABLE_PORT: "10002"
+      COSMOSDB_HOST: cosmosdb
+      COSMOSDB_PORT: "8081"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
+    restart: unless-stopped
+    command: azurite --skipApiVersionCheck --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 -l /data
+    volumes:
+      - azurite-data:/data
+
+  redis:
+    image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview@sha256:a8b93e25520e999d867ed3949e7de7f4ff3ddab23ca95fa6f90230de5dd9729b
+    environment:
+      AZURE_COSMOS_EMULATOR_PARTITION_COUNT: 1
+      AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
+
+volumes:
+  azurite-data:
