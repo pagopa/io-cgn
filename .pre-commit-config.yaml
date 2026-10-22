@@ -1,4 +1,12 @@
 repos:
+  - repo: local
+    hooks:
+      - id: update-submodules
+        name: Update submodules to remote master
+        entry: scripts/update-submodules.sh
+        language: system
+        pass_filenames: false
+        always_run: true
   - repo: https://github.com/pagopa/dx
     rev: pre_commit_scripts@0.0.1
     hooks:

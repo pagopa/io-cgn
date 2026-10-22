@@ -21,11 +21,12 @@ The runtime source of truth is [`utils/config.ts`](./utils/config.ts).
 
 ```shell
 pnpm install
+pnpm generate
 pnpm build
-docker-compose up -d --build
-docker-compose logs -f functions
-open http://localhost/some/path/test
+pnpm start
 ```
+
+Azurite, the Cosmos DB emulator and Redis are provided by the devcontainer (hosts `azurite`, `cosmosdb`, `redis`).
 
 ## Deploy
 

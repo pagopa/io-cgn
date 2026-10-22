@@ -1,0 +1,69 @@
+{
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/io-cgn",
+  "forwardPorts": [
+    "azurite:10000",
+    "azurite:10001",
+    "azurite:10002",
+    "redis:6379",
+    "cosmosdb:8081",
+    "cosmosdb:1234"
+  ],
+  "portsAttributes": {
+    "*": {
+      "onAutoForward": "silent"
+    }
+  },
+  "initializeCommand": "sh ./.devcontainer/scripts/export-devcontainer-ca.sh || echo Windows host requires WSL or a POSIX shell for certificate export",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest",
+      "tflint": "latest",
+      "installTFsec": true,
+      "installTerraformDocs": true
+    },
+    "ghcr.io/pagopa/devcontainer-features/trivy:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22",
+      "installYarnUsingApt": false,
+      "pnpmVersion": "none",
+      "nvmInstallPath": "/opt/nvm"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": true
+    }
+  },
+  "postCreateCommand": "corepack enable && pnpm install && pre-commit install",
+  "postStartCommand": {
+    "set-workspace-as-safe-dir": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "jest.outputConfig": {
+          "revealOn": "demand",
+          "revealWithFocus": "none"
+        },
+        "testing.automaticallyOpenTestResults": "neverOpen"
+      },
+      "extensions": [
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-azureterraform",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig",
+        "orta.vscode-jest",
+        "redhat.vscode-yaml",
+        "dbaeumer.vscode-eslint",
+        "github.copilot",
+        "42crunch.vscode-openapi"
+      ]
+    }
+  }
+}

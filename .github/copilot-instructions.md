@@ -58,25 +58,13 @@ cp env.example .env             # Configure local environment
 pnpm generate                   # Generate OpenAPI clients & models
 pnpm build                      # Compile TypeScript
 pnpm start                      # Start Azure Functions runtime
-docker-compose up -d --build    # Local development with dependencies
 ```
 
-### Java Backend
+The devcontainer (`.devcontainer/`) provides Azurite, the Cosmos DB emulator and Redis.
 
-```bash
-cd cgn-onboarding-portal-backend
-mvn clean install
-./upgrade_version.sh increment-patch  # Version bump
-```
+### Java Backend and Frontend
 
-### Frontend
-
-```bash
-cd cgn-onboarding-portal-frontend
-pnpm install
-pnpm generate                   # Generate OpenAPI client from backend spec
-pnpm start:uat                  # Run against UAT environment
-```
+`cgn-onboarding-portal-backend` and `cgn-onboarding-portal-frontend` are git submodules kept only for GitHub Actions deploys. Build, test and change them in their own repositories; the `update-submodules` pre-commit hook keeps their pointers on remote `master`.
 
 ## Code Conventions
 
