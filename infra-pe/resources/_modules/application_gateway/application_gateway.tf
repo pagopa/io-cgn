@@ -44,6 +44,38 @@ module "agw_identity_roles" {
   ]
 }
 
+resource "azurerm_web_application_firewall_policy" "this" {
+  name                = "${var.project}-cgn-pe-agw-waf-policy-01"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  policy_settings {
+    enabled                     = true
+    mode                        = "Detection"
+    request_body_check          = true
+    file_upload_limit_in_mb     = 100
+    max_request_body_size_in_kb = 128
+  }
+
+  managed_rules {
+    managed_rule_set {
+      type    = "OWASP"
+      version = "3.2"
+
+      rule_group_override {
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT"
+        rule {
+          id      = "920300"
+          enabled = true
+          action  = "Log"
+        }
+      }
+    }
+  }
+
+  tags = var.tags
+}
+
 module "app_gw" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v4.git//app_gateway?ref=v7.40.3"
 
@@ -55,14 +87,9 @@ module "app_gw" {
   sku_name = var.sku.name
   sku_tier = var.sku.tier
 
-  # WAF
-  waf_enabled = var.sku.tier == "WAF_v2" ? true : false
-  waf_disabled_rule_group = var.sku.tier == "WAF_v2" ? [
-    {
-      rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT"
-      rules           = ["920300", ]
-    }
-  ] : []
+  # WAF: policy-based, so the module's inline waf_configuration must stay off
+  waf_enabled        = false
+  firewall_policy_id = azurerm_web_application_firewall_policy.this.id
 
   # Networking
   subnet_id    = module.appgateway_snet.id
@@ -112,7 +139,7 @@ module "app_gw" {
       host               = "api.cgnonboardingportal${var.env_short == "u" ? "-uat" : ""}.pagopa.it"
       port               = 443
       ssl_profile_name   = "${var.project}-cgn-pe-ssl-profile"
-      firewall_policy_id = null
+      firewall_policy_id = azurerm_web_application_firewall_policy.this.id
 
       certificate = {
         name = var.app_gw_cert_name

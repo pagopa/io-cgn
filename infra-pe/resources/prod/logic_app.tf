@@ -8,6 +8,35 @@ resource "azurerm_logic_app_workflow" "smart_agent_export" {
   }
 
   tags = local.tags
+
+  lifecycle {
+    # The Key Vault connection ($connections) is set via the designer, not in Terraform
+    ignore_changes = [parameters, workflow_parameters]
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "smart_agent_export_runs_failed" {
+  name                = "[CGN | PE] Smart agent export logic app run failed"
+  resource_group_name = azurerm_resource_group.itn_cgn_pe.name
+  scopes              = [azurerm_logic_app_workflow.smart_agent_export.id]
+  description         = "At least one run of the smart-agent-export logic app failed."
+  severity            = 1
+  frequency           = "PT1H"
+  window_size         = "PT6H"
+
+  criteria {
+    metric_namespace = "Microsoft.Logic/workflows"
+    metric_name      = "RunsFailed"
+    aggregation      = "Total"
+    operator         = "GreaterThan"
+    threshold        = 0
+  }
+
+  action {
+    action_group_id = data.azurerm_monitor_action_group.ag_cgn_pe.id
+  }
+
+  tags = local.tags
 }
 
 module "smart_agent_export_kv_role_assignment" {
