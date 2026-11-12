@@ -1,6 +1,6 @@
 module "appsvc_principal_role_assignments" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "~> 1.3"
+  version = "1.3.3"
 
   for_each = toset([
     module.app_service_onboarding_portal_backend.app_service_onboarding_portal_backend.principal_id,

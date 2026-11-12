@@ -26,7 +26,7 @@ module "appgateway_snet" {
 
 module "agw_identity_roles" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "~> 1.0"
+  version = "1.3.3"
 
   principal_id    = azurerm_user_assigned_identity.app_gw_identity.principal_id
   subscription_id = var.azure_subscription_id

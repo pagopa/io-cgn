@@ -3,7 +3,7 @@
 # read, write, and delete blobs without connection strings.
 module "adf_storage_role_assignment" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "~> 2.0"
+  version = "2.1.0"
 
   principal_id    = azurerm_data_factory.this.identity[0].principal_id
   subscription_id = var.subscription_id
