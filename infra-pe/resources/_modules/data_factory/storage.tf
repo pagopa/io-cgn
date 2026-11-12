@@ -3,7 +3,7 @@
 # Access is private-only; a blob private endpoint is created automatically.
 module "storage_adf" {
   source  = "pagopa-dx/azure-storage-account/azurerm"
-  version = "~> 2.0"
+  version = "2.2.4"
 
   environment = local.storage_environment
   tags        = var.tags

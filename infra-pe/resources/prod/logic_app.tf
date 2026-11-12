@@ -41,7 +41,7 @@ resource "azurerm_monitor_metric_alert" "smart_agent_export_runs_failed" {
 
 module "smart_agent_export_kv_role_assignment" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "~> 1.3"
+  version = "1.3.3"
 
   principal_id    = azurerm_logic_app_workflow.smart_agent_export.identity[0].principal_id
   subscription_id = data.azurerm_client_config.current.subscription_id
