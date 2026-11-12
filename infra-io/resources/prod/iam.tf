@@ -18,7 +18,7 @@ resource "azurerm_role_assignment" "bonus_kv_administrator_cgn_rg_itn_01" {
 
 module "appsvc_principal_role_assignments" {
   source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "~> 1.3"
+  version = "1.3.3"
 
   for_each = toset([
     module.functions_cgn_card_02.function_app_cgn_card.principal_id,
