@@ -100,6 +100,17 @@ variable "azurerm_monitor_action_group_id" {
   default     = null
 }
 
+variable "waf_mode" {
+  type        = string
+  description = "WAF policy mode; custom rules only block in Prevention"
+  default     = "Detection"
+
+  validation {
+    condition     = contains(["Detection", "Prevention"], var.waf_mode)
+    error_message = "waf_mode must be Detection or Prevention."
+  }
+}
+
 variable "alert_sensitivity" {
   type        = string
   description = "Alert sensitivity level"

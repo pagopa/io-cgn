@@ -15,6 +15,8 @@ module "application_gateway" {
     tier = "WAF_v2"
   }
 
+  waf_mode = "Prevention"
+
   virtual_network = {
     resource_group_name = module.networking.vnet_common.resource_group_name
     name                = module.networking.vnet_common.name
