@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "github>pagopa/dx//renovate-presets/default"
+  ],
+  "timezone": "Europe/Rome",
+  "packageRules": [
+  ]
+}

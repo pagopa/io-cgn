@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 4.81"
     }
   }
 
@@ -20,14 +20,23 @@ provider "azurerm" {
 }
 
 module "federated_identities" {
-  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+  source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
+  version = "4.0.0"
 
-  prefix    = local.prefix
-  env_short = local.env_short
-  env       = "pe-${local.env}"
-  domain    = local.domain
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location
+    domain          = local.domain
+    instance_number = "01"
+  }
 
-  repositories = [local.repo_name]
+  repository = {
+    name = local.repo_name
+  }
+
+  resource_group_name = local.identity_resource_group_name
+  subscription_id     = data.azurerm_subscription.current.id
 
   continuos_delivery = {
     enable = true,
@@ -43,18 +52,31 @@ module "federated_identities" {
 }
 
 module "app_federated_identities" {
-  source = "github.com/pagopa/dx//infra/modules/azure_federated_identity_with_github?ref=main"
+  source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
+  version = "4.0.0"
 
-  prefix       = local.prefix
-  env_short    = local.env_short
-  env          = "pe-app-${local.env}"
-  domain       = "${local.domain}-app"
-  repositories = [local.repo_name]
-  tags         = local.tags
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location
+    domain          = local.domain
+    instance_number = "01"
+  }
+
+  repository = {
+    name = local.repo_name
+  }
+
+  resource_group_name = local.identity_resource_group_name
+  subscription_id     = data.azurerm_subscription.current.id
+
+  identity_type = "app"
 
   continuos_integration = { enable = false }
   continuos_delivery = {
     enable = true,
     roles  = local.environment_app_cd_roles
   }
+
+  tags = local.tags
 }

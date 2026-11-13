@@ -8,6 +8,8 @@ locals {
 
   repo_name = "io-cgn"
 
+  identity_resource_group_name = "${local.prefix}-${local.env_short}-identity-rg"
+
   tags = {
     CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
     CreatedBy   = "Terraform"
