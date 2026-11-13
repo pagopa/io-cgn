@@ -307,3 +307,20 @@ module "app_gw" {
   depends_on = [module.agw_identity_roles]
   tags       = var.tags
 }
+
+resource "azurerm_monitor_diagnostic_setting" "app_gw_logs" {
+  name                       = "${var.project}-cgn-pe-agw-diag-01"
+  target_resource_id         = module.app_gw.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  # Dedicated writes to resource-specific tables (AGWFirewallLogs, AGWAccessLogs)
+  log_analytics_destination_type = "Dedicated"
+
+  enabled_log {
+    category = "ApplicationGatewayFirewallLog"
+  }
+
+  enabled_log {
+    category = "ApplicationGatewayAccessLog"
+  }
+}

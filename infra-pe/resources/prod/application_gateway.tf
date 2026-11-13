@@ -36,5 +36,7 @@ module "application_gateway" {
 
   alert_sensitivity = "Medium"
 
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law_cgn_pe.id
+
   tags = local.tags
 }
