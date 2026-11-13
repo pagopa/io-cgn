@@ -116,3 +116,8 @@ variable "alert_sensitivity" {
   description = "Alert sensitivity level"
   default     = "Medium"
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "Log Analytics workspace ID that receives Application Gateway firewall and access logs"
+}
