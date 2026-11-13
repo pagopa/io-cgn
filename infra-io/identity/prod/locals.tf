@@ -69,6 +69,21 @@ locals {
     }
   }
 
+  environment_app_ci_roles = {
+    subscription = [
+      "Reader",
+      "Reader and Data Access",
+      "PagoPA IaC Reader",
+      "DocumentDB Account Contributor",
+      "PagoPA API Management Service List Secrets",
+    ]
+    resource_groups = {
+      terraform-state-rg = [
+        "Storage Blob Data Contributor"
+      ],
+    }
+  }
+
   issuer   = "https://token.actions.githubusercontent.com"
   audience = ["api://AzureADTokenExchange"]
 }

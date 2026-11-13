@@ -28,7 +28,7 @@ provider "azurerm" {
 
 module "federated_identities" {
   source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
-  version = "~> 1.0"
+  version = "4.0.0"
 
   environment = {
     prefix          = local.prefix
@@ -61,7 +61,7 @@ module "federated_identities" {
 
 module "app_federated_identities" {
   source  = "pagopa-dx/azure-federated-identity-with-github/azurerm"
-  version = "~> 1.0"
+  version = "4.0.0"
 
   environment = {
     prefix          = local.prefix
@@ -81,7 +81,10 @@ module "app_federated_identities" {
 
   identity_type = "app"
 
-  continuos_integration = { enable = true }
+  continuos_integration = {
+    enable = true
+    roles  = local.environment_app_ci_roles
+  }
 
   tags = local.tags
 }
