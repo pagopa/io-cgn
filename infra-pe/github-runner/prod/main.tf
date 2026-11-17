@@ -2,7 +2,12 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 4.81"
+    }
+
+    dx = {
+      source  = "pagopa-dx/azure"
+      version = "0.12.10"
     }
   }
 
@@ -17,6 +22,10 @@ terraform {
 provider "azurerm" {
   features {
   }
+}
+
+provider "dx" {
+  features {}
 }
 
 module "runner_commons" {
