@@ -45,3 +45,14 @@ variable "snet" {
 
   description = "Subnet configuration"
 }
+
+variable "cae_use_case" {
+  type        = string
+  description = "Use case of the DX Container App Environment (default or development)"
+  default     = "default"
+
+  validation {
+    condition     = contains(["default", "development"], var.cae_use_case)
+    error_message = "cae_use_case must be either 'default' or 'development'."
+  }
+}

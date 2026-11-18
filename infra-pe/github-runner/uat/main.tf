@@ -24,9 +24,7 @@ provider "azurerm" {
   }
 }
 
-provider "dx" {
-  features {}
-}
+provider "dx" {}
 
 
 module "runner_commons" {
@@ -47,27 +45,29 @@ module "runner_commons" {
   snet = {
     cidr = "10.25.200.0/23"
   }
+
+  cae_use_case = "development"
 }
 
-module "container_app_job_selfhosted_runner" {
+module "container_app_job_selfhosted_runner_02" {
   source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
-  version = "~> 1.0"
+  version = "4.0.1"
 
   environment = {
     prefix          = local.prefix
     env_short       = local.env_short
     location        = local.location.itn
-    instance_number = "01"
+    instance_number = "02"
   }
 
-  resource_group_name = module.runner_commons.container_app_environment.resource_group_name
+  resource_group_name = module.runner_commons.container_app_environment_02.resource_group_name
 
   repository = {
     name = local.repo_name
   }
 
   container_app_environment = {
-    id       = module.runner_commons.container_app_environment.id
+    id       = module.runner_commons.container_app_environment_02.id
     location = local.location.itn
 
     cpu                        = 2
