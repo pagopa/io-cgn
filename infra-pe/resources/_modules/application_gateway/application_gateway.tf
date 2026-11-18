@@ -97,6 +97,15 @@ resource "azurerm_web_application_firewall_policy" "this" {
           action  = "Log"
         }
       }
+
+      rule_group_override {
+        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        rule {
+          id      = "942390"
+          enabled = true
+          action  = "Log"
+        }
+      }
     }
   }
 
