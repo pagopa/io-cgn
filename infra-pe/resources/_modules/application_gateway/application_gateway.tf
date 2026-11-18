@@ -124,6 +124,26 @@ resource "azurerm_web_application_firewall_policy" "this" {
     }
   }
 
+  custom_rules {
+    name      = "BlockSpring4Shell"
+    priority  = 5
+    rule_type = "MatchRule"
+    action    = "Block"
+
+    match_conditions {
+      match_variables {
+        variable_name = "QueryString"
+      }
+      match_variables {
+        variable_name = "RequestBody"
+      }
+
+      operator     = "Contains"
+      match_values = ["classloader"]
+      transforms   = ["UrlDecode", "Lowercase"]
+    }
+  }
+
   policy_settings {
     enabled                     = true
     mode                        = var.waf_mode
