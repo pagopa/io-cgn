@@ -42,7 +42,7 @@ module "container_app_environment_runner_02" {
     location        = local.location.itn
     domain          = var.domain
     app_name        = "github-runner"
-    instance_number = "01"
+    instance_number = "02"
   }
 
   resource_group_name        = azurerm_resource_group.rg_github_runner.name
