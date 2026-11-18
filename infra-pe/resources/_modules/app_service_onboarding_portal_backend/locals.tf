@@ -25,7 +25,7 @@ locals {
       SPRING_DATASOURCE_URL      = var.spring_datasource_url
       SPRING_DATASOURCE_USERNAME = var.spring_datasource_username
       SPRING_DATASOURCE_PASSWORD = var.spring_datasource_password
-      JAVA_OPTS                  = "-XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication"
+      JAVA_OPTS                  = "-XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:-UseBASE64Intrinsics"
 
       # BLOB STORAGE SETTINGS
       CGN_PE_STORAGE_AZURE_DEFAULT_ENDPOINTS_PROTOCOL = "https"
