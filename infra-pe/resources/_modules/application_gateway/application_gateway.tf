@@ -67,6 +67,83 @@ resource "azurerm_web_application_firewall_policy" "this" {
     }
   }
 
+  custom_rules {
+    name      = "BlockJava4ShellB64BodyField"
+    priority  = 2
+    rule_type = "MatchRule"
+    action    = "Block"
+
+    match_conditions {
+      match_variables {
+        variable_name = "PostArgs"
+      }
+
+      operator           = "Regex"
+      negation_condition = false
+      match_values       = ["\\A(?:[A-Za-z0-9+/]{64})+(?:[A-Za-z0-9+/]{0,2}=|[A-Za-z0-9+/]?==)\\z"]
+      transforms         = ["Trim"]
+    }
+  }
+
+  custom_rules {
+    name      = "BlockJava4ShellB64Query"
+    priority  = 3
+    rule_type = "MatchRule"
+    action    = "Block"
+
+    match_conditions {
+      match_variables {
+        variable_name = "QueryString"
+      }
+
+      operator           = "Regex"
+      negation_condition = false
+      match_values       = ["(?:\\A|&)[^&=]*=(?:[A-Za-z0-9+/]{64})+(?:[A-Za-z0-9+/]{0,2}=|[A-Za-z0-9+/]?==)(?:&|\\z)"]
+      transforms         = ["UrlDecode", "Trim"]
+    }
+  }
+
+  custom_rules {
+    name      = "BlockJava4ShellB64Header"
+    priority  = 4
+    rule_type = "MatchRule"
+    action    = "Block"
+
+    match_conditions {
+      match_variables {
+        variable_name = "RequestHeaders"
+      }
+
+      operator           = "Regex"
+      negation_condition = false
+      match_values = [
+        "\\A(?:(?i:Bearer|Basic)\\s+)?(?:(?:[A-Za-z0-9+\\/]{64})+(?:[A-Za-z0-9+\\/]{0,2}=|[A-Za-z0-9+\\/]?==)|(?:[A-Za-z0-9_-]+=*\\.)?(?:[A-Za-z0-9_-]+=*\\.)?(?:[A-Za-z0-9_-]{64})+(?:[A-Za-z0-9_-]{0,2}=|[A-Za-z0-9_-]?==)(?:\\.[A-Za-z0-9_-]+=*){0,2})\\z",
+        "(?:\\A|[^A-Za-z0-9+/])(?:[A-Za-z0-9+/]{64})+(?:[A-Za-z0-9+/]{0,2}=|[A-Za-z0-9+/]?==)(?:\\z|[^A-Za-z0-9+/=])",
+      ]
+      transforms = []
+    }
+  }
+
+  custom_rules {
+    name      = "BlockSpring4Shell"
+    priority  = 5
+    rule_type = "MatchRule"
+    action    = "Block"
+
+    match_conditions {
+      match_variables {
+        variable_name = "QueryString"
+      }
+      match_variables {
+        variable_name = "RequestBody"
+      }
+
+      operator     = "Contains"
+      match_values = ["classloader"]
+      transforms   = ["UrlDecode", "Lowercase"]
+    }
+  }
+
   policy_settings {
     enabled                     = true
     mode                        = var.waf_mode
