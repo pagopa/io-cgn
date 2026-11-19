@@ -24,9 +24,7 @@ provider "azurerm" {
   }
 }
 
-provider "dx" {
-  features {}
-}
+provider "dx" {}
 
 module "runner_commons" {
   source = "../_modules/common"
@@ -68,6 +66,43 @@ module "container_app_job_selfhosted_runner" {
 
   container_app_environment = {
     id       = module.runner_commons.container_app_environment.id
+    location = local.location.itn
+
+    cpu                        = 2
+    memory                     = "4Gi"
+    replica_timeout_in_seconds = 7200
+    use_labels                 = true
+    override_labels            = [local.env]
+  }
+
+  key_vault = {
+    name                = "${local.project}-itn-${local.domain}-kv-01"
+    resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
+    use_rbac            = true
+  }
+
+  tags = local.tags
+}
+
+module "container_app_job_selfhosted_runner_02" {
+  source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
+  version = "4.0.1"
+
+  environment = {
+    prefix          = local.prefix
+    env_short       = local.env_short
+    location        = local.location.itn
+    instance_number = "02"
+  }
+
+  resource_group_name = module.runner_commons.container_app_environment_02.resource_group_name
+
+  repository = {
+    name = local.repo_name
+  }
+
+  container_app_environment = {
+    id       = module.runner_commons.container_app_environment_02.id
     location = local.location.itn
 
     cpu                        = 2
