@@ -85,18 +85,21 @@ const RECONNECT_BACKOFF_MS = 1_000;
 const withDeadline = <T>(
   timeoutMs: number,
   operation: string,
-  task: (hasExpired: () => boolean) => Promise<T>,
+  task: (signal: AbortSignal) => Promise<T>,
 ): Promise<T> => {
-  let expired = false;
+  const controller = new AbortController();
   let timer: NodeJS.Timeout | undefined;
   const deadline = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      expired = true;
-      reject(new Error(`Redis ${operation} timed out after ${timeoutMs}ms`));
+      const error = new Error(
+        `Redis ${operation} timed out after ${timeoutMs}ms`,
+      );
+      controller.abort(error);
+      reject(error);
     }, timeoutMs);
   });
   const clear = () => clearTimeout(timer);
-  return Promise.race([task(() => expired), deadline]).then(
+  return Promise.race([task(controller.signal), deadline]).then(
     (result) => {
       clear();
       return result;
@@ -245,14 +248,18 @@ export const createResilientRedisClient = async (
   // The node-redis command timeout stops once a command is sent, and the idle
   // socket timeout never fires while other commands keep the connection busy:
   // this deadline is the only bound for a command sent on a dead connection.
-  const run = <T>(command: (c: RedisClusterClient) => Promise<T>): Promise<T> =>
-    withDeadline(commandTimeoutMs, "command", async (hasExpired) => {
+  const run = <T>(command: (c: RedisCluster) => Promise<T>): Promise<T> =>
+    withDeadline(commandTimeoutMs, "command", async (signal) => {
       const c = await getClient();
       // The caller has already received a timeout: do not run it late.
-      if (hasExpired()) {
-        throw new Error(`Redis command timed out after ${commandTimeoutMs}ms`);
-      }
-      return command(c);
+      signal.throwIfAborted();
+      // Aborting drops a command still unsent; the options are not merged.
+      return command(
+        c.withCommandOptions({
+          abortSignal: signal,
+          timeout: commandTimeoutMs,
+        }),
+      );
     }).then(
       (result) => {
         consecutiveFailures = 0;

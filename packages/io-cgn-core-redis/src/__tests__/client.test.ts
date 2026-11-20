@@ -40,6 +40,9 @@ class FakeCluster extends EventEmitter {
   LPUSH = jest.fn(async () => 2);
   PING = jest.fn(async () => "PONG");
   SETEX = jest.fn(async () => "OK");
+  withCommandOptions = jest.fn(
+    (_options: { abortSignal?: AbortSignal; timeout?: number }) => this,
+  );
 }
 
 const aCredentialsProvider = { type: "credentials-provider" };
@@ -215,6 +218,31 @@ describe("createResilientRedisClient", () => {
     await expect(rejection).resolves.toEqual(
       new Error("Redis command timed out after 2000ms"),
     );
+  });
+
+  it("should run commands with an abort signal and the command timeout", async () => {
+    const client = await createResilientRedisClient(config, deps);
+
+    await client.LPOP("list");
+
+    const [options] = clusters[0].withCommandOptions.mock.calls[0];
+    expect(options.timeout).toBe(2_000);
+    expect(options.abortSignal?.aborted).toBe(false);
+    expect(clusters[0].LPOP).toHaveBeenCalledWith("list");
+  });
+
+  it("should abort the command signal when the deadline expires", async () => {
+    const client = await createResilientRedisClient(config, deps);
+    clusters[0].LPOP.mockReturnValue(never());
+
+    const rejection = rejectionOf(client.LPOP("list"));
+    await jest.advanceTimersByTimeAsync(2_000);
+
+    const error = new Error("Redis command timed out after 2000ms");
+    await expect(rejection).resolves.toEqual(error);
+    const [options] = clusters[0].withCommandOptions.mock.calls[0];
+    expect(options.abortSignal?.aborted).toBe(true);
+    expect(options.abortSignal?.reason).toEqual(error);
   });
 
   it("should rebuild the connection after consecutive failed commands", async () => {
