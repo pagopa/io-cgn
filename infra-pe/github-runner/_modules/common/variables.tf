@@ -38,14 +38,6 @@ variable "vnet" {
   description = "Virtual Network configuration"
 }
 
-variable "snet" {
-  type = object({
-    cidr = string
-  })
-
-  description = "Subnet configuration"
-}
-
 variable "cae_use_case" {
   type        = string
   description = "Use case of the DX Container App Environment (default or development)"

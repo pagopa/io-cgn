@@ -42,48 +42,7 @@ module "runner_commons" {
     resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
   }
 
-  snet = {
-    cidr = "10.25.200.0/23"
-  }
-
   cae_use_case = "development"
-}
-
-module "container_app_job_selfhosted_runner" {
-  source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
-  version = "~> 1.0"
-
-  environment = {
-    prefix          = local.prefix
-    env_short       = local.env_short
-    location        = local.location.itn
-    instance_number = "01"
-  }
-
-  resource_group_name = module.runner_commons.container_app_environment.resource_group_name
-
-  repository = {
-    name = local.repo_name
-  }
-
-  container_app_environment = {
-    id       = module.runner_commons.container_app_environment.id
-    location = local.location.itn
-
-    cpu                        = 2
-    memory                     = "4Gi"
-    replica_timeout_in_seconds = 7200
-    use_labels                 = true
-    override_labels            = [local.env]
-  }
-
-  key_vault = {
-    name                = "${local.project}-itn-${local.domain}-kv-01"
-    resource_group_name = "${local.project}-itn-${local.domain}-rg-01"
-    use_rbac            = true
-  }
-
-  tags = local.tags
 }
 
 module "container_app_job_selfhosted_runner_02" {
