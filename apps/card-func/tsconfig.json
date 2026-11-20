@@ -8,8 +8,7 @@
     "strict": true,
     "sourceMap": false,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "ignoreDeprecations": "6.0"
+    "skipLibCheck": true
   },
   "exclude": [
     "__mocks__",
