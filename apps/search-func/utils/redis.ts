@@ -1,9 +1,10 @@
 /* eslint-disable no-invalid-this */
-import * as redis from "redis";
+import { RedisCommands, createRedisClient } from "@pagopa/io-cgn-core-redis";
 
+import { trackErrorToVoid } from "./appinsights";
 import { IConfig } from "./config";
 
-export type RedisClient = redis.RedisClientType;
+export type RedisClient = RedisCommands;
 
 /**
  * RedisClientFactory singleton
@@ -23,44 +24,36 @@ export const getRedisClientFactory = (config: IConfig) => {
  */
 export class RedisClientFactory {
   protected readonly config: IConfig;
-  protected readonly createSimpleRedisClient = async (
-    redisUrl: string,
-    password?: string,
-    port?: string,
-    useTls = true,
-  ): Promise<RedisClient> => {
-    const DEFAULT_REDIS_PORT = useTls ? "6380" : "6379";
-    const redisPort: number = parseInt(port || DEFAULT_REDIS_PORT, 10);
-    const redisClientConnection = redis.createClient<
-      redis.RedisDefaultModules,
-      Record<string, never>,
-      Record<string, never>
-    >({
-      password,
-      pingInterval: 1000 * 60 * 9,
-      socket: {
-        port: redisPort,
-        tls: useTls,
-      },
-      url: useTls ? `rediss://${redisUrl}` : `redis://${redisUrl}`,
-    });
-    await redisClientConnection.connect();
-    return redisClientConnection;
-  };
 
-  public readonly getInstance = async (): Promise<RedisClient> => {
+  protected readonly createRedisClient = (): Promise<RedisClient> =>
+    createRedisClient({
+      clusterEnabled: this.config.REDIS_CLUSTER_ENABLED,
+      entraIdEnabled: this.config.REDIS_ENTRA_ID_ENABLED,
+      host: this.config.REDIS_URL,
+      onError: (error) =>
+        trackErrorToVoid(
+          error instanceof Error ? error : new Error(String(error)),
+          { source: "redis" },
+        ),
+      password: this.config.REDIS_PASSWORD,
+      port: this.config.REDIS_PORT
+        ? parseInt(this.config.REDIS_PORT, 10)
+        : undefined,
+      tlsEnabled: this.config.REDIS_TLS_ENABLED,
+    });
+
+  public readonly getInstance = (): Promise<RedisClient> => {
+    // Cached as a promise, so concurrent first calls share one connection.
     if (!this.redisClient) {
-      this.redisClient = await this.createSimpleRedisClient(
-        this.config.REDIS_URL,
-        this.config.REDIS_PASSWORD,
-        this.config.REDIS_PORT,
-        this.config.REDIS_TLS_ENABLED,
-      );
+      this.redisClient = this.createRedisClient().catch((error: unknown) => {
+        this.redisClient = undefined;
+        throw error;
+      });
     }
     return this.redisClient;
   };
 
-  protected redisClient: RedisClient | undefined;
+  protected redisClient: Promise<RedisClient> | undefined;
 
   constructor(config: IConfig) {
     this.config = config;

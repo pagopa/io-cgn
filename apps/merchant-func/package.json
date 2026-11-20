@@ -40,12 +40,12 @@
   },
   "dependencies": {
     "@azure/functions": "^4.7.0",
+    "@pagopa/io-cgn-core-redis": "workspace:^",
     "@pagopa/io-functions-commons": "^30.0.0",
     "@pagopa/ts-commons": "^11.0.0",
     "applicationinsights": "^3.4.0",
     "date-fns": "^2.16.1",
     "fp-ts": "^2.11.1",
-    "io-ts": "^2.2.16",
-    "redis": "^4.6.15"
+    "io-ts": "^2.2.16"
   }
 }
