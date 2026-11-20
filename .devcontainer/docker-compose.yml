@@ -6,15 +6,6 @@ services:
     volumes:
       - ..:/workspaces/io-cgn:cached
     command: sleep infinity
-    environment:
-      AZURITE_HOST: azurite
-      AZURITE_BLOB_PORT: "10000"
-      AZURITE_QUEUE_PORT: "10001"
-      AZURITE_TABLE_PORT: "10002"
-      COSMOSDB_HOST: cosmosdb
-      COSMOSDB_PORT: "8081"
-      REDIS_HOST: redis
-      REDIS_PORT: "6379"
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
