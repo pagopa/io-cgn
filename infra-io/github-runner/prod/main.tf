@@ -22,7 +22,7 @@ provider "azurerm" {
 
 module "container_app_job_selfhosted_runner" {
   source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
-  version = "1.2.0"
+  version = "5.0.0"
 
   resource_group_name = "${local.prefix}-${local.env_short}-itn-cgn-rg-01"
 
