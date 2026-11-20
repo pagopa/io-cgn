@@ -49,7 +49,7 @@ module "runner_commons" {
 
 module "container_app_job_selfhosted_runner" {
   source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
-  version = "~> 1.0"
+  version = "~> 5.0"
 
   environment = {
     prefix          = local.prefix
@@ -86,7 +86,7 @@ module "container_app_job_selfhosted_runner" {
 
 module "container_app_job_selfhosted_runner_02" {
   source  = "pagopa-dx/github-selfhosted-runner-on-container-app-jobs/azurerm"
-  version = "4.0.1"
+  version = "5.0.0"
 
   environment = {
     prefix          = local.prefix

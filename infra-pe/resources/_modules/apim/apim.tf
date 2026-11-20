@@ -1,6 +1,6 @@
 module "apim" {
   source  = "pagopa-dx/azure-api-management/azurerm"
-  version = "2.2.3"
+  version = "4.2.4"
 
   tags = var.tags
 
