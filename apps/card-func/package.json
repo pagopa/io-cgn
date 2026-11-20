@@ -10,8 +10,9 @@
     "host.json"
   ],
   "scripts": {
-    "prebuild": "shx rm -rf dist && pnpm generate",
+    "prebuild": "pnpm build:deps && shx rm -rf dist && pnpm generate",
     "build": "tsc",
+    "build:deps": "[ -n \"$TURBO_HASH\" ] || pnpm --filter @pagopa/io-cgn-core-redis build",
     "watch": "tsc -w",
     "start": "dotenv -e .env func start --javascript",
     "test": "jest",
