@@ -1,6 +1,6 @@
 import { IntegerFromString } from "@pagopa/ts-commons/lib/numbers.js";
 import { ResponseErrorInternal } from "@pagopa/ts-commons/lib/responses.js";
-import * as ai from "applicationinsights";
+import ai from "applicationinsights";
 import * as E from "fp-ts/lib/Either.js";
 import { pipe } from "fp-ts/lib/function.js";
 import { Errors } from "io-ts";
@@ -14,7 +14,7 @@ const samplingPercentage = pipe(
 );
 
 /** TelemetryClient singleton */
-let telemetryClient: ai.TelemetryClient;
+let telemetryClient: ai.TelemetryClient | undefined;
 
 /**
  * Sets a given telemetry client
@@ -47,7 +47,7 @@ export const trackEventToVoid = (
   name: string,
   additionalProperties: Record<string, string> = {},
 ) => {
-  telemetryClient.trackEvent({
+  telemetryClient?.trackEvent({
     name: name,
     properties: additionalProperties,
   });
@@ -62,7 +62,7 @@ export const trackErrorToVoid = (
   error: Error,
   additionalProperties: Record<string, string> = {},
 ): void => {
-  telemetryClient.trackException({
+  telemetryClient?.trackException({
     exception: error,
     properties: additionalProperties,
   });

@@ -45,7 +45,6 @@ Publish
 *.Cache
 project.lock.json
 
-/packages
 /TestResults
 
 /tools/NuGet.exe
@@ -155,4 +154,3 @@ out
 
 # PNPM
 .pnpm-store
-build-aa.sh

@@ -2,6 +2,8 @@ linkWorkspacePackages: true
 packageImportMethod: "clone-or-copy"
 cleanupUnusedCatalogs: true
 injectWorkspacePackages: true
+syncInjectedDepsAfterScripts:
+  - build
 
 packages:
   - apps/*
