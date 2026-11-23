@@ -10,8 +10,9 @@
     "host.json"
   ],
   "scripts": {
-    "prebuild": "shx rm -rf dist && pnpm generate:definitions",
+    "prebuild": "pnpm build:deps && shx rm -rf dist && pnpm generate:definitions",
     "build": "tsc",
+    "build:deps": "[ -n \"$TURBO_HASH\" ] || pnpm --filter @pagopa/io-cgn-core-redis build",
     "start": "dotenv -e .env func start --javascript",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -28,7 +29,6 @@
     "@types/jest": "^29.5.12",
     "@types/node-fetch": "^2.5.7",
     "@types/pg": "^7.14.11",
-    "@types/redis": "^2.8.28",
     "@types/sequelize": "^4.28.10",
     "auto-changelog": "2.2.1",
     "dotenv-cli": "^3.1.0",
@@ -45,6 +45,7 @@
   "dependencies": {
     "@azure/cosmos": "^4.2.0",
     "@azure/functions": "^4.0.0",
+    "@pagopa/io-cgn-core-redis": "workspace:^",
     "@pagopa/io-functions-commons": "^30.0.0",
     "@pagopa/ts-commons": "^11.0.0",
     "applicationinsights": "^3.4.0",
@@ -54,7 +55,6 @@
     "node-fetch": "^2.6.0",
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
-    "redis": "^4.6.15",
     "sequelize": "^6.6.2"
   }
 }

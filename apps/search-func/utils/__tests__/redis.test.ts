@@ -1,60 +1,86 @@
+import { createRedisClient } from "@pagopa/io-cgn-core-redis";
+
 import { IConfig } from "../config";
 import { RedisClient, RedisClientFactory } from "../redis";
 
-const baseConfigMockForRedisFactory = ({
-  isProduction: false,
-  REDIS_CLUSTER_ENABLED: false,
-  REDIS_URL: "url",
+jest.mock("@pagopa/io-cgn-core-redis", () => ({
+  createRedisClient: jest.fn(),
+}));
+
+const createRedisClientMock = createRedisClient as jest.Mock;
+
+const aConfig = {
+  REDIS_CLUSTER_ENABLED: true,
+  REDIS_ENTRA_ID_ENABLED: true,
   REDIS_PASSWORD: "password",
-  REDIS_PORT: 6379,
-  REDIS_TLS_ENABLED: false
-} as unknown) as IConfig;
+  REDIS_PORT: "6379",
+  REDIS_TLS_ENABLED: false,
+  REDIS_URL: "url",
+} as unknown as IConfig;
+
+const aClient = { LPOP: jest.fn() } as unknown as RedisClient;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  createRedisClientMock.mockResolvedValue(aClient);
+});
 
 describe("RedisClientFactory", () => {
-  it.each`
-    instanceType | isProduction | isClusterEnabled
-    ${"simple"}  | ${false}     | ${false}
-    ${"simple"}  | ${true}      | ${false}
-    ${"simple"}  | ${false}     | ${true}
-  `(
-    "should resolve to a $instanceType client when isProduction = $isProduction and REDIS_CLUSTER_ENABLED = $isClusterEnabled",
-    async ({ isProduction, isClusterEnabled }) => {
-      const redisClientFactory = new RedisClientFactory({
-        ...baseConfigMockForRedisFactory,
-        isProduction,
-        REDIS_CLUSTER_ENABLED: isClusterEnabled
-      });
+  it("should map the configuration to the redis client options", async () => {
+    await new RedisClientFactory(aConfig).getInstance();
 
-      // override the connection methods to return test clients
-      // with properties injected for testing purposes
-      let instanceNumber = 0;
-      Object.assign(redisClientFactory, {
-        createSimpleRedisClient: async () =>
-          (({
-            isCluster: false,
-            instanceNumber: instanceNumber++
-          } as unknown) as RedisClient),
-        createClusterRedisClient: async () =>
-          (({
-            isCluster: true,
-            instanceNumber: instanceNumber++
-          } as unknown) as RedisClient)
-      });
+    expect(createRedisClientMock).toHaveBeenCalledWith({
+      clusterEnabled: true,
+      entraIdEnabled: true,
+      host: "url",
+      onError: expect.any(Function),
+      password: "password",
+      port: 6379,
+      tlsEnabled: false,
+    });
+  });
 
-      expect(instanceNumber).toBe(0);
-      const redisClient = await redisClientFactory.getInstance();
-      //@ts-ignore to check a property injected for testing purposes
-      expect(redisClient.isCluster).toBe(isProduction && isClusterEnabled);
-      //@ts-ignore to check a property injected for testing purposes
-      expect(redisClient.instanceNumber).toBe(0);
+  it("should leave the port to the package when REDIS_PORT is not set", async () => {
+    await new RedisClientFactory({
+      ...aConfig,
+      REDIS_PORT: undefined,
+    }).getInstance();
 
-      // factory MUST return the same client when getInstance gets called again
-      expect(instanceNumber).toBe(1);
-      const redisClient2 = await redisClientFactory.getInstance();
-      //@ts-ignore to check a property injected for testing purposes
-      expect(redisClient2.instanceType).toBe(redisClient.instanceType);
-      //@ts-ignore to check a property injected for testing purposes
-      expect(redisClient2.instanceNumber).toBe(redisClient.instanceNumber);
-    }
-  );
+    expect(createRedisClientMock).toHaveBeenCalledWith(
+      expect.objectContaining({ port: undefined }),
+    );
+  });
+
+  it("should return the same client when getInstance gets called again", async () => {
+    const factory = new RedisClientFactory(aConfig);
+
+    const first = await factory.getInstance();
+    const second = await factory.getInstance();
+
+    expect(first).toBe(aClient);
+    expect(second).toBe(first);
+    expect(createRedisClientMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should share one connection between concurrent calls", async () => {
+    const factory = new RedisClientFactory(aConfig);
+
+    const [first, second] = await Promise.all([
+      factory.getInstance(),
+      factory.getInstance(),
+    ]);
+
+    expect(first).toBe(second);
+    expect(createRedisClientMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not cache a failed connection", async () => {
+    createRedisClientMock.mockRejectedValueOnce(new Error("connect failed"));
+    const factory = new RedisClientFactory(aConfig);
+
+    await expect(factory.getInstance()).rejects.toThrow("connect failed");
+    await expect(factory.getInstance()).resolves.toBe(aClient);
+
+    expect(createRedisClientMock).toHaveBeenCalledTimes(2);
+  });
 });

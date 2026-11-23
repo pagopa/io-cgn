@@ -2,7 +2,7 @@ import { app } from "@azure/functions";
 
 import { Info } from "./functions/Info/handler.js";
 import { ValidateOtp } from "./functions/ValidateOtp/handler.js";
-import initTelemetryClient from "./utils/appinsights.js";
+import "./utils/appinsights-init.js";
 import { getConfigOrThrow } from "./utils/config.js";
 import { getRedisClientFactory } from "./utils/redis.js";
 
@@ -14,8 +14,6 @@ const config = getConfigOrThrow();
 // ---------------------------------------------------------------
 // DEPENDENCY INITIALISATION
 // ---------------------------------------------------------------
-initTelemetryClient();
-
 const redisClientFactory = getRedisClientFactory(config);
 
 // ---------------------------------------------------------------

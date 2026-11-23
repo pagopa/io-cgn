@@ -9,7 +9,8 @@
     "format": "turbo run format",
     "lint": "turbo run lint",
     "version": "changeset version && pnpm install --lockfile-only",
-    "release": "changeset tag"
+    "release": "changeset tag",
+    "test": "turbo run test:coverage"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.7",
