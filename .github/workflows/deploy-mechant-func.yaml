@@ -12,7 +12,7 @@ on:
 jobs:
   deploy:
     name: Deploy Merchant Func
-    uses: pagopa/dx/.github/workflows/release-azure-appsvc-v1.yaml@d187d7667ee20d93cb588e06d7ab194ece3de911
+    uses: pagopa/dx/.github/workflows/release-azure-appsvc-v1.yaml@818248628e8291b7059d275bdd076b532bd77103
     secrets: inherit
     with:
       workspace_name: merchant-func
