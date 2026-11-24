@@ -29,27 +29,30 @@ module "redis_cgn_03" {
   tags = local.tags
 }
 
-module "redis_cgn_03_role_assignments" {
-  source  = "pagopa-dx/azure-role-assignments/azurerm"
-  version = "5.0.1"
+locals {
+  redis_cgn_03_owners = {
+    card             = module.functions_cgn_card_02.function_app_cgn_card.principal_id
+    card_staging     = module.functions_cgn_card_02.function_app_cgn_card.staging_principal_id
+    merchant         = module.functions_cgn_merchant_02.function_app_cgn_merchant.principal_id
+    merchant_staging = module.functions_cgn_merchant_02.function_app_cgn_merchant.staging_principal_id
+    search           = module.functions_cgn_search_02.function_app_cgn_search.principal_id
+    search_staging   = module.functions_cgn_search_02.function_app_cgn_search.staging_principal_id
+  }
+}
 
-  for_each = toset([
-    module.functions_cgn_card_02.function_app_cgn_card.principal_id,
-    module.functions_cgn_card_02.function_app_cgn_card.staging_principal_id,
-    module.functions_cgn_merchant_02.function_app_cgn_merchant.principal_id,
-    module.functions_cgn_merchant_02.function_app_cgn_merchant.staging_principal_id,
-    module.functions_cgn_search_02.function_app_cgn_search.principal_id,
-    module.functions_cgn_search_02.function_app_cgn_search.staging_principal_id,
-  ])
+# The azure-role-assignments module keys its for_each on the Redis id, unknown before the first apply.
+# Owner as in that module: control-plane Contributor role plus the data-plane access policy.
+resource "azurerm_role_assignment" "redis_cgn_03_functions_contributor" {
+  for_each = local.redis_cgn_03_owners
 
-  principal_id    = each.value
-  subscription_id = data.azurerm_client_config.current.subscription_id
+  scope                = module.redis_cgn_03.id
+  role_definition_name = "Azure Managed Redis Contributor"
+  principal_id         = each.value
+}
 
-  managed_redis = [
-    {
-      id          = module.redis_cgn_03.id
-      role        = "writer"
-      description = "Allow function to read and write data on the CGN managed Redis"
-    }
-  ]
+resource "azurerm_managed_redis_access_policy_assignment" "redis_cgn_03_functions" {
+  for_each = local.redis_cgn_03_owners
+
+  managed_redis_id = module.redis_cgn_03.id
+  object_id        = each.value
 }
