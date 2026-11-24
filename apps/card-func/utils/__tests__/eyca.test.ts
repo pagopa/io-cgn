@@ -5,7 +5,13 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
 import * as TE from "fp-ts/lib/TaskEither";
 import { CcdbNumber } from "../../generated/eyca-api/CcdbNumber";
-import { preIssueCard, updateCard } from "../eyca";
+import {
+  CCDB_SESSION_ID_KEY,
+  CCDB_SESSION_ID_TTL,
+  deleteCard,
+  preIssueCard,
+  updateCard
+} from "../eyca";
 import * as redis from "../redis_storage";
 
 const anEycaApiUsername = "USERNAME" as NonEmptyString;
@@ -50,9 +56,21 @@ const authLoginMock = jest.fn().mockImplementation(() =>
     })
   )
 );
+const deleteCardMock = jest.fn().mockImplementation(() =>
+  Promise.resolve(
+    E.right({
+      status: 200,
+      value: {
+        api_response: {
+          text: "Object(s) deleted."
+        }
+      }
+    })
+  )
+);
 const eycaApiClient = {
   authLogin: authLoginMock,
-  deleteCard: jest.fn(),
+  deleteCard: deleteCardMock,
   preIssueCard: preIssueCardMock,
   updateCard: updateCardMock
 } as any;
@@ -157,6 +175,12 @@ describe("preIssueCard", () => {
           expect(getTaskMock).toBeCalledTimes(1);
           expect(authLoginMock).toBeCalledTimes(1);
           expect(setWithExpirationTaskMock).toHaveBeenCalledTimes(1);
+          expect(setWithExpirationTaskMock).toHaveBeenCalledWith(
+            expect.anything(),
+            CCDB_SESSION_ID_KEY,
+            anEycaSessionId,
+            CCDB_SESSION_ID_TTL
+          );
           expect(ccdbNumber).toEqual(aCcdbNumber);
         }
       )
@@ -302,5 +326,56 @@ describe("updateCard", () => {
         }
       )
     )();
+  });
+});
+
+describe("deleteCard", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const aDeleteCard = () =>
+    deleteCard(
+      {} as any,
+      eycaApiClient,
+      anEycaApiUsername,
+      anEycaApiPassword
+    )(aCcdbNumber);
+
+  it("should log in again and store the new session when it is missing from redis", async () => {
+    getTaskMock.mockImplementationOnce(() => TE.of(O.none));
+
+    const result = await aDeleteCard()();
+
+    expect(E.isRight(result)).toBe(true);
+    expect(authLoginMock).toHaveBeenCalledTimes(1);
+    expect(setWithExpirationTaskMock).toHaveBeenCalledWith(
+      expect.anything(),
+      CCDB_SESSION_ID_KEY,
+      anEycaSessionId,
+      CCDB_SESSION_ID_TTL
+    );
+    expect(deleteCardMock).toHaveBeenCalledWith(
+      expect.objectContaining({ session_id: anEycaSessionId })
+    );
+  });
+
+  it("should fail if EYCA authLogin fails while session is not present in redis", async () => {
+    getTaskMock.mockImplementationOnce(() => TE.of(O.none));
+    authLoginMock.mockImplementationOnce(() => anErrorEycaAPIResponse);
+
+    const result = await aDeleteCard()();
+
+    expect(E.isLeft(result)).toBe(true);
+    expect(setWithExpirationTaskMock).not.toHaveBeenCalled();
+    expect(deleteCardMock).not.toHaveBeenCalled();
+  });
+
+  it("should reuse the session stored in redis", async () => {
+    const result = await aDeleteCard()();
+
+    expect(E.isRight(result)).toBe(true);
+    expect(authLoginMock).not.toHaveBeenCalled();
+    expect(setWithExpirationTaskMock).not.toHaveBeenCalled();
   });
 });
