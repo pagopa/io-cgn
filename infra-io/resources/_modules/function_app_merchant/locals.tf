@@ -5,9 +5,11 @@ locals {
       NODE_ENV                       = "production"
 
       // REDIS
-      REDIS_URL      = var.redis_url
-      REDIS_PORT     = var.redis_port
-      REDIS_PASSWORD = var.redis_password
+      REDIS_URL              = var.redis_url
+      REDIS_PORT             = var.redis_port
+      REDIS_CLUSTER_ENABLED  = "true"
+      REDIS_TLS_ENABLED      = "true"
+      REDIS_ENTRA_ID_ENABLED = "true"
 
       // Keepalive fields are all optionals
       FETCH_KEEPALIVE_ENABLED             = "true"

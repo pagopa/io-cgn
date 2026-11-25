@@ -99,8 +99,3 @@ variable "redis_port" {
   type        = string
   description = "Redis port"
 }
-
-variable "redis_password" {
-  type        = string
-  description = "Redis password"
-}
