@@ -1,10 +1,17 @@
 import { readableReport } from "@pagopa/ts-commons/lib/reporters.js";
+import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
 import { pipe } from "fp-ts/lib/function.js";
 
 import { IConfig, getConfig } from "./config.js";
+import { getRedisClientFactory } from "./redis.js";
 
-type ProblemSource = "AzureCosmosDB" | "AzureStorage" | "Config" | "Url";
+type ProblemSource =
+  | "AzureCosmosDB"
+  | "AzureStorage"
+  | "Config"
+  | "RedisConnection"
+  | "Url";
 export type HealthProblem<S extends ProblemSource> = {
   readonly __source: S;
 } & string;
@@ -37,6 +44,25 @@ export const checkConfigHealth = (): HealthCheck<"Config", IConfig> =>
   );
 
 /**
+ * Check redis connection is available
+ */
+export const checkRedisConnection = (
+  config: IConfig,
+): HealthCheck<"RedisConnection", true> =>
+  pipe(
+    TE.tryCatch(
+      async () => {
+        const client = await getRedisClientFactory(config).getInstance();
+        return client.PING();
+      },
+      (e): readonly HealthProblem<"RedisConnection">[] => [
+        formatProblem("RedisConnection", E.toError(e).message),
+      ],
+    ),
+    TE.map(() => true),
+  );
+
+/**
  * Execute all the health checks for the application
  *
  * @returns either true or an array of error messages
@@ -46,5 +72,6 @@ export const checkApplicationHealth = (): HealthCheck<ProblemSource, true> =>
     void 0,
     TE.of,
     TE.chain(() => checkConfigHealth()),
+    TE.chainW((config) => checkRedisConnection(config)),
     TE.map(() => true),
   );

@@ -18,12 +18,14 @@ import { QueryTypes } from "sequelize";
 
 import { cgnOperatorDb } from "../client/sequelize";
 import { IConfig, getConfig } from "./config";
+import { getRedisClientFactory } from "./redis";
 
 type ProblemSource =
   | "AzureCosmosDB"
   | "AzureStorage"
   | "Config"
   | "PostgresDB"
+  | "RedisConnection"
   | "Url";
 export type HealthProblem<S extends ProblemSource> = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -137,6 +139,20 @@ export const checkPostgresHealth = (): HealthCheck<"PostgresDB", true> =>
   );
 
 /**
+ * Check redis connection is available
+ */
+export const checkRedisConnection = (
+  config: IConfig,
+): HealthCheck<"RedisConnection", true> =>
+  pipe(
+    TE.tryCatch(async () => {
+      const client = await getRedisClientFactory(config).getInstance();
+      return client.PING();
+    }, toHealthProblems("RedisConnection")),
+    TE.map(() => true),
+  );
+
+/**
  * Execute all the health checks for the application
  *
  * @returns either true or an array of error messages
@@ -150,9 +166,12 @@ export const checkApplicationHealth = (): HealthCheck<ProblemSource, true> => {
     void 0,
     TE.of,
     TE.chain(() => checkConfigHealth()),
-    TE.chain(() =>
+    TE.chain((config) =>
       // run each taskEither and collect validation errors from each one of them, if any
-      sequenceT(applicativeValidation)(checkPostgresHealth()),
+      sequenceT(applicativeValidation)(
+        checkPostgresHealth(),
+        checkRedisConnection(config),
+      ),
     ),
     TE.map(() => true),
   );

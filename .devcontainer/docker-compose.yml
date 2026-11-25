@@ -17,11 +17,88 @@ services:
   redis:
     image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
     restart: unless-stopped
+    command: >
+      redis-server --port 6379 --cluster-enabled yes
+      --cluster-config-file /tmp/nodes.conf --cluster-node-timeout 5000
+      --cluster-announce-hostname redis --cluster-announce-port 6379
+      --cluster-preferred-endpoint-type hostname
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis-2:
+    image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
+    restart: unless-stopped
+    command: >
+      redis-server --port 6380 --cluster-enabled yes
+      --cluster-config-file /tmp/nodes.conf --cluster-node-timeout 5000
+      --cluster-announce-hostname redis-2 --cluster-announce-port 6380
+      --cluster-preferred-endpoint-type hostname
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis-3:
+    image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
+    restart: unless-stopped
+    command: >
+      redis-server --port 6381 --cluster-enabled yes
+      --cluster-config-file /tmp/nodes.conf --cluster-node-timeout 5000
+      --cluster-announce-hostname redis-3 --cluster-announce-port 6381
+      --cluster-preferred-endpoint-type hostname
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6381", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis-single:
+    image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
+
+  redis-cluster-setup:
+    image: redis:7@sha256:a5995dfdf108997f8a7c9587f54fad5e94ed5848de5236a6b28119e99efd67e0
+    restart: "on-failure:5"
+    depends_on:
+      redis:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+    # `--cluster create` fails on nodes that kept a stale /tmp/nodes.conf after
+    # a restart: skip when the cluster is healthy, otherwise reset and recreate.
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -eu
+        # Wait past cluster-node-timeout so stale peers are marked failed.
+        sleep 8
+        if redis-cli -h redis -p 6379 cluster info | tr -d '\r' | grep -q cluster_state:ok \
+          && redis-cli -h redis-2 -p 6380 cluster info | tr -d '\r' | grep -q cluster_state:ok \
+          && redis-cli -h redis-3 -p 6381 cluster info | tr -d '\r' | grep -q cluster_state:ok; then
+          echo 'Redis cluster already healthy'
+          exit 0
+        fi
+        echo 'Resetting stale Redis cluster state'
+        redis-cli -h redis -p 6379 FLUSHALL
+        redis-cli -h redis-2 -p 6380 FLUSHALL
+        redis-cli -h redis-3 -p 6381 FLUSHALL
+        redis-cli -h redis -p 6379 CLUSTER RESET HARD
+        redis-cli -h redis-2 -p 6380 CLUSTER RESET HARD
+        redis-cli -h redis-3 -p 6381 CLUSTER RESET HARD
+        redis-cli --cluster create redis:6379 redis-2:6380 redis-3:6381 --cluster-replicas 0 --cluster-yes
+        timeout 60 sh -c 'until redis-cli -h redis -p 6379 cluster info | tr -d "\r" | grep -q cluster_state:ok; do sleep 1; done'
 
   cosmosdb:
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview@sha256:a8b93e25520e999d867ed3949e7de7f4ff3ddab23ca95fa6f90230de5dd9729b

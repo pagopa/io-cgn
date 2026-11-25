@@ -160,10 +160,10 @@ export const checkRedisConnection = (
   config: IConfig,
 ): HealthCheck<"RedisConnection", true> =>
   pipe(
-    TE.tryCatch(
-      () => getRedisClientFactory(config).getInstance(),
-      toHealthProblems("RedisConnection"),
-    ),
+    TE.tryCatch(async () => {
+      const client = await getRedisClientFactory(config).getInstance();
+      return client.PING();
+    }, toHealthProblems("RedisConnection")),
     TE.map(() => true),
   );
 

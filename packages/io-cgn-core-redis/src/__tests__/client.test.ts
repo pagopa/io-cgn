@@ -423,7 +423,6 @@ describe("createRedisClient", () => {
     clusterEnabled | entraIdEnabled
     ${undefined}   | ${undefined}
     ${false}       | ${false}
-    ${true}        | ${false}
     ${false}       | ${true}
   `(
     "should use the password client when clusterEnabled = $clusterEnabled and entraIdEnabled = $entraIdEnabled",
@@ -473,6 +472,34 @@ describe("createRedisClient", () => {
 
     expect(createCluster.mock.calls[0][0].rootNodes).toEqual([
       { url: "rediss://redis.example:10001" },
+    ]);
+  });
+
+  it.each([undefined, false])(
+    "should use a plain cluster when clusterEnabled and entraIdEnabled = %s",
+    async (entraIdEnabled) => {
+      await createRedisClient(
+        { clusterEnabled: true, entraIdEnabled, host: "redis" },
+        deps,
+      );
+
+      expect(createClient).not.toHaveBeenCalled();
+      const options = createCluster.mock.calls[0][0];
+      expect(options.rootNodes).toEqual([{ url: "redis://redis:6379" }]);
+      expect(options.defaults.credentialsProvider).toBeUndefined();
+      expect(options.defaults.socket.tls).toBe(false);
+      expect(options.nodeAddressMap).toBeUndefined();
+    },
+  );
+
+  it("should use the configured port in a plain cluster", async () => {
+    await createRedisClient(
+      { clusterEnabled: true, host: "redis", port: 6380 },
+      deps,
+    );
+
+    expect(createCluster.mock.calls[0][0].rootNodes).toEqual([
+      { url: "redis://redis:6380" },
     ]);
   });
 });

@@ -26,7 +26,7 @@ pnpm build
 pnpm start
 ```
 
-Azurite, the Cosmos DB emulator and Redis are provided by the devcontainer (hosts `azurite`, `cosmosdb`, `redis`).
+Azurite, the Cosmos DB emulator, a 3-node Redis cluster (`redis`, `redis-2`, `redis-3`) and a single Redis instance (`redis-single`) are provided by the devcontainer (hosts `azurite`, `cosmosdb`, ...). `env.example` targets the cluster (`REDIS_CLUSTER_ENABLED=true`, `REDIS_ENTRA_ID_ENABLED=false`: no TLS, no authentication); switch to `REDIS_URL=redis-single` and `REDIS_CLUSTER_ENABLED=false` to use the single-instance client.
 
 ## Deploy
 

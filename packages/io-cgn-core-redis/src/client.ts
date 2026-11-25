@@ -33,6 +33,11 @@ export interface RedisClusterConfig {
   readonly commandTimeoutMs?: number;
   /** Max total time to connect to the cluster (discovery and all nodes). */
   readonly connectTimeoutMs?: number;
+  /**
+   * Defaults to true. Without it the cluster is unauthenticated and not
+   * encrypted, which is only meant for the local development cluster.
+   */
+  readonly entraIdEnabled?: boolean;
   readonly host: string;
   readonly onError?: (error: unknown) => void;
   readonly port: number;
@@ -49,9 +54,11 @@ export interface RedisPasswordConfig {
 export interface RedisClientConfig
   extends Omit<RedisClusterConfig, "port">,
     RedisPasswordConfig {
-  /** Cluster mode is used only when Entra ID is enabled too. */
   readonly clusterEnabled?: boolean;
+  /** In cluster mode it selects Entra ID authentication over TLS. */
   readonly entraIdEnabled?: boolean;
+  /** Defaults to 10000 for the cluster with Entra ID, 6379 without it. */
+  readonly port?: number;
 }
 
 export interface RedisDeps {
@@ -61,6 +68,7 @@ export interface RedisDeps {
 }
 
 const DEFAULT_CLUSTER_PORT = 10000;
+const DEFAULT_PLAIN_PORT = 6379;
 const DEFAULT_COMMAND_TIMEOUT_MS = 2_000;
 const DEFAULT_CONNECT_TIMEOUT_MS = 20_000;
 // Timeout of a single socket attempt: node-redis retries failed attempts on
@@ -139,29 +147,43 @@ export const createRedisClusterClient = async (
   const commandTimeoutMs =
     config.commandTimeoutMs ?? DEFAULT_COMMAND_TIMEOUT_MS;
   const onError = config.onError ?? (() => undefined);
+  const entraIdEnabled = config.entraIdEnabled ?? true;
+
+  const socketOptions = {
+    connectTimeout: SOCKET_CONNECT_TIMEOUT_MS,
+    reconnectStrategy,
+    socketTimeout: SOCKET_IDLE_TIMEOUT_MS,
+  };
 
   const client = deps.createCluster({
     // Drops commands still waiting for a connection once they time out, so
     // they do not run after the caller gave up. Commands already sent are not
     // covered: withDeadline bounds those.
     commandOptions: { timeout: commandTimeoutMs },
-    defaults: {
-      credentialsProvider: deps.createCredentialsProvider(),
-      pingInterval: PING_INTERVAL_MS,
-      socket: {
-        connectTimeout: SOCKET_CONNECT_TIMEOUT_MS,
-        reconnectStrategy,
-        socketTimeout: SOCKET_IDLE_TIMEOUT_MS,
-        tls: true,
-      },
-    },
+    defaults: entraIdEnabled
+      ? {
+          credentialsProvider: deps.createCredentialsProvider(),
+          pingInterval: PING_INTERVAL_MS,
+          socket: { ...socketOptions, tls: true },
+        }
+      : {
+          pingInterval: PING_INTERVAL_MS,
+          socket: { ...socketOptions, tls: false },
+        },
     // The cluster announces its nodes by IP, which does not match the TLS
-    // certificate: connect to them through the configured host name.
-    nodeAddressMap: (incomingAddress: string) => {
-      const [, port = String(config.port)] = incomingAddress.split(":");
-      return { host: config.host, port: Number(port) };
-    },
-    rootNodes: [{ url: `rediss://${config.host}:${config.port}` }],
+    // certificate: connect to them through the configured host name. The local
+    // cluster announces host names already.
+    ...(entraIdEnabled && {
+      nodeAddressMap: (incomingAddress: string) => {
+        const [, port = String(config.port)] = incomingAddress.split(":");
+        return { host: config.host, port: Number(port) };
+      },
+    }),
+    rootNodes: [
+      {
+        url: `${entraIdEnabled ? "rediss" : "redis"}://${config.host}:${config.port}`,
+      },
+    ],
   });
   // The cluster reports its own failures as "error" and the failures of the
   // single node connections as "node-error".
@@ -306,16 +328,25 @@ export const createPasswordRedisClient = async (
 };
 
 /**
- * The cluster with Entra ID authentication is used only when both flags are
- * enabled, otherwise a single node with a password.
+ * The cluster is used when enabled, authenticated with Entra ID over TLS if
+ * that flag is set too, otherwise a single node with a password.
  */
 export const createRedisClient = (
   config: RedisClientConfig,
   deps: RedisDeps = defaultDeps,
-): Promise<RedisClient> =>
-  config.clusterEnabled && config.entraIdEnabled
-    ? createResilientRedisClient(
-        { ...config, port: config.port ?? DEFAULT_CLUSTER_PORT },
-        deps,
-      )
-    : createPasswordRedisClient(config, deps);
+): Promise<RedisClient> => {
+  if (!config.clusterEnabled) {
+    return createPasswordRedisClient(config, deps);
+  }
+  const entraIdEnabled = config.entraIdEnabled ?? false;
+  return createResilientRedisClient(
+    {
+      ...config,
+      entraIdEnabled,
+      port:
+        config.port ??
+        (entraIdEnabled ? DEFAULT_CLUSTER_PORT : DEFAULT_PLAIN_PORT),
+    },
+    deps,
+  );
+};
