@@ -1,5 +1,11 @@
 # @pagopa/io-cgn-core-redis
 
+## 0.2.0
+
+### Minor Changes
+
+- a990a65: Support a plain Redis cluster for local development and check Redis (PING) in the health endpoints
+
 ## 0.1.0
 
 ### Minor Changes
