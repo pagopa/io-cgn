@@ -102,3 +102,9 @@ resource "azurerm_role_assignment" "cd_cgn" {
   principal_id         = module.federated_identities.federated_cd_identity.principal_id
   role_definition_name = "Contributor"
 }
+
+resource "azurerm_role_assignment" "cd_log_analytics_contributor" {
+  scope                = data.azurerm_log_analytics_workspace.common.id
+  principal_id         = module.federated_identities.federated_cd_identity.principal_id
+  role_definition_name = "Log Analytics Contributor"
+}
