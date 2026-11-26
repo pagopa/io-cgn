@@ -106,11 +106,6 @@ variable "redis_port" {
   description = "Redis port"
 }
 
-variable "redis_password" {
-  type        = string
-  description = "Redis password"
-}
-
 variable "cosmosdb_cgn_uri" {
   type        = string
   description = "Connection uri for CGN cosmosdb"

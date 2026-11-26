@@ -102,11 +102,6 @@ variable "redis_port" {
   description = "Redis port"
 }
 
-variable "redis_password" {
-  type        = string
-  description = "Redis password"
-}
-
 variable "cgn_postgres_db_admin_connection_string" {
   type        = string
   description = "Postgres admin connection string"
