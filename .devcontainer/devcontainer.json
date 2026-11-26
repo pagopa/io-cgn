@@ -9,7 +9,6 @@
     "redis:6379",
     "redis-2:6380",
     "redis-3:6381",
-    "redis-single:6379",
     "cosmosdb:8081",
     "cosmosdb:1234"
   ],

@@ -4,7 +4,6 @@ import * as redis from "redis";
 import {
   RedisClusterConfig,
   RedisDeps,
-  createPasswordRedisClient,
   createRedisClient,
   createRedisClusterClient,
   createResilientRedisClient,
@@ -56,8 +55,6 @@ const config: RedisClusterConfig = {
 let clusters: FakeCluster[];
 let nextClusterSetup: ((cluster: FakeCluster) => void)[];
 let createCluster: jest.Mock;
-let createClient: jest.Mock;
-let simpleClient: { connect: jest.Mock };
 let deps: RedisDeps;
 
 beforeEach(() => {
@@ -70,10 +67,7 @@ beforeEach(() => {
     clusters.push(cluster);
     return cluster;
   });
-  simpleClient = { connect: jest.fn(async () => undefined) };
-  createClient = jest.fn(() => simpleClient);
   deps = {
-    createClient: createClient as unknown as RedisDeps["createClient"],
     createCluster: createCluster as unknown as RedisDeps["createCluster"],
     createCredentialsProvider: () =>
       aCredentialsProvider as unknown as ReturnType<
@@ -367,134 +361,49 @@ describe("createResilientRedisClient", () => {
   });
 });
 
-describe("createPasswordRedisClient", () => {
-  it("should connect with the password over TLS on the default port", async () => {
-    const client = await createPasswordRedisClient(
-      { host: "redis.example", password: "secret" },
-      deps,
-    );
-
-    expect(client).toBe(simpleClient);
-    expect(createClient).toHaveBeenCalledWith({
-      password: "secret",
-      pingInterval: 1000 * 60 * 9,
-      socket: { port: 6380, tls: true },
-      url: "rediss://redis.example",
-    });
-    expect(simpleClient.connect).toHaveBeenCalledTimes(1);
-  });
-
-  it("should use the plain default port without TLS", async () => {
-    await createPasswordRedisClient(
-      { host: "redis.example", tlsEnabled: false },
-      deps,
-    );
-
-    expect(createClient).toHaveBeenCalledWith(
-      expect.objectContaining({
-        socket: { port: 6379, tls: false },
-        url: "redis://redis.example",
-      }),
-    );
-  });
-
-  it("should use the configured port", async () => {
-    await createPasswordRedisClient(
-      { host: "redis.example", port: 6000 },
-      deps,
-    );
-
-    expect(createClient).toHaveBeenCalledWith(
-      expect.objectContaining({ socket: { port: 6000, tls: true } }),
-    );
-  });
-
-  it("should reject when the connection fails", async () => {
-    simpleClient.connect.mockRejectedValueOnce(new Error("refused"));
-
-    await expect(
-      createPasswordRedisClient({ host: "redis.example" }, deps),
-    ).rejects.toThrow("refused");
-  });
-});
-
 describe("createRedisClient", () => {
-  it.each`
-    clusterEnabled | entraIdEnabled
-    ${undefined}   | ${undefined}
-    ${false}       | ${false}
-    ${false}       | ${true}
-  `(
-    "should use the password client when clusterEnabled = $clusterEnabled and entraIdEnabled = $entraIdEnabled",
-    async ({ clusterEnabled, entraIdEnabled }) => {
-      await createRedisClient(
-        {
-          clusterEnabled,
-          entraIdEnabled,
-          host: "redis.example",
-          password: "secret",
-        },
-        deps,
-      );
+  it("should use a cluster with Entra ID over TLS on port 10000 by default", async () => {
+    await createRedisClient({ host: "redis.example" }, deps);
 
-      expect(createClient).toHaveBeenCalledTimes(1);
-      expect(createCluster).not.toHaveBeenCalled();
-    },
-  );
-
-  it("should use the cluster with Entra ID when both flags are enabled", async () => {
-    await createRedisClient(
-      {
-        clusterEnabled: true,
-        entraIdEnabled: true,
-        host: "redis.example",
-        password: "ignored",
-      },
-      deps,
-    );
-
-    expect(createClient).not.toHaveBeenCalled();
-    expect(createCluster.mock.calls[0][0].rootNodes).toEqual([
+    const options = createCluster.mock.calls[0][0];
+    expect(options.rootNodes).toEqual([
       { url: "rediss://redis.example:10000" },
     ]);
+    expect(options.defaults.credentialsProvider).toBe(aCredentialsProvider);
+    expect(options.defaults.socket.tls).toBe(true);
   });
 
-  it("should use the configured port in cluster mode", async () => {
-    await createRedisClient(
-      {
-        clusterEnabled: true,
-        entraIdEnabled: true,
-        host: "redis.example",
-        port: 10001,
-      },
-      deps,
-    );
+  it("should use the configured port with Entra ID", async () => {
+    await createRedisClient({ host: "redis.example", port: 10001 }, deps);
 
     expect(createCluster.mock.calls[0][0].rootNodes).toEqual([
       { url: "rediss://redis.example:10001" },
     ]);
   });
 
-  it.each([undefined, false])(
-    "should use a plain cluster when clusterEnabled and entraIdEnabled = %s",
-    async (entraIdEnabled) => {
-      await createRedisClient(
-        { clusterEnabled: true, entraIdEnabled, host: "redis" },
-        deps,
-      );
+  it("should map announced node addresses to the default port with Entra ID", async () => {
+    await createRedisClient({ host: "redis.example" }, deps);
 
-      expect(createClient).not.toHaveBeenCalled();
-      const options = createCluster.mock.calls[0][0];
-      expect(options.rootNodes).toEqual([{ url: "redis://redis:6379" }]);
-      expect(options.defaults.credentialsProvider).toBeUndefined();
-      expect(options.defaults.socket.tls).toBe(false);
-      expect(options.nodeAddressMap).toBeUndefined();
-    },
-  );
+    const { nodeAddressMap } = createCluster.mock.calls[0][0];
+    expect(nodeAddressMap("10.0.0.4")).toEqual({
+      host: "redis.example",
+      port: 10000,
+    });
+  });
+
+  it("should use a plain cluster on port 6379 without Entra ID", async () => {
+    await createRedisClient({ entraIdEnabled: false, host: "redis" }, deps);
+
+    const options = createCluster.mock.calls[0][0];
+    expect(options.rootNodes).toEqual([{ url: "redis://redis:6379" }]);
+    expect(options.defaults.credentialsProvider).toBeUndefined();
+    expect(options.defaults.socket.tls).toBe(false);
+    expect(options.nodeAddressMap).toBeUndefined();
+  });
 
   it("should use the configured port in a plain cluster", async () => {
     await createRedisClient(
-      { clusterEnabled: true, host: "redis", port: 6380 },
+      { entraIdEnabled: false, host: "redis", port: 6380 },
       deps,
     );
 

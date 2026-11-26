@@ -10,11 +10,8 @@ jest.mock("@pagopa/io-cgn-core-redis", () => ({
 const createRedisClientMock = createRedisClient as jest.Mock;
 
 const aConfig = {
-  REDIS_CLUSTER_ENABLED: true,
   REDIS_ENTRA_ID_ENABLED: true,
-  REDIS_PASSWORD: "password",
-  REDIS_PORT: "6379",
-  REDIS_TLS_ENABLED: false,
+  REDIS_PORT: "10000",
   REDIS_URL: "url",
 } as unknown as IConfig;
 
@@ -30,14 +27,22 @@ describe("RedisClientFactory", () => {
     await new RedisClientFactory(aConfig).getInstance();
 
     expect(createRedisClientMock).toHaveBeenCalledWith({
-      clusterEnabled: true,
       entraIdEnabled: true,
       host: "url",
       onError: expect.any(Function),
-      password: "password",
-      port: 6379,
-      tlsEnabled: false,
+      port: 10000,
     });
+  });
+
+  it("should leave Entra ID to the package default when REDIS_ENTRA_ID_ENABLED is not set", async () => {
+    await new RedisClientFactory({
+      ...aConfig,
+      REDIS_ENTRA_ID_ENABLED: undefined,
+    }).getInstance();
+
+    expect(createRedisClientMock).toHaveBeenCalledWith(
+      expect.objectContaining({ entraIdEnabled: undefined }),
+    );
   });
 
   it("should leave the port to the package when REDIS_PORT is not set", async () => {

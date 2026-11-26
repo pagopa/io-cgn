@@ -40,29 +40,11 @@ export interface RedisClusterConfig {
   readonly entraIdEnabled?: boolean;
   readonly host: string;
   readonly onError?: (error: unknown) => void;
-  readonly port: number;
-}
-
-export interface RedisPasswordConfig {
-  readonly host: string;
-  readonly password?: string;
-  readonly port?: number;
-  /** Defaults to true. */
-  readonly tlsEnabled?: boolean;
-}
-
-export interface RedisClientConfig
-  extends Omit<RedisClusterConfig, "port">,
-    RedisPasswordConfig {
-  readonly clusterEnabled?: boolean;
-  /** In cluster mode it selects Entra ID authentication over TLS. */
-  readonly entraIdEnabled?: boolean;
-  /** Defaults to 10000 for the cluster with Entra ID, 6379 without it. */
+  /** Defaults to 10000 with Entra ID, 6379 without it. */
   readonly port?: number;
 }
 
 export interface RedisDeps {
-  readonly createClient: typeof redis.createClient;
   readonly createCluster: typeof redis.createCluster;
   readonly createCredentialsProvider: () => CredentialsProvider;
 }
@@ -82,7 +64,6 @@ const SOCKET_IDLE_TIMEOUT_MS = 15_000;
 // Keeps healthy idle connections busy, so SOCKET_IDLE_TIMEOUT_MS only closes
 // the ones that stopped answering.
 const PING_INTERVAL_MS = 5_000;
-const PASSWORD_PING_INTERVAL_MS = 1000 * 60 * 9;
 const MAX_RECONNECT_DELAY_MS = 2_000;
 // After this many failed commands in a row the cluster client is discarded
 // and rebuilt, in case node-redis is stuck on dead connections.
@@ -135,7 +116,6 @@ const createSystemAssignedCredentialsProvider = (): CredentialsProvider =>
   );
 
 const defaultDeps: RedisDeps = {
-  createClient: redis.createClient,
   createCluster: redis.createCluster,
   createCredentialsProvider: createSystemAssignedCredentialsProvider,
 };
@@ -148,6 +128,8 @@ export const createRedisClusterClient = async (
     config.commandTimeoutMs ?? DEFAULT_COMMAND_TIMEOUT_MS;
   const onError = config.onError ?? (() => undefined);
   const entraIdEnabled = config.entraIdEnabled ?? true;
+  const port =
+    config.port ?? (entraIdEnabled ? DEFAULT_CLUSTER_PORT : DEFAULT_PLAIN_PORT);
 
   const socketOptions = {
     connectTimeout: SOCKET_CONNECT_TIMEOUT_MS,
@@ -175,13 +157,13 @@ export const createRedisClusterClient = async (
     // cluster announces host names already.
     ...(entraIdEnabled && {
       nodeAddressMap: (incomingAddress: string) => {
-        const [, port = String(config.port)] = incomingAddress.split(":");
-        return { host: config.host, port: Number(port) };
+        const [, nodePort = String(port)] = incomingAddress.split(":");
+        return { host: config.host, port: Number(nodePort) };
       },
     }),
     rootNodes: [
       {
-        url: `${entraIdEnabled ? "rediss" : "redis"}://${config.host}:${config.port}`,
+        url: `${entraIdEnabled ? "rediss" : "redis"}://${config.host}:${port}`,
       },
     ],
   });
@@ -311,42 +293,7 @@ export const createResilientRedisClient = async (
   };
 };
 
-export const createPasswordRedisClient = async (
-  config: RedisPasswordConfig,
-  deps: RedisDeps = defaultDeps,
-): Promise<RedisClient> => {
-  const useTls = config.tlsEnabled ?? true;
-  const port = config.port ?? (useTls ? 6380 : 6379);
-  const client = deps.createClient({
-    password: config.password,
-    pingInterval: PASSWORD_PING_INTERVAL_MS,
-    socket: useTls ? { port, tls: true } : { port, tls: false },
-    url: `${useTls ? "rediss" : "redis"}://${config.host}`,
-  });
-  await client.connect();
-  return client;
-};
-
-/**
- * The cluster is used when enabled, authenticated with Entra ID over TLS if
- * that flag is set too, otherwise a single node with a password.
- */
 export const createRedisClient = (
-  config: RedisClientConfig,
+  config: RedisClusterConfig,
   deps: RedisDeps = defaultDeps,
-): Promise<RedisClient> => {
-  if (!config.clusterEnabled) {
-    return createPasswordRedisClient(config, deps);
-  }
-  const entraIdEnabled = config.entraIdEnabled ?? false;
-  return createResilientRedisClient(
-    {
-      ...config,
-      entraIdEnabled,
-      port:
-        config.port ??
-        (entraIdEnabled ? DEFAULT_CLUSTER_PORT : DEFAULT_PLAIN_PORT),
-    },
-    deps,
-  );
-};
+): Promise<RedisClient> => createResilientRedisClient(config, deps);
