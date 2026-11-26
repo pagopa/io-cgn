@@ -13,7 +13,7 @@ Open the repository in VS Code and run **Dev Containers: Reopen in Container**. 
 
 ## Shared packages
 
-`packages/` holds workspace packages consumed by the apps through `workspace:^`. `@pagopa/io-cgn-core-redis` contains the Redis connection logic used by `card-func`, `merchant-func` and `search-func`: a password client by default, or a cluster with Entra ID authentication when both `REDIS_CLUSTER_ENABLED` and `REDIS_ENTRA_ID_ENABLED` are `true`. The turbo `build` task builds it before the apps, and an app-level `pnpm build` builds it too (skipped under turbo).
+`packages/` holds workspace packages consumed by the apps through `workspace:^`. `@pagopa/io-cgn-core-redis` contains the Redis connection logic used by `card-func`, `merchant-func` and `search-func`: a Redis cluster client, with Entra ID authentication over TLS by default or, when `REDIS_ENTRA_ID_ENABLED` is `false`, a plain cluster for local development. The turbo `build` task builds it before the apps, and an app-level `pnpm build` builds it too (skipped under turbo).
 
 ## Submodules
 

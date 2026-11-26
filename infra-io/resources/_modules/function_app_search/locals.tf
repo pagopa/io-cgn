@@ -11,8 +11,6 @@ locals {
       // REDIS
       REDIS_URL              = var.redis_url
       REDIS_PORT             = var.redis_port
-      REDIS_CLUSTER_ENABLED  = "true"
-      REDIS_TLS_ENABLED      = "true"
       REDIS_ENTRA_ID_ENABLED = "true"
 
       // UTILS

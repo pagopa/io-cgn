@@ -27,7 +27,6 @@ export class RedisClientFactory {
 
   protected readonly createRedisClient = (): Promise<RedisClient> =>
     createRedisClient({
-      clusterEnabled: this.config.REDIS_CLUSTER_ENABLED,
       entraIdEnabled: this.config.REDIS_ENTRA_ID_ENABLED,
       host: this.config.REDIS_URL,
       onError: (error) =>
@@ -35,11 +34,9 @@ export class RedisClientFactory {
           error instanceof Error ? error : new Error(String(error)),
           { source: "redis" },
         ),
-      password: this.config.REDIS_PASSWORD,
       port: this.config.REDIS_PORT
         ? parseInt(this.config.REDIS_PORT, 10)
         : undefined,
-      tlsEnabled: this.config.REDIS_TLS_ENABLED,
     });
 
   public readonly getInstance = (): Promise<RedisClient> => {
