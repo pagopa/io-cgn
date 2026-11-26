@@ -26,9 +26,8 @@ module "functions_cgn_search_02" {
 
   cgn_postgres_db_admin_connection_string = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=POSTGRES-DB-ADMIN-CONNECTION-STRING)"
 
-  redis_url      = module.redis_cgn_02.hostname
-  redis_port     = module.redis_cgn_02.ssl_port
-  redis_password = module.redis_cgn_02.primary_access_key
+  redis_url  = split(":", module.redis_cgn_03.endpoint)[0]
+  redis_port = split(":", module.redis_cgn_03.endpoint)[1]
 
   cgn_cdn_endpoint_base_url = "@Microsoft.KeyVault(VaultName=${module.key_vaults.key_vault_cgn.name};SecretName=CDN-ENDPOINT-BASE-URL)"
 

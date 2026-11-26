@@ -24,9 +24,8 @@ module "functions_cgn_merchant_02" {
     name                = data.azurerm_virtual_network.vnet_common_itn.name
   }
 
-  redis_url      = module.redis_cgn_02.hostname
-  redis_port     = module.redis_cgn_02.ssl_port
-  redis_password = module.redis_cgn_02.primary_access_key
+  redis_url  = split(":", module.redis_cgn_03.endpoint)[0]
+  redis_port = split(":", module.redis_cgn_03.endpoint)[1]
 
   tags = local.tags
 }

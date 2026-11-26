@@ -9,11 +9,11 @@ locals {
       CGN_POSTGRES_DB_SSL_ENABLED = "true"
 
       // REDIS
-      REDIS_URL             = var.redis_url
-      REDIS_PORT            = var.redis_port
-      REDIS_PASSWORD        = var.redis_password
-      REDIS_CLUSTER_ENABLED = "false"
-      REDIS_TLS_ENABLED     = "true"
+      REDIS_URL              = var.redis_url
+      REDIS_PORT             = var.redis_port
+      REDIS_CLUSTER_ENABLED  = "true"
+      REDIS_TLS_ENABLED      = "true"
+      REDIS_ENTRA_ID_ENABLED = "true"
 
       // UTILS
       CDN_MERCHANT_IMAGES_BASE_URL = var.cgn_cdn_endpoint_base_url
