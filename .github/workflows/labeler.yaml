@@ -20,6 +20,6 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/labeler@main
+      - uses: actions/labeler@e418da8824fe5e9edfa64aae6cd5648b895283c4 # main
         with:
           sync-labels: true
